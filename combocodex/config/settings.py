@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'main',
     'compressor',
     'allauth',
-    'allauth.account'
+    'allauth.account',
+    'django_cleanup.apps.CleanupConfig'
 ]
 
 MIDDLEWARE = [
