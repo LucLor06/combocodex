@@ -1,3 +1,6 @@
 from django.contrib import admin
+from . import models
 
-# Register your models here.
+admin.site.register(models.Weapon)
+admin.site.register(models.Legend)
+admin.site.register(models.LegendWeaponPair)

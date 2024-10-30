@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>Combos</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <form>
+        <div class="icons">
+            {% for legend in legends %}
+            <img class="icon" src="{{ legend.icon }}" title="{{ legend.name }}">
+            {% endfor %}
+        </div>
+        <div class="icons">
+            {% for weapon in weapons %}
+            <img class="icon" src="{{ weapon.icon }}" title="{{ weapon.name }}">
+            {% endfor %}
+        </div>
+    </form>
+</section>
+{% endblock content %}

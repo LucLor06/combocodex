@@ -3,6 +3,9 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db.models import F
 from django.http import HttpRequest
+from django.utils.text import slugify
+from django.utils.functional import cached_property
+from config.settings import STATIC_URL
 
 class User(AbstractUser):
     discord_id = models.CharField(blank=True, null=True, max_length=64)
@@ -11,17 +14,27 @@ class User(AbstractUser):
 class AbstractBaseModel(models.Model):
     name = models.CharField(max_length=64)
 
+    def slug_name(self):
+        return slugify(self.name)
+
+    @cached_property
+    def icon(self):
+        return f'/{STATIC_URL}icons/{self.__class__.__name__.lower()}s/{self.slug_name()}.png'
+
     def __str__(self) -> str:
         return self.name
     
     class Meta:
         abstract = True
+        
 
 class Guest(AbstractBaseModel):
     ...
     
+
 class Weapon(AbstractBaseModel):
     ...
+
 
 class Legend(AbstractBaseModel):
     weapons = models.ManyToManyField('Weapon', related_name='legends')
