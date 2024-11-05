@@ -1,0 +1,14 @@
+.characters {
+    display: flex;
+    height: 5rem;
+
+    div {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+.selected {
+    outline: solid white 1rem;
+}

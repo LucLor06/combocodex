@@ -5,17 +5,147 @@
 {% endblock header %}
 
 {% block content %}
+<script type="text/hyperscript">
+    init
+        set global selectedPair to #character-one
+        set global unselectedPair to #character-two
+        set global keysDown to {}
+    end
+
+    on keydown[not repeat] from document
+        set keysDown[event.key] to true
+    end
+    on keyup from document
+        set keysDown[event.key] to false
+    end
+
+    on keydown from document
+        if keysDown['Shift']
+            if (keysDown['x'] or keysDown['X'])
+                set the innerHTML of selectedPair to null
+                set the innerHTML of unselectedPair to null
+                call checkPairs()
+            end
+            if (keysDown['d'] or keysDown['D'])
+                set the innerHTML of selectedPair to null
+                call checkPairs()
+            end
+            if (keysDown["s"] or keysDown['S'])
+                if not event.repeat
+                    call swapPairs()
+                end
+            end
+        end
+    end
+
+    def swapPairs()
+        set temp to selectedPair
+        remove .selected from selectedPair
+        set global selectedPair to unselectedPair
+        add .selected to selectedPair
+        set global unselectedPair to temp  
+    end 
+    
+    def checkPairs()
+        if .legend in selectedPair is empty or .legend in unselectedPair is empty
+            remove .disabled from .legends
+        else
+            add .disabled to .legends
+        end
+        if .weapon in selectedPair is empty or .weapon in unselectedPair is empty
+            remove .disabled from .weapons
+        else
+            add .disabled to .weapons
+        end
+
+        if .weapon in selectedPair is not empty and .legend in selectedPair is not empty
+            call swapPairs()
+        end
+    end
+</script>
 <section>
     <form>
-        <div class="icons">
+        <div id="character-input-template" class="hs-template">
+            <img>
+            <input type="hidden">
+        </div>
+        <div class="icons legends" _="
+        behavior LegendSelect
+            on click
+                set selectedLegend to me
+
+                set legend to #character-input-template.cloneNode(true)
+                remove @id from legend
+                remove @class from legend
+                add .legend to legend
+
+                set legendImg to the first <img/> in legend
+                set legendData to the first <input/> in legend
+
+                set legendImg.src to selectedLegend.src
+                add .icon to legendImg
+
+                set legendData.name to `${selectedPair.id}_legend`
+                set legendData.value to selectedLegend.title
+
+                if .legend in selectedPair is not empty or (keysDown['Shift'] and .legend in unselectedPair is empty)
+                    set insertPair to unselectedPair
+                else
+                    set insertPair to selectedPair
+                end
+
+                put legend at start of insertPair
+                call checkPairs()
+            end
+        end
+
+        behavior WeaponSelect
+            on click
+                set selectedWeapon to me
+
+                set weapon to #character-input-template.cloneNode(true)
+                remove @id from weapon
+                remove @class from weapon
+                add .weapon to weapon
+
+                set weaponImg to the first <img/> in weapon
+                set weaponData to the first <input/> in weapon
+
+                set weaponImg.src to selectedWeapon.src
+                add .icon to weaponImg
+
+                set weaponData.name to `${selectedPair.id}_weapon`
+                set weaponData.value to selectedWeapon.title
+
+                if .weapon in selectedPair is not empty or (keysDown['Shift'] and .weapon in unselectedPair is empty)
+                    set insertPair to unselectedPair
+                else
+                    set insertPair to selectedPair
+                end
+
+                put weapon at end of insertPair
+                call checkPairs()
+            end
+        end">   
             {% for legend in legends %}
-            <img class="icon" src="{{ legend.icon }}" title="{{ legend.name }}">
+            <img class="icon" src="{{ legend.icon }}" title="{{ legend.name }}" _="install LegendSelect">
             {% endfor %}
         </div>
-        <div class="icons">
+        <div class="icons weapons">
             {% for weapon in weapons %}
-            <img class="icon" src="{{ weapon.icon }}" title="{{ weapon.name }}">
+            <img class="icon" src="{{ weapon.icon }}" title="{{ weapon.name }}" _="install WeaponSelect">
             {% endfor %}
+        </div>
+        <div class="characters" _="
+        behavior SwapPairs
+            on click
+                if unselectedPair is me
+                    call swapPairs()
+                end
+            end
+        end">
+            <div id="character-one" class="character-one selected" _="install SwapPairs"></div>
+            <div id="character-two" class="character-two" _="install SwapPairs"></div>
         </div>
     </form>
 </section>
