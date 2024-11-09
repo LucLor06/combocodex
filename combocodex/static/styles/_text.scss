@@ -1,0 +1,55 @@
+@font-face {
+    font-family: 'Bebas Neue';
+    src: url(fonts/BebasNeue.ttf);
+}
+
+@font-face {
+    font-family: 'Dosis';
+    src: url(fonts/Dosis.ttf);
+}
+
+h1, h2, h3, h4, h5, p, li, a, sub {
+    color: $color-text;
+    margin: .5rem;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Bebas Neue';
+}
+
+h1 {
+    font-size: $font-size-xl;
+}
+
+h2 {
+    font-size: $font-size-lg;
+}
+
+p, li, a, sub {
+    font-family: 'Dosis';
+    font-size: $font-size-sm;
+}
+
+.text--center {
+    text-align: center;
+}
+
+.text--secondary {
+    opacity: .5;
+}
+
+.text--xl {
+    font-size: $font-size-xl;
+}
+
+.text--lg {
+    font-size: $font-size-lg;
+}
+
+.text--md {
+    font-size: $font-size-md;
+}
+
+.text--sm {
+    font-size: $font-size-sm;
+}

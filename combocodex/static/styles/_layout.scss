@@ -1,18 +1,24 @@
 body {
     width: 100%;
-    min-height: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     background: url(/static/backgrounds/default.png) no-repeat center center fixed;
     background-size: cover;
 }
 
+header {
+    
+}
+
 main {
     background-color: $color-base;
     flex-grow: 1;
+    display: flex;
 }
 
 section {
+    flex-grow: 1;
     margin: 1rem auto;
     width: clamp(320px, 60%, 1200px);
 }
