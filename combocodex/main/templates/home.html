@@ -6,8 +6,22 @@
 
 {% block content %}
 <section>
-    <h1>Welcome to the Codex!</h1>
-    <h2>Welcome to the Codex!</h2>
-    <p>Welcome to the Codex!</p>
+    <h2 class="text--primary"><b>ComboCodex...</b></h2>
+    <p>is a website based all around team combos from the platform fighting game <i><a href="https://www.brawlhalla.com/">Brawlhalla</a></i>. Users can upload and view team combos, along with gaining achievements, fighting for spots on the leaderboard, and going head to head in competitions.</p>
+</section>
+<section>
+    <h2>Interact with us!</h2>
+    <div class="icons socials">
+        {% for social in socials %}
+        <a class="icon social" href="{{ social.link }}">
+            <p class="tooltip">{{ social.name }}</p>
+            <img src="{{ social.icon }}">
+        </a>
+        {% endfor %}
+    </div>
+</section>
+<section>
+    <h2>Today's daily challenge</h2>
+    {% include 'partials/daily_challenge.html' %}
 </section>
 {% endblock content %}

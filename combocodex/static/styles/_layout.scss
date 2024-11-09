@@ -14,12 +14,9 @@ header {
 main {
     background-color: $color-base;
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
 }
 
 section {
-    flex-grow: 1;
     margin: 1rem auto;
     width: clamp(320px, 60%, 1200px);
 }

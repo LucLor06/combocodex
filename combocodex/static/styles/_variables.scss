@@ -6,3 +6,8 @@ $font-size-xl: clamp(32px, 5vw, 80px);
 $font-size-lg: clamp(28px, 3vw, 72px);
 $font-size-md: clamp(24px, 2vw, 64px);
 $font-size-sm: clamp(20px, 1.5vw, 56px);
+
+
+:root {
+    --color-primary: #239063;
+}

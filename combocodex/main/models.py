@@ -119,3 +119,6 @@ class Request(models.Model):
 class DailyChallenge(models.Model):
     date = models.DateField(auto_now_add=True)
     legends_weapons = models.ManyToManyField('LegendWeaponPair', related_name='daily_challenges')
+
+class Social(AbstractBaseModel):
+    link = models.URLField()

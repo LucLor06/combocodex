@@ -28,10 +28,19 @@ h2 {
 p, li, a, sub {
     font-family: 'Dosis';
     font-size: $font-size-sm;
+    padding-inline: 1rem;
+
+    & a {
+        margin: 0;
+    }
 }
 
 .text--center {
     text-align: center;
+}
+
+.text--primary {
+    color: var(--color-primary);
 }
 
 .text--secondary {
@@ -52,4 +61,29 @@ p, li, a, sub {
 
 .text--sm {
     font-size: $font-size-sm;
+}
+
+.tooltip {
+    width: max-content;
+    margin: 5% auto;
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    font-size: $font-size-sm;
+    background-color: rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 250ms 0ms;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+*:has(> .tooltip) { 
+    position: relative;
+    
+    &:hover > .tooltip, &:focus-visible > .tooltip {
+        opacity: 1;
+        transition: opacity 250ms 250ms;
+    }
 }

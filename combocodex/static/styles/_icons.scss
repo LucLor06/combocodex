@@ -4,6 +4,13 @@
 }
 
 .icon {
-    aspect-ratio: 1/1;
-    width: 6rem;
+    display: block;
+    margin: .25rem;
+    width: $font-size-xl;
+    height: $font-size-xl;
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
 }
