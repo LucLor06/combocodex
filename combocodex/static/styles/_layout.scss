@@ -8,13 +8,14 @@ body {
 }
 
 header {
-    
+    padding: 1rem;
 }
 
 main {
     background-color: $color-base;
     flex-grow: 1;
     display: flex;
+    flex-direction: column;
 }
 
 section {

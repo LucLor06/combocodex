@@ -6,6 +6,7 @@ from django.http import HttpRequest
 from django.utils.text import slugify
 from django.utils.functional import cached_property
 from config.settings import STATIC_URL
+import uuid
 
 class User(AbstractUser):
     discord_id = models.CharField(blank=True, null=True, max_length=64)
@@ -57,7 +58,8 @@ def upload_to_combo(instance: "Combo", filename: str) -> str:
     ext = filename.split('.')[-1]
     if ext not in ACCEPTED_VIDEO_FORMATS:
         raise ValidationError(f'Incorrect file format. Must be of the following {", ".join(ACCEPTED_VIDEO_FORMATS)}.')
-    return f'{instance.legend_one.name}_{instance.weapon_one.name}-{instance.legend_two.name}_{instance.weapon_two.name}.{ext}'
+    video_id = uuid.uuid4()
+    return f'combos/{video_id}.{ext}'
 
 
 class ComboManager(models.Manager):
@@ -92,8 +94,9 @@ class Combo(models.Model):
         return self
 
     def __str__(self) -> str:
-        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
-
+        pairs = [f'{pair.legend.name}_{pair.weapon.name}' for pair in self.legends_weapons.all()]
+        return '-'.join(pairs)
+    
     class Meta:
         ordering = ['upload_date', 'outdated']
 
