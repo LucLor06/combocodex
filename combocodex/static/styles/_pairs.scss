@@ -1,5 +1,4 @@
 .legend-weapon-pairs {
-    width: fit-content;
     display: flex;
     gap: 1rem;
 }
@@ -13,4 +12,8 @@
         width: $font-size-xl;
         height: $font-size-xl;
     }
+}
+
+.daily-challenge {
+    width: fit-content;
 }

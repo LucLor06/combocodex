@@ -1,6 +1,12 @@
-<div class="daily-challenge legend-weapon-pairs">
+<div class="daily-challenge">
+    <div class="legend-weapon-pairs">
     {% for legend_weapon in daily_challenge.legends_weapons.all %}
     {% include 'partials/legend-weapon-pair.html' %}
     {% endfor %}
+    </div>
+    {% if include_date %}
+    <p class="text--center text--sm">{{ daily_challenge.date }}</p>
+    {% else %}
     <p class="tooltip">{{ daily_challenge.date }}</p>
+    {% endif %}
 </div>
