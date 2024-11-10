@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from main.models import Legend, Weapon, Social
+from main.models import Legend, Weapon, Social, DailyChallenge
 
 def home(request):
-    context = {'socials': Social.objects.all()}
+    context = {'socials': Social.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('id')}
     return render(request, 'home.html', context)
 
 def combos_submit(request):

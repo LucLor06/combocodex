@@ -1,0 +1,16 @@
+.legend-weapon-pairs {
+    width: fit-content;
+    display: flex;
+    gap: 1rem;
+}
+
+.legend-weapon-pair {
+    flex-grow: 1;
+    display: flex;
+
+    img {
+        display: block;
+        width: $font-size-xl;
+        height: $font-size-xl;
+    }
+}

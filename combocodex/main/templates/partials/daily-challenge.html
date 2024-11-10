@@ -1,0 +1,6 @@
+<div class="daily-challenge legend-weapon-pairs">
+    {% for legend_weapon in daily_challenge.legends_weapons.all %}
+    {% include 'partials/legend-weapon-pair.html' %}
+    {% endfor %}
+    <p class="tooltip">{{ daily_challenge.date }}</p>
+</div>

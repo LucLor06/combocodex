@@ -10,7 +10,7 @@
 
 h1, h2, h3, h4, h5, p, li, a, sub {
     color: $color-text;
-    margin: .5rem;
+    margin: .25rem;
 }
 
 h1, h2, h3, h4, h5 {
@@ -65,13 +65,14 @@ p, li, a, sub {
 
 .tooltip {
     width: max-content;
-    margin: 5% auto;
+    text-align: center;
+    margin: 1% auto;
     position: absolute;
     left: 50%;
     bottom: 100%;
     transform: translateX(-50%);
     font-size: $font-size-sm;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.9);   
     pointer-events: none;
     opacity: 0;
     transition: opacity 250ms 0ms;
@@ -81,7 +82,16 @@ p, li, a, sub {
 
 *:has(> .tooltip) { 
     position: relative;
-    
+    transition: background-color 500ms;
+    display: block;
+    padding: .25rem;
+    border-radius: .5rem;
+
+    &:hover {
+        transition: background-color 250ms;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
     &:hover > .tooltip, &:focus-visible > .tooltip {
         opacity: 1;
         transition: opacity 250ms 250ms;
