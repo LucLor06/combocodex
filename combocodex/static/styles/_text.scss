@@ -32,7 +32,12 @@ p, li, a, sub {
 
     & a {
         margin: 0;
+        padding: 0;
     }
+}
+
+.text--header {
+    font-family: 'Bebas Neue';
 }
 
 .text--center {
@@ -95,5 +100,21 @@ p, li, a, sub {
     &:hover > .tooltip, &:focus-visible > .tooltip {
         opacity: 1;
         transition: opacity 250ms 250ms;
+    }
+}
+
+.flex--columns {
+    display: flex;
+    flex-flow: row wrap;
+    text-align: center;
+    text-wrap: nowrap;
+    gap: 1rem;
+
+    & > div {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 }

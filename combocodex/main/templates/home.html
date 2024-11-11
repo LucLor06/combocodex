@@ -5,23 +5,38 @@
 {% endblock header %}
 
 {% block content %}
-<section>
-    <h2 class="text--primary"><b>ComboCodex...</b></h2>
-    <p>is a website based all around team combos from the platform fighting game <i><a href="https://www.brawlhalla.com/">Brawlhalla</a></i>. Users can upload and view team combos, along with gaining achievements, fighting for spots on the leaderboard, and going head to head in competitions.</p>
+<section class="home__info-container">
+    <div class="home__info-description">
+        <p><b class="text--primary">ComboCodex</b> is a website based all around team combos from the platform fighting game <i><a href="https://www.brawlhalla.com/">Brawlhalla</a></i>. Users can upload and view team combos, along with gaining achievements, fighting for spots on the leaderboard, and going head to head in competitions.</p>
+    </div>
+    <div class="home__info-stats text--center">
+        <h2 class="text--primary">0</h2>
+        <p class="text--xs">Combos in the Codex</p>
+    </div>
 </section>
-<section>
-    <h2>Interact with us!</h2>
-    <div class="icons socials">
-        {% for social in socials %}
-        <a class="icon social" href="{{ social.link }}">
-            <p class="tooltip">{{ social.name }}</p>
-            <img src="{{ social.icon }}">
-        </a>
-        {% endfor %}
+<section class="home__features-container">
+    <div>
+        <h2 class="text--center text--primary">Interact with us!</h2>
+        <div class="icons socials">
+            {% for social in socials %}
+            <a class="icon social" href="{{ social.link }}">
+                <p class="tooltip">{{ social.name }}</p>
+                <img src="{{ social.icon }}">
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div>
+        <h2 class="text--center text--primary">Daily Challenge</h2>
+        {% include 'partials/daily-challenge.html' %}
     </div>
 </section>
 <section>
-    <h2>Today's daily challenge</h2>
-    {% include 'partials/daily-challenge.html' %}
+    <h2 class="text--center">Recent Combos</h2>
+    <div class="combos">
+        {% for combo in combos %}
+        {% include 'partials/combo.html' %}
+        {% endfor %}
+    </div>
 </section>
 {% endblock content %}

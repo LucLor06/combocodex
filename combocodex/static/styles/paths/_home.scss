@@ -1,0 +1,32 @@
+.home__info-container {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+    
+    .home__info-description {
+        flex: 3;
+        min-width: 320px;
+    }
+
+    .home__info-stats {
+        flex: 1;
+        text-wrap: nowrap;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+.home__features-container {
+    display: flex;
+    gap: 1rem;
+    flex-flow: row wrap;
+
+    & > div {
+        text-wrap: nowrap;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
