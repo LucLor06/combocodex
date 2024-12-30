@@ -6,10 +6,13 @@ class AbstractModel(models.Model):
 
     class Meta:
         abstract = True
-        orering = ['order']
+        ordering = ['order']
 
     def __str__(self):
         return self.name
     
 class Weapon(AbstractModel):
     ...
+
+class Legend(AbstractModel):
+    weapons = models.ManyToManyField('Weapon', related_name='legends')
