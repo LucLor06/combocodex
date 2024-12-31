@@ -31,3 +31,7 @@ class Legend(AbstractModel):
 
     def icon(self):
         return f'{STATIC_ROOT}legends/{self.slug}.png'
+    
+
+class Guest(models.Model):
+    username = models.CharField(max_length=32)
