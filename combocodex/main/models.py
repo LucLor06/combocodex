@@ -1,6 +1,7 @@
 from django.db import models
 from config.settings import STATIC_ROOT
 from django.utils.text import slugify
+from django.db.models import F
 
 
 class AbstractModel(models.Model):
@@ -35,3 +36,33 @@ class Legend(AbstractModel):
 
 class Guest(models.Model):
     username = models.CharField(max_length=32)
+
+
+def combo_video_upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    return f'combos/{instance.legend_one.slug}_{instance.weapon_one.slug}+{instance.legend_two.slug}_{instance.weapon_two.slug}.{ext}'
+
+class Combo(models.Model):
+    is_verified = models.BooleanField(default=False)
+    is_outdated = models.BooleanField(default=False)
+    is_map_specific = models.BooleanField(default=False)
+    created_on = models.DateField(auto_now_add=True)
+    legend_one = models.ForeignKey('Legend', related_name='combos_one', on_delete=models.CASCADE)
+    weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)
+    legend_two = models.ForeignKey('Legend', related_name='combos_two', on_delete=models.CASCADE)
+    weapon_two = models.ForeignKey('Weapon', related_name='combos_two', on_delete=models.CASCADE)
+    users = models.ManyToManyField('user.User', blank=True, related_name='combos')
+    guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
+    video = models.FileField(upload_to=combo_video_upload_to)
+
+    class Meta:
+        ordering = ['is_outdated', '-created_on']
+
+    def __str__(self):
+        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
+
+    def verify(self):
+        if not self.is_verified:
+            self.is_verified = True
+            self.save()
+        return self
