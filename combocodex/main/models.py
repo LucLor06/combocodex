@@ -1,7 +1,7 @@
 from django.db import models
 from config.settings import STATIC_ROOT
 from django.utils.text import slugify
-from django.db.models import F
+from django.db.models import F, Q
 
 
 class AbstractModel(models.Model):
@@ -42,6 +42,14 @@ def combo_video_upload_to(instance, filename):
     ext = filename.split('.')[-1]
     return f'combos/{instance.legend_one.slug}_{instance.weapon_one.slug}+{instance.legend_two.slug}_{instance.weapon_two.slug}.{ext}'
 
+class ComboManager(models.Manager):
+    def verified(self):
+        return self.filter(is_verified=True)
+
+    def unverified(self):
+        return self.filter(is_verified=False)
+    
+
 class Combo(models.Model):
     is_verified = models.BooleanField(default=False)
     is_outdated = models.BooleanField(default=False)
@@ -54,6 +62,7 @@ class Combo(models.Model):
     users = models.ManyToManyField('user.User', blank=True, related_name='combos')
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
     video = models.FileField(upload_to=combo_video_upload_to)
+    objects = ComboManager()
 
     class Meta:
         ordering = ['is_outdated', '-created_on']
