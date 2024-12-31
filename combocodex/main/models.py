@@ -5,7 +5,7 @@ from django.utils.text import slugify
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
-    slug = models.SlugField()
+    slug = models.SlugField(blank=True, editable=False)
     order = models.PositiveIntegerField(unique=True)
 
     class Meta:
@@ -30,4 +30,4 @@ class Legend(AbstractModel):
     weapons = models.ManyToManyField('Weapon', related_name='legends')
 
     def icon(self):
-        return f'{STATIC_ROOT}weapons/{self.slug}.png'
+        return f'{STATIC_ROOT}legends/{self.slug}.png'
