@@ -62,6 +62,7 @@ class Combo(models.Model):
     users = models.ManyToManyField('user.User', blank=True, related_name='combos')
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
     video = models.FileField(upload_to=combo_video_upload_to)
+    daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL)
     objects = ComboManager()
 
     class Meta:
@@ -100,3 +101,14 @@ class Request(models.Model):
 
     def display_name(self):
         return 'Guest' if not self.user else self.user.username
+    
+    
+class DailyChallenge(models.Model):
+    created_on = models.DateField(auto_now_add=True)
+    legend_one = models.ForeignKey('Legend', related_name='daily_challenges_one', on_delete=models.CASCADE)
+    weapon_one = models.ForeignKey('Weapon', related_name='daily_challenges_one', on_delete=models.CASCADE)
+    legend_two = models.ForeignKey('Legend', related_name='daily_challenges_two', on_delete=models.CASCADE)
+    weapon_two = models.ForeignKey('Weapon', related_name='daily_challenges_two', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
