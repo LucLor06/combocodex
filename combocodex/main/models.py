@@ -51,6 +51,7 @@ class ComboManager(models.Manager):
     
 
 class Combo(models.Model):
+    CODEX_COINS = 5
     is_verified = models.BooleanField(default=False)
     is_outdated = models.BooleanField(default=False)
     is_map_specific = models.BooleanField(default=False)
@@ -87,6 +88,7 @@ class RequestManager(models.Manager):
     
 
 class Request(models.Model):
+    CODEX_COINS = 5
     combo = models.OneToOneField('Combo', blank=True, null=True, related_name='request', on_delete=models.CASCADE)
     user = models.ForeignKey('user.User', blank=True, null=True, related_name='requests', on_delete=models.CASCADE)
     created_on = models.DateField(auto_now_add=True)
@@ -104,6 +106,7 @@ class Request(models.Model):
     
     
 class DailyChallenge(models.Model):
+    CODEX_COINS = 10
     created_on = models.DateField(auto_now_add=True)
     legend_one = models.ForeignKey('Legend', related_name='daily_challenges_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='daily_challenges_one', on_delete=models.CASCADE)
