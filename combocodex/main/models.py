@@ -75,15 +75,25 @@ class Combo(models.Model):
             self.is_verified = True
             self.save()
         return self
+    
+
+class RequestManager(models.Manager):
+    def complete(self):
+        return self.filter(combo__isnull=False)
+    
+    def incomplete(self):
+        return self.filter(combo__isnull=True)
+    
 
 class Request(models.Model):
-    combo = models.OneToOneField('Combo', blank=True, null=True, related_name='request')
-    user = models.ForeignKey('user.User', blank=True, null=True, related_name='requests')
+    combo = models.OneToOneField('Combo', blank=True, null=True, related_name='request', on_delete=models.CASCADE)
+    user = models.ForeignKey('user.User', blank=True, null=True, related_name='requests', on_delete=models.CASCADE)
     created_on = models.DateField(auto_now_add=True)
     legend_one = models.ForeignKey('Legend', related_name='requests_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='requests_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='requests_two', on_delete=models.CASCADE)
     weapon_two = models.ForeignKey('Weapon', related_name='requests_two', on_delete=models.CASCADE)
+    objects = RequestManager()
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
