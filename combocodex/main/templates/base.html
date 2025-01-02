@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ComboCodex{% endblock title %}</title>
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% block embeds %}
+    <meta property="og:image" content="{% static 'logo.png' %}">
+    <meta property="og:title" content="ComboCodex">
+    <meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+    {% endblock embeds %}
+    <link rel="icon" type="image/x-icon" href="{% static 'logo.ico' %}">
+    {% compress css %}
+    <link rel="stylesheet" type="text/x-scss" href="{% static '/styles/styles.scss' %}">
+    {% endcompress %}
+    <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+</head>
+<body>
+    {% include 'navigation.html' %}
+    <header>{% block header %}{% endblock header %}</header>
+    <main>{% block content %}{% endblock content %}</main>
+</body>
+</html>
