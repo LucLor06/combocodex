@@ -37,6 +37,13 @@ class Legend(AbstractModel):
 class Guest(models.Model):
     username = models.CharField(max_length=32)
 
+    def transfer_combos_to_user(self, user=None):
+        from user.models import User
+        user = User.objects.get(username=self.username) if not user else user
+        combos = Combo.objects.filter(guests=self)
+        self.combos.remove(combos)
+        user.combos.set(combos)
+
 
 def combo_video_upload_to(instance, filename):
     ext = filename.split('.')[-1]
