@@ -1,0 +1,92 @@
+$font-size-lg: clamp(48px, 5vw, 96px);
+$font-size-md: clamp(32px, 3vw, 64px);
+$font-size-sm: clamp(20px, 2vw, 48px);
+
+@font-face {
+    font-family: 'BebasNeue';
+    src: url(fonts/BebasNeue.ttf);
+}
+
+@font-face {
+    font-family: 'Dosis';
+    src: url(fonts/Dosis.ttf);
+}
+
+h1, h2, h3, h4, h5, p, a, li, sub, input, button, label {
+    color: $color-text;
+    margin: .5rem;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'BebasNeue';
+}
+
+h1 {
+    font-size: $font-size-lg;
+
+    img {
+        position: absolute;
+        width: $font-size-md;
+    }
+}
+
+p, a, li, sub, input, button, label {
+    text-align: left;
+    font-family: 'Dosis';
+}
+
+p {
+    font-size: $font-size-sm;
+
+    a {
+        margin: 0;
+    }
+
+    & + p {
+        margin-top: 1rem;
+    }
+}
+
+a {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.text--secondary {
+    font-size: $font-size-sm;
+    margin: 1rem;
+    opacity: 0.5;
+}
+
+.text--center {
+    text-align: center;
+}
+
+.text--primary {
+    color: $color-primary;
+}
+
+.tooltip {
+    width: max-content;
+    margin: 5% auto;
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    font-size: $font-size-sm;
+    background-color: rgba(0, 0, 0, 0.9);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 250ms 0ms;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+*:has(> .tooltip) { 
+    position: relative;
+    
+    &:hover > .tooltip, &:focus-visible > .tooltip {
+        opacity: 1;
+        transition: opacity 250ms 250ms;
+    }
+}
