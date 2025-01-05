@@ -5,10 +5,15 @@
 
     .social {
         width: clamp(2.5rem, 15%, 5rem);
+        transition: scale 250ms;
 
         img {
             width: 100%;
             border-radius: 1rem;
+        }
+
+        &:hover {
+            scale: 1.1;
         }
     }
 }

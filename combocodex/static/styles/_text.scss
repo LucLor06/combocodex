@@ -1,6 +1,7 @@
-$font-size-lg: clamp(48px, 5vw, 96px);
-$font-size-md: clamp(32px, 3vw, 64px);
-$font-size-sm: clamp(16px, 1.5vw, 36px);
+$font-size-xl: clamp(48px, 5vw, 96px);
+$font-size-lg: clamp(32px, 3vw, 64px);
+$font-size-md: clamp(16px, 1.5vw, 36px);
+$font-size-xs: clamp(12px, 1vw, 20px);
 
 @font-face {
     font-family: 'BebasNeue';
@@ -21,13 +22,20 @@ h1, h2, h3, h4, h5 {
     font-family: 'BebasNeue';
 }
 
-h1 {
-    font-size: $font-size-lg;
+h2, h3, h4, h5 {
+    color: $color-primary;
+}
 
-    img {
-        position: absolute;
-        width: $font-size-md;
-    }
+h1 {
+    font-size: $font-size-xl;
+}
+
+h2 {
+    font-size: $font-size-lg;
+}
+
+h3 {
+    font-size: $font-size-md;
 }
 
 p, a, li, sub, input, button, label {
@@ -36,7 +44,7 @@ p, a, li, sub, input, button, label {
 }
 
 p {
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
 
     a {
         margin: 0;
@@ -58,7 +66,7 @@ a {
 }
 
 .text--secondary {
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
     margin: 1rem;
     opacity: 0.5;
 }
@@ -71,6 +79,16 @@ a {
     color: $color-primary;
 }
 
+.text--header {
+    color: white;
+    text-align: center;
+    margin-block: 1rem;
+}
+
+.text--xs {
+    font-size: $font-size-xs;
+}
+
 .tooltip {
     width: max-content;
     margin: 5% auto;
@@ -78,7 +96,7 @@ a {
     left: 50%;
     bottom: 100%;
     transform: translateX(-50%);
-    font-size: $font-size-sm;
+    font-size: $font-size-xs;
     background-color: rgba(0, 0, 0, 0.9);
     pointer-events: none;
     opacity: 0;
@@ -92,6 +110,6 @@ a {
     
     &:hover > .tooltip, &:focus-visible > .tooltip {
         opacity: 1;
-        transition: opacity 250ms 250ms;
+        transition: opacity 250ms 125ms;
     }
 }

@@ -9,18 +9,34 @@
 
 {% block content %}
 <section>
-    <div class="section-content home-info">
-        <div class="home-info__logo">
-            <img src="{% static 'logo.png' %}">
+    <div class="section-content">
+        <div class="home-info">
+            <div class="home-info__logo">
+                <img src="{% static 'logo.png' %}">
+            </div>
+            <div class="home-info__description">
+                <p>ComboCodex is the place for team combo enthusiasts!</p>
+                <p><b>Looking for combos?</b> Try <a>searching for combos</a>, <a>requesting combos</a>, or <a>using the spreadsheet</a>!</p>
+                <p><b>Want to get involved?</b> <a>Sign up</a>, <a>submit combos</a>, and check out some of our socials below!</p>
+                <div class="home-info__socials socials">
+                    {% for social in socials %}
+                    {% include 'partials/social.html' %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        <div class="home-info__description">
-            <p><b>ComboCodex</b> is the place for team combo enthusiasts! We are home to <b>{{ combo_count }}</b> combos and <b>{{ user_count }}</b> users!</p>
-            <p><b>Looking for combos?</b> Try <a>searching for combos</a>, <a>requesting combos</a>, or <a>using the spreadsheet</a>!</p>
-            <p><b>Want to get involved?</b> <a>Sign up</a> and <a>submit combos</a>!</p>
-            <div class="home-info__socials socials">
-                {% for social in socials %}
-                {% include 'partials/social.html' %}
-                {% endfor %}
+        <div class="home-stats">
+            <div>
+                <h3 class="text--center">Today's Challenge</h3>
+                {% include 'partials/daily-challenge.html' %}
+            </div>
+            <div>
+                <h2 class="text--center">{{ combo_count }}</h2>
+                <p class="text--xs text--center">Combos in the Codex</p>
+            </div>
+            <div>
+                <h3 class="text--center">Weekly Player</h3>
+                <h3 class="text--center">Placeholder</h3>
             </div>
         </div>
     </div>

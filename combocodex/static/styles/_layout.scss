@@ -36,4 +36,8 @@ section {
 .section-content {
     margin-inline: auto;
     width: 75%;
+
+    & > div + div {
+        margin-top: 3rem;
+    }
 }

@@ -20,8 +20,20 @@
             margin-inline: auto;
             width: 100%;
             min-width: 300px;
-            max-width: 75%;
+            max-width: 50%;
             display: block;
         }
+    }
+}
+
+.home-stats {
+    display: flex;
+    flex-flow: row-reverse wrap;
+    justify-content: space-around;
+    align-items: center;
+    gap: 2rem;
+
+    & > div {
+        min-width: 250px;
     }
 }
