@@ -1,5 +1,4 @@
 from django.db import models
-from config.settings import STATIC_ROOT
 from django.utils.text import slugify
 from django.db.models import F, Q
 from django.core.exceptions import ValidationError
@@ -24,14 +23,14 @@ class AbstractModel(models.Model):
 
 class Weapon(AbstractModel):
     def icon(self):
-        return f'{STATIC_ROOT}weapons/{self.slug}.png'
+        return f'/static/weapons/{self.slug}.png'
 
 
 class Legend(AbstractModel):
     weapons = models.ManyToManyField('Weapon', related_name='legends')
 
     def icon(self):
-        return f'{STATIC_ROOT}legends/{self.slug}.png'
+        return f'/static/legends/{self.slug}.png'
     
 
 class Guest(models.Model):
@@ -122,3 +121,9 @@ class DailyChallenge(models.Model):
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
+    
+class WebsiteSocial(AbstractModel):
+    link = models.URLField()
+    
+    def icon(self):
+        return f'/static/socials/{self.slug}.png'

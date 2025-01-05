@@ -1,0 +1,14 @@
+.socials {
+    display: flex;
+    flex-flow: row wrap;
+    gap: .5rem;
+
+    .social {
+        width: clamp(2.5rem, 15%, 5rem);
+
+        img {
+            width: 100%;
+            border-radius: 1rem;
+        }
+    }
+}

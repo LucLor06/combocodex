@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Welcome to the Codex!{% endblock title %}
 
@@ -8,8 +9,20 @@
 
 {% block content %}
 <section>
-    <div class="section-content">
-        <p>Welcome!</p>
+    <div class="section-content home-info">
+        <div class="home-info__logo">
+            <img src="{% static 'logo.png' %}">
+        </div>
+        <div class="home-info__description">
+            <p><b>ComboCodex</b> is the place for team combo enthusiasts! We are home to <b>{{ combo_count }}</b> combos and <b>{{ user_count }}</b> users!</p>
+            <p><b>Looking for combos?</b> Try <a>searching for combos</a>, <a>requesting combos</a>, or <a>using the spreadsheet</a>!</p>
+            <p><b>Want to get involved?</b> <a>Sign up</a> and <a>submit combos</a>!</p>
+            <div class="home-info__socials socials">
+                {% for social in socials %}
+                {% include 'partials/social.html' %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </section>
 {% endblock content %}

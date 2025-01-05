@@ -1,0 +1,27 @@
+.home-info {
+    display: flex;
+    flex-flow: row-reverse wrap;
+
+    .home-info__description {
+        flex: 4;
+        min-width: 320px;
+        display: flex;
+        flex-direction: column;
+
+        .home-info__socials {
+            margin-top: auto;
+        }
+    }
+
+    .home-info__logo {
+        flex: 1;
+
+        img {
+            margin-inline: auto;
+            width: 100%;
+            min-width: 300px;
+            max-width: 75%;
+            display: block;
+        }
+    }
+}

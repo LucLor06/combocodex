@@ -1,6 +1,6 @@
 $font-size-lg: clamp(48px, 5vw, 96px);
 $font-size-md: clamp(32px, 3vw, 64px);
-$font-size-sm: clamp(20px, 2vw, 48px);
+$font-size-sm: clamp(16px, 1.5vw, 36px);
 
 @font-face {
     font-family: 'BebasNeue';
@@ -47,9 +47,14 @@ p {
     }
 }
 
+b {
+    color: $color-primary;
+}
+
 a {
     cursor: pointer;
     text-decoration: underline;
+    color: $color-tertriary;
 }
 
 .text--secondary {

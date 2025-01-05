@@ -1,4 +1,4 @@
 from django.contrib import admin
 from . import models
 
-admin.site.register([models.Legend, models.Weapon])
+admin.site.register([models.Legend, models.Weapon, models.Combo, models.WebsiteSocial])
