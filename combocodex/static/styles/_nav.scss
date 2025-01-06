@@ -1,4 +1,133 @@
-nav {
-    height: $font-size-lg;
+.nav__toggle {
+    margin: 0;
     background-color: $color-base;
+    cursor: pointer;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    svg {
+        width: $font-size-lg;
+        height: $font-size-lg;
+    }
+
+    input {
+        display: none;
+    }
+
+    &:has(input:checked) {
+        & + nav {
+            transform: translateX(0%);
+        }
+
+        .nav__toggle--open {
+            display: none;
+        }
+
+        .nav__toggle--close {
+            display: block;
+        }
+    }
+}
+
+.nav__toggle--close {
+    display: none;
+}
+
+nav {
+    overflow-y: scroll;
+    position: fixed;
+    height: 100%;
+    width: clamp(320px, 20%, 600px);
+    z-index: 1;
+    padding-top: $font-size-xl;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    transform-origin: left;
+    transform: translateX(-100%);
+    transition: transform 250ms;
+}
+
+.nav__secondary {
+    z-index: 3;
+    margin-inline: auto;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
+    gap: .5rem;
+
+    a {
+        margin: 0;
+        z-index: 3;
+        display: block;
+        width: clamp(24px, 2.25vw, 48px);
+        height: clamp(24px, 2.25vw, 48px);
+
+        svg {
+            opacity: 0.75;
+            width: 100%;
+            height: 100%;
+            transition: opacity 250ms, scale 250ms;
+        }
+
+        &:hover {
+            svg {
+                opacity: 1;
+                scale: 1.1;
+            }
+        }
+    }
+}
+
+.nav__main {
+    margin-top: 2rem;
+
+    hr {
+        margin: .5rem auto;
+        width: 60%;
+        border-style: solid;
+        border-width: .125rem;
+        opacity: 0.75;
+        color: $color-primary;
+    }
+
+    a {
+        margin: 0;
+        padding: .5rem 2rem;
+        width: 100%;
+        cursor: pointer;
+        user-select: none;
+        text-decoration: none;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        gap: 5%;
+        transition: background-color 500ms;
+
+        h3 {
+            color: white;
+        }
+
+        svg {
+            width: $font-size-lg;
+            height: $font-size-lg;
+            
+            path {
+                fill: $color-secondary;
+            }
+        }
+
+        &:hover, &:focus-visible {
+            transition: background-color 250ms;
+            background-color: $color-secondary;
+
+            svg, path {
+                fill: white;
+            }
+        }
+    }
 }
