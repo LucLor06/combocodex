@@ -1,0 +1,71 @@
+<div class="combo" _="
+init
+    set element viewed to false
+end
+on play from <video/> in me
+    if not viewed
+        get .views in me
+        set its innerHTML to its innerHTML as Int + 1
+        set element viewed to true
+    end
+end">
+    <div class="combo-data">
+        <div class="combo-data__pairs">
+            <div class="combo-data__pair">
+                <p class="tooltip">{{ combo.legend_one.name }} ({{ combo.weapon_one.name }})</p>
+                <img src="{{ combo.legend_one.icon }}">
+                <img src="{{ combo.weapon_one.icon }}">
+            </div>
+            <div class="combo-data__pair">
+                <p class="tooltip">{{ combo.legend_two.name }} ({{ combo.weapon_two.name }})</p>
+                <img src="{{ combo.legend_two.icon }}">
+                <img src="{{ combo.weapon_two.icon }}">
+            </div>
+        </div>
+        <div class="combo-data__info">
+            <div class="combo-data__stats">
+                {% if not combo.is_verified %}
+                <div>
+                    <p class="tooltip">Unverified</p>
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg>
+                </div>
+                {% endif %}
+                {% if combo.is_outdated %}
+                <div>
+                    <p class="tooltip">Outdated</p>
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m388-212-56-56 92-92-92-92 56-56 92 92 92-92 56 56-92 92 92 92-56 56-92-92-92 92ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+                </div>
+                {% endif %}
+                {% if combo.is_map_specific %}
+                <div>
+                    <p class="tooltip">Map Specific</p>
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
+                </div>
+                {% endif %}
+                <div>
+                    <p class="tooltip">Views</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg>
+                    <p class="text--sm text--tertriary views">{{ combo.views }}</p>
+                </div>
+            </div>
+            <div class="combo-data__users">
+                {% for user in combo.users.all %}
+                <p class="text--xs">{{ user.username }}</p>
+                {% endfor %}
+                {% for guest in combo.guests.all %}
+                <p class="text--xs">{{ guest.username }}</p>
+                {% endfor %}
+            </div>
+            <div>
+                <p class="text--xs">{{ combo.created_on }}</p>
+            </div>
+        </div>
+    </div>
+    <video muted playsinline controls src="{{ combo.video }}" _="
+    on play
+        add .combo-hidden to the previous .combo-data
+    end
+    on pause or ended
+        remove .combo-hidden from the previous .combo-data
+    end">
+</div>

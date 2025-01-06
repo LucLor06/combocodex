@@ -70,6 +70,7 @@ class Combo(models.Model):
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
     video = models.FileField(upload_to=combo_video_upload_to)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL)
+    views = models.PositiveIntegerField(default=0)
     objects = ComboManager()
 
     class Meta:

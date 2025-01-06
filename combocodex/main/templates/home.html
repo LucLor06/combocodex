@@ -41,4 +41,12 @@
         </div>
     </div>
 </section>
+<h2 class="text--header">Recent Combos</h2>
+<section>
+    <div class="section-content combos">
+        {% for combo in combos %}
+        {% include 'partials/combo.html' %}
+        {% endfor %}
+    </div>
+</section>
 {% endblock content %}
