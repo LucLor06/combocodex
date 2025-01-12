@@ -63,7 +63,7 @@ Combos | Submit
             </div>
             {% endfor %}
         </div>
-        <form class="submit-form" id="combos-submit" method="post" enctype="multipart/form-data">
+        <form class="submit-form" id="combos-submit" method="post" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin">
             {% csrf_token %}
             <div>
                 <h3 class="text--center">Legends/Weapons</h3>

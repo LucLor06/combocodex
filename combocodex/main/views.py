@@ -4,7 +4,7 @@ from main.models import Combo, WebsiteSocial, DailyChallenge, Legend
 from django.http import HttpResponse
 
 def home(request):
-    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.count(), 'user_count': User.objects.count()}
+    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count()}
     return render(request, 'home.html', context)
 
 def combos_view(request, pk):
@@ -21,6 +21,8 @@ def combos_submit(request):
     if request.method == 'POST':
         try:
             Combo.objects.create_from_post(request.POST, request.FILES)
+            message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
         except:
-            pass
+            message = 'An error occured. Try again later. If the issue persists reach out on our discord!'
+        return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/submit.html', context)
