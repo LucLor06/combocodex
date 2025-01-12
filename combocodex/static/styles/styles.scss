@@ -3,8 +3,15 @@
 @import '_text.scss';
 @import '_layout.scss';
 @import '_nav.scss';
+@import '_inputs.scss';
 @import '_home.scss';
 
 @import 'partials/_socials.scss';
 @import 'partials/_daily-challenges.scss';
 @import 'partials/_combos.scss';
+@import 'partials/legends-weapons.scss';
+@import 'partials/_modal.scss';
+@import 'partials/_user-select-modal.scss';
+@import 'partials/_submit-form.scss';
+
+@import 'combos/_submit.scss';

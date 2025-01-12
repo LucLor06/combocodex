@@ -1,4 +1,4 @@
-<div class="combo" _="
+<div class="combo" hx-trigger="comboviewed" hx-post="{% url 'combos-view' combo.pk %}" hx-swap="none" _="
 init
     set element viewed to false
 end
@@ -7,6 +7,7 @@ on play from <video/> in me
         get .views in me
         set its innerHTML to its innerHTML as Int + 1
         set element viewed to true
+        send comboviewed to me
     end
 end">
     <div class="combo-data">
@@ -61,7 +62,7 @@ end">
             </div>
         </div>
     </div>
-    <video muted playsinline controls src="{{ combo.video }}" _="
+    <video muted playsinline controls src="{{ combo.video.url }}" _="
     on play
         add .combo-hidden to the previous .combo-data
     end

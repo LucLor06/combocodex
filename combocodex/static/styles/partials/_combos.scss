@@ -2,6 +2,7 @@
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
+    gap: 2rem;
 
     .combo {
         width: clamp(20rem, 45%, 40rem);

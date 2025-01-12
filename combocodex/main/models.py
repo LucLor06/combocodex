@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.db.models import F, Q
+from user.models import User
 from django.core.exceptions import ValidationError
 
 class AbstractModel(models.Model):
@@ -54,6 +55,38 @@ class ComboManager(models.Manager):
 
     def unverified(self):
         return self.filter(is_verified=False)
+    
+    def create_from_post(self, post, files):
+        users = []
+        guests = []
+        for user in post.getlist('user'):
+            try:
+                users.append(User.objects.get(username=user))
+            except User.DoesNotExist:
+                guest, created = Guest.objects.get_or_create(username=user, defaults={'username': user})
+                guests.append(guest)
+        legend_one = Legend.objects.get(id=post.get('legend_one'))
+        weapon_one = Weapon.objects.get(id=post.get('weapon_one'))
+        legend_two = Legend.objects.get(id=post.get('legend_two'))
+        weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
+        video = files.get('video')
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
+        combo.users.set(users)
+        combo.guests.set(guests)
+        try:
+            daily_challenge = DailyChallenge.objects.get(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one))
+            if daily_challenge.created_on == combo.created_on:
+                combo.daily_challenge = daily_challenge
+                combo.save()
+        except DailyChallenge.DoesNotExist:
+            pass
+        try:
+           request = Request.objects.get(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one))
+           request.combo = combo
+           request.save()
+        except Request.DoesNotExist:
+            pass
+        return combo
     
 
 class Combo(models.Model):

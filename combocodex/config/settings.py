@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'main',
     'django_cleanup.apps.CleanupConfig',
     'compressor',
-    'user'
+    'user',
+    'template_partials'
 ]
 
 MIDDLEWARE = [

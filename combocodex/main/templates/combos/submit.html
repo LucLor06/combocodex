@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load partials %}
+
+{% block title %}
+Combos | Submit
+{% endblock title %}
+
+{% block header %}
+<h1>Submit Combos</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <script type="text/hyperscript">
+        init
+            set global pairNumber to 'one'
+            set global pairsFilled to false
+            set global videoFilled to false
+        end
+        behavior PairAdd
+            on click
+                set weapon to me.cloneNode(true)
+                get <input/> in weapon
+                set its @name to `weapon_${pairNumber}`
+                get the first .legend in the closest .pair-container
+                set legend to it.cloneNode(true)
+                get <input/> in legend
+                set its @name to `legend_${pairNumber}`
+                if pairNumber == 'one'
+                    get #submit__pair-one
+                    put legend at the end of it
+                    put weapon at the end of it
+                    set global pairNumber to 'two'
+                else
+                    get #submit__pair-two
+                    put legend at the end of it
+                    put weapon at the end of it
+                    add .disabled to .pair-container
+                    add .hidden to .weapons
+                    set global pairsFilled to true
+                    trigger validationchanged
+                end
+            end
+        end
+    </script>
+    <div class="section-content">
+        <p>Press a Legend/Weapon pair to add it to your combo. Order does not matter.</p>
+        <div class="legends">
+            {% for legend in legends %}
+            <div class="pair-container">
+                <div class="legend">
+                    <img src="{{ legend.icon }}">
+                    <input type="hidden" value="{{ legend.id }}">
+                </div>
+                <div class="weapons">
+                    {% for weapon in legend.weapons.all %}
+                    <div class="weapon" _="install PairAdd">
+                        <img src="{{ weapon.icon }}">
+                        <input type="hidden" value="{{ weapon.id }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <form class="submit-form" id="combos-submit" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+                <h3 class="text--center">Legends/Weapons</h3>
+                <div class="submit__pairs">
+                    <div class="submit__pair" id="submit__pair-one"></div>
+                    <div class="submit__pair" id="submit__pair-two">
+                        <div class="submit__pair-clear">
+                            <p class="tooltip">Clear</p>
+                            <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="
+                            on click
+                                get .legend in .submit__pair
+                                remove it
+                                get .weapon in .submit__pair
+                                remove it
+                                remove .disabled from .pair-container
+                                remove .hidden from .weapons
+                                set global pairsFilled to false
+                                trigger validationchanged
+                                set global pairNumber to 'one'
+                            end"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="text--center">Users/Guests</h3>
+                <div class="combos-submit__users">
+                    <button type="button" _="
+                    on click
+                        remove .hidden from the next .modal
+                    end
+                    on usercountchanged
+                        if userCount >= 2
+                            add .hidden to me
+                        else
+                            remove .hidden from me
+                        end
+                    end">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                        <p>Add user</p>
+                    </button>
+                </div>
+            </div>
+            <div>
+                <h3 class="text--center">Video</h3>
+                <div class="combos-submit__video">
+                    <label class="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                        <p>Add Video</p>
+                        <input type="file" _="
+                        on change
+                            if my.files.length > 0
+                            set video to my.files[0]
+                            get the previous <p/>
+                            set its innerText to `${video.name}`
+                            get the first <svg/> in the closest <label/>
+                            if it is not null
+                                remove it
+                            end
+                            set global videoFilled to true
+                            trigger validationchanged
+                        end">
+                    </label>
+                </div>
+            </div>
+        </form>
+        <input id="submit-button" class="disabled" type="submit" value="Submit" form="combos-submit" _="
+        on validationchanged from document
+            if pairsFilled and videoFilled
+                remove .disabled from me
+            else
+                add .disabled to me
+            end
+        end">
+        <div class="modal hidden" _="
+        init
+            set global userCount to 0
+        end
+        behavior UserAdd(addAsGuest)
+            on click
+                get the previous .hs-template
+                set newUser to it.cloneNode(true)
+                remove .hs-template from newUser
+                get the first <p/> in newUser
+                if addAsGuest
+                    set its innerText to the value of the first <input[type='search']/>
+                else
+                    set its innerText to my innerText
+                end
+                get the first <input/> in newUser
+                if addAsGuest
+                    set its @value to the value of the first <input[type='search']/>
+                else
+                    set its @value to my innerText
+                end
+                put newUser at the start of the previous .combos-submit__users
+                increment global userCount
+                send usercountchanged to the first <button/> in .combos-submit__users
+                if userCount >= 2
+                    add .hidden to the closest .modal
+                end
+                remove me
+            end
+        end
+        behavior UserRemove
+            on click
+                decrement global userCount
+                get the innerText of the previous <p/>
+                send usercountchanged to the first <button/> in .combos-submit__users
+                remove the closest parent .user-selected
+            end
+        end">
+            <div class="modal-content">
+                <div class="hs-template user-selected">
+                    <p class="text--center"></p>  
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                    <input name="user" type="hidden">
+                </div>
+                <div class="modal-header">
+                    <h2 class="text--center">Select Users</h2>
+                    <p>Search for users and press them to add them, or add the search as a guest.</p>
+                    <input autocomplete="off" type="search" placeholder="Search users" name="username" hx-get hx-trigger="searchfilled" hx-target="next .modal-main" _="
+                    on input
+                        if my.value.length > 2
+                            wait 200ms
+                            send searchfilled to me
+                            remove .hidden from .guest-button
+                        else
+                            add .hidden to .guest-button
+                    end">
+                </div>
+                <div class="modal-main user-select">
+                    {% partialdef users %}
+                    {% for user in users %}
+                    <p _="install UserAdd(addAsGuest: false)">{{ user.username }}</p>
+                    {% endfor %}
+                    <button class="guest-button" type="button" _="
+                    install UserAdd(addAsGuest: true)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                        Add as Guest
+                    </button>
+                    {% endpartialdef %}
+                </div>
+                <div class="modal-actions">
+                    <button type="button" _="
+                    on click
+                        add .hidden to the closest .modal
+                    end">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

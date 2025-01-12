@@ -1,0 +1,56 @@
+button, input {
+    color: $color-text;
+    font-size: $font-size-sm;
+}
+
+button, input[type='submit'], .button {
+    font-size: $font-size-sm;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: .25rem .5rem;
+    border: none;
+    gap: .25rem;
+    background-color: $color-secondary;
+    color: $color-text;
+    border-radius: .5rem;
+    transition: scale 125ms;
+
+    cursor: pointer;
+
+    p {
+        font-size: $font-size-sm;
+    }
+
+    svg {
+        width: $font-size-md;
+        height: $font-size-md;
+        
+        path {
+            fill: $color-text;
+        }
+    }
+
+    &:hover {
+        scale: 1.05;
+    }
+}
+
+
+input:is([type='text'], [type='search']) {
+    display: block;
+    margin-inline: auto;
+    background-color: $color-base;
+    font-size: $font-size-sm;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+    border: 2px solid $color-secondary;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+input[type='file'] {
+    display: none;
+}
