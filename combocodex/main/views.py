@@ -56,3 +56,8 @@ def combos_verify(request):
             message = 'Combo rejected.'
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/verify.html', context)
+
+def combos_combo(request, pk):
+    combo = Combo.objects.get(pk=pk)
+    context = {'combo': combo, 'similar_combos': combo.get_similar()}
+    return render(request, 'combos/combo.html', context)

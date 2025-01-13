@@ -19,8 +19,8 @@
     border: solid 2px $color-secondary;
     border-radius: 2rem;
     overflow-y: hidden;
-    
-
+    margin-inline: auto;
+    width: clamp(320px, 60%, 1200px);
     video {
         display: block;
         width: 100%;
@@ -43,7 +43,11 @@
             margin: 0;
         }
 
-        & > div {
+        a {
+            margin: 0;
+        }
+
+        & > * {
             flex: 1;
         }
 

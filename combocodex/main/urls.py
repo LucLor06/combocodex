@@ -6,5 +6,5 @@ urlpatterns = [
     path('combos/submit/', views.combos_submit, name='combos-submit'),
     path('combos/verify/', views.combos_verify, name='combos-verify'),
     path('combos/<pk>/view/', views.combos_view, name='combos-view'),
-    
+    path('combos/<pk>/', views.combos_combo, name='combos-combo')
 ]

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Combos | {{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) | {{ combo.legend_two.name }} ({{ combo.weapon_two.name }})
+{% endblock title %}
+
+{% block header %}
+<h1>Combo Viewer</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        {% include 'partials/combo.html' %}
+    </div>
+</section>
+{% if similar_combos %}
+<h2 class="text--header">Similar Combos</h2>
+<section>
+    <div class="section-content combos">
+        {% for combo in similar_combos %}
+        {% include 'partials/combo.html' %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock content %}

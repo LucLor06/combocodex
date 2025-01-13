@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from django.db.models import F, Q
 from user.models import User
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
@@ -50,11 +51,14 @@ def combo_video_upload_to(instance, filename):
     return f'combos/{instance.legend_one.slug}_{instance.weapon_one.slug}|{instance.legend_two.slug}_{instance.weapon_two.slug}.{ext}'
 
 class ComboManager(models.Manager):
+    def select_weapons_legends(self):
+        return self.select_related('legend_one', 'weapon_one', 'legend_two', 'weapon_two')
+    
     def verified(self):
-        return self.filter(is_verified=True)
+        return self.select_weapons_legends().filter(is_verified=True)
 
     def unverified(self):
-        return self.filter(is_verified=False)
+        return self.select_weapons_legends().filter(is_verified=False)
     
     def create_from_post(self, post, files):
         users = []
@@ -70,9 +74,7 @@ class ComboManager(models.Manager):
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
         video = files.get('video')
-        print(video)
         combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
-        print(combo.video)
         combo.users.set(users)
         combo.guests.set(guests)
         try:
@@ -111,6 +113,9 @@ class Combo(models.Model):
     class Meta:
         ordering = ['is_outdated', '-created_on']
 
+    def get_absolute_url(self):
+        return reverse('combos-combo', kwargs={'pk': self.pk})
+
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
 
@@ -121,6 +126,8 @@ class Combo(models.Model):
             self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
         return self
     
+    def get_similar(self):
+        return Combo.objects.select_weapons_legends().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
 
 class RequestManager(models.Manager):
     def complete(self):
