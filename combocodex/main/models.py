@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
 from django.db.models import F, Q
-from user.models import User
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
@@ -60,21 +59,25 @@ class ComboManager(models.Manager):
     def unverified(self):
         return self.select_weapons_legends().filter(is_verified=False)
     
-    def create_from_post(self, post, files):
+    def create_from_post(self, post, files, submitter=None):
+        from user.models import User
         users = []
         guests = []
-        for user in post.getlist('user'):
+        is_verified = False
+        if submitter:
+            is_verified = submitter.is_trusted
+        for username in post.getlist('user'):
             try:
-                users.append(User.objects.get(username=user))
+                users.append(User.objects.get(username=username))
             except User.DoesNotExist:
-                guest, created = Guest.objects.get_or_create(username=user, defaults={'username': user})
+                guest, created = Guest.objects.get_or_create(username=username, defaults={'username': username})
                 guests.append(guest)
         legend_one = Legend.objects.get(id=post.get('legend_one'))
         weapon_one = Weapon.objects.get(id=post.get('weapon_one'))
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
         video = files.get('video')
-        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, is_verified=is_verified)
         combo.users.set(users)
         combo.guests.set(guests)
         try:
@@ -124,6 +127,8 @@ class Combo(models.Model):
             self.is_verified = True
             self.save()
             self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
+            for user in self.users.all():
+                user.check_trusted()
         return self
     
     def get_similar(self):

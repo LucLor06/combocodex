@@ -4,7 +4,16 @@ from django.utils.functional import cached_property
 from django.db.models import Prefetch, Q
 
 class User(AbstractUser):
+    is_trusted = models.BooleanField(default=False)
     codex_coins = models.PositiveIntegerField(default=0)
+
+    def check_trusted(self):
+        from main.models import Combo
+        if not self.is_trusted:
+            if Combo.objects.verified().filter(users=self).count() >= 10:
+                self.is_trusted = True
+                self.save()
+        return self.is_trusted
 
     def transfer_combos_to_user(self, user):
         combos = self.combos.all()

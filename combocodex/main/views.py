@@ -22,7 +22,8 @@ def combos_submit(request):
     if request.method == 'POST':
         print(request.FILES)
         try:
-            Combo.objects.create_from_post(request.POST, request.FILES)
+            user = request.user if request.user.is_authenticated else None
+            Combo.objects.create_from_post(request.POST, request.FILES, request.user)
             message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
         except:
             message = 'An error occured. Try again later. If the issue persists reach out on our discord!'
