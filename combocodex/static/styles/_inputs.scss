@@ -54,3 +54,15 @@ input:is([type='text'], [type='search']) {
 input[type='file'] {
     display: none;
 }
+
+.button--error {
+    background-color: $color-error;
+}
+
+label input[type='checkbox'] {
+    display: none;
+}
+
+label.button:has(input[type='checkbox']:not(:checked)) {
+    opacity: .5;
+}

@@ -1,0 +1,22 @@
+.combos-verify {
+    .combo {
+        margin-inline: auto;
+        width: clamp(320px, 60%, 1200px);
+    }
+
+    .combos-verify__form {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+
+        & > * {
+            min-width: 320px;
+        }
+
+        .combos-verify__form--actions {
+            display: flex;
+
+            justify-content: center;
+        }
+    }
+}

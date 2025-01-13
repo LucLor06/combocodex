@@ -47,7 +47,7 @@ class Guest(models.Model):
 
 def combo_video_upload_to(instance, filename):
     ext = filename.split('.')[-1]
-    return f'combos/{instance.legend_one.slug}_{instance.weapon_one.slug}+{instance.legend_two.slug}_{instance.weapon_two.slug}.{ext}'
+    return f'combos/{instance.legend_one.slug}_{instance.weapon_one.slug}|{instance.legend_two.slug}_{instance.weapon_two.slug}.{ext}'
 
 class ComboManager(models.Manager):
     def verified(self):
@@ -70,7 +70,9 @@ class ComboManager(models.Manager):
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
         video = files.get('video')
+        print(video)
         combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
+        print(combo.video)
         combo.users.set(users)
         combo.guests.set(guests)
         try:
@@ -116,6 +118,7 @@ class Combo(models.Model):
         if not self.is_verified:
             self.is_verified = True
             self.save()
+            self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
         return self
     
 

@@ -113,7 +113,7 @@ Combos | Submit
                     <label class="button">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
                         <p>Add Video</p>
-                        <input type="file" _="
+                        <input type="file" name="video" _="
                         on change
                             if my.files.length > 0
                             set video to my.files[0]
@@ -130,7 +130,7 @@ Combos | Submit
                 </div>
             </div>
         </form>
-        <input id="submit-button" class="disabled" type="submit" value="Submit" form="combos-submit" _="
+        <button id="submit-button" class="disabled" type="submit" form="combos-submit" _="
         on validationchanged from document
             if pairsFilled and videoFilled
                 remove .disabled from me
@@ -138,11 +138,19 @@ Combos | Submit
                 add .disabled to me
             end
         end">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+            <p>Submit</p>
+        </button>
         <div class="modal hidden" _="
         init
             set global userCount to 0
         end
         behavior UserAdd(addAsGuest)
+            init
+                if my innerText is in the innerText of .user-selected
+                    remove me
+                end
+            end
             on click
                 get the previous .hs-template
                 set newUser to it.cloneNode(true)
@@ -185,7 +193,7 @@ Combos | Submit
                 <div class="modal-header">
                     <h2 class="text--center">Select Users</h2>
                     <p>Search for users and press them to add them, or add the search as a guest.</p>
-                    <input autocomplete="off" type="search" placeholder="Search users" name="username" hx-get hx-trigger="searchfilled" hx-target="next .modal-main" _="
+                    <input autocomplete="off" type="search" placeholder="Search users" name="filter_users" hx-get hx-trigger="searchfilled" hx-target="next .modal-main" _="
                     on input
                         if my.value.length > 2
                             wait 200ms

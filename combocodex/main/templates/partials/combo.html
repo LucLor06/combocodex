@@ -1,4 +1,4 @@
-<div class="combo" hx-trigger="comboviewed" hx-post="{% url 'combos-view' combo.pk %}" hx-swap="none" _="
+<div class="combo"{% if not no_view %} hx-trigger="comboviewed" hx-post="{% url 'combos-view' combo.pk %}" hx-swap="none" _="
 init
     set element viewed to false
 end
@@ -9,7 +9,7 @@ on play from <video/> in me
         set element viewed to true
         send comboviewed to me
     end
-end">
+end"{% endif %}>
     <div class="combo-data">
         <div class="combo-data__pairs">
             <div class="combo-data__pair">

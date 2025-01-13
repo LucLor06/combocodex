@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Combos | Verify
+{% endblock title %}
+
+{% block header %}
+<h1>Verify Combos</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content combos-verify">
+        {% if combo %}
+        <h3 class="text--center">{{ combos_count }} pending verification</h3>
+        {% include 'partials/combo.html' with no_view=True %}
+        <form class="combos-verify__form" hx-post hx-swap="beforebegin" hx-target="main">
+            {% csrf_token %}
+            <div class="combos-verify__form--options">
+                <label class="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m388-212-56-56 92-92-92-92 56-56 92 92 92-92 56 56-92 92 92 92-56 56-92-92-92 92ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+                    <p>Outdated</p>
+                    <input type="checkbox" name="is_outdated">
+                </label>
+                <label class="button">
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
+                    <p>Map Specific</p>
+                    <input type="checkbox" name="is_map_specific">
+                </label>
+            </div>
+            <div class="combos-verify__form--actions">
+                <button name="is_accepted" value="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                    <p>Accept</p>
+                </button>
+                <button name="is_accepted" value="all">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
+                    <p>Accept All</p>
+                </button>
+                <button name="is_accepted" class="button--error" value="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                    <p>Reject</p>
+                </button>
+            </div>
+        </form>
+        {% else %}
+        <h3 class="text--center">No combos to verify</h3>
+        {% endif %}
+    </div>
+</section>
+{% endblock content %}
