@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load partials %}
+
+{% block title %}
+Combos | Search
+{% endblock title %}
+
+{% block header %}
+<h1>Search Combos</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>Click on a legend/weapon to add them to your query. <b>Nothing is required.</b></p>
+        <div class="legends" _="
+        init
+            set global legendCount to 0
+        end
+        behavior LegendAdd
+            on click
+                set legend to me.cloneNode(true)
+                set legend's @_ to 'install LegendRemove'
+                put legend at the end of #legend-weapon__pair-one
+                increment global legendCount
+                trigger legendcountchanged
+            end
+        end
+        behavior LegendRemove
+            on click
+                decrement global legendCount
+                trigger legendcountchanged
+                remove me
+            end
+        end
+        on legendcountchanged from document
+            log legendCount
+            if legendCount >= 2
+                add .disabled to .legend in .legends
+            else
+                remove .disabled from .legend in .legends
+            end
+        end">
+            {% for legend in legends %}
+            <div class="legend" _="install LegendAdd">
+                <img src="{{ legend.icon }}">
+                <input type="hidden" name='legend' value="{{ legend.id }}">
+            </div>
+            {% endfor %}
+        </div>
+        <div class="weapons" _="
+        init
+            set global weaponCount to 0
+        end
+        behavior WeaponAdd
+            on click
+                set weapon to me.cloneNode(true)
+                set weapon's @_ to 'install WeaponRemove'
+                put weapon at the end of #legend-weapon__pair-two
+                increment global weaponCount
+                trigger weaponcountchanged
+            end
+        end
+        behavior WeaponRemove
+            on click
+                decrement global weaponCount
+                trigger weaponcountchanged
+                remove me
+            end
+        end
+        on weaponcountchanged from document
+            log weaponCount
+            if weaponCount >= 2
+                add .disabled to .weapon in .weapons
+            else
+                remove .disabled from .weapon in .weapons
+            end
+        end">
+            {% for weapon in weapons %}
+            <div class="weapon" _="install WeaponAdd">
+                <img src="{{ weapon.icon }}">
+                <input type="hidden" name='weapon' value="{{ weapon.id }}">
+            </div>
+            {% endfor %}
+        </div>
+        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get hx-target="#combos-search__found" hx-select="#combos-search__found">
+            <div>
+                <h3 class="text--center">Legends/Weapons</h3>
+                <p class="text--center text--xs text--secondary">Click/tap items to remove</p>
+                <div class="legend-weapon__pairs">
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-one"></div>
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-two">
+                        <div class="legend-weapon__pair-clear">
+                            <p class="tooltip">Clear</p>
+                            <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="
+                            on click
+                                get .legend in .legend-weapon__pair
+                                remove it
+                                get .weapon in .legend-weapon__pair
+                                remove it
+                                remove .disabled from .weapons
+                                remove .disabled from .legends
+                                set global legendCount to 0
+                                set global weaponCount to 0
+                                trigger legendcountchanged
+                                trigger weaponcountchanged
+                            end"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="combos-search__show-advanced" _="
+            init
+                set element showing to false
+            end
+            on click
+                if showing
+                    remove .expanded from the next .expandable
+                    set my innerText to 'Show Advanced'
+                else
+                    add .expanded to the next .expandable
+                    set my innerText to 'Hide Advanced'
+                end
+                set element showing to not showing
+            end">Show Advanced</button>
+            <div class="expandable">
+                <div class="combos-search__form-advanced">
+                    <div>
+                        <h3 class="text--center">Users/Guests</h3>
+                        <div class="form__users">
+                            <button type="button" _="
+                            on click
+                                remove .hidden from the next .modal
+                            end
+                            on usercountchanged
+                                if userCount >= 2
+                                    add .hidden to me
+                                else
+                                    remove .hidden from me
+                                end
+                            end">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                                <p>Add user</p>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text--center">Order by</h3>
+                        <div class="combos-search__order-by" _="
+                        on change from <input/> in me
+                            trigger submit on the closest parent <form/>
+                        end">
+                            <label class="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
+                                <p>Date Created</p>
+                                <input type="radio" name="order_by" value="-created_on" checked>
+                            </label>
+                            <label class="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg>
+                                <p>Views</p>
+                                <input type="radio" name="order_by" value="-views">
+                            </label>
+                            <label class="button combos-search__order-by--function" _="
+                            init
+                                set element function to 'descending'
+                            end
+                            on click
+                                if function == 'descending'
+                                    for input in <input[name='order_by']/>
+                                        set input.value to input.value.slice(1)
+                                    end
+                                    set element function to 'ascending'
+                                    set the innerText of <p/> in me to 'Ascending'
+                                    add .hidden to .combos-search__order-by--descending
+                                    remove .hidden from .combos-search__order-by--ascending
+                                else
+                                    for input in <input[name='order_by']/>
+                                        set input.value to `-${input.value}`
+                                    end
+                                    set element function to 'descending'
+                                    set the innerText of <p/> in me to 'Descending'
+                                    add .hidden to .combos-search__order-by--ascending
+                                    remove .hidden from .combos-search__order-by--descending
+                                end
+                                send submit to the closest parent <form/>
+                                log function
+                            end">
+                                <svg class="combos-search__order-by--ascending hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m296-224-56-56 240-240 240 240-56 56-184-183-184 183Zm0-240-56-56 240-240 240 240-56 56-184-183-184 183Z"/></svg>
+                                <svg class="combos-search__order-by--descending" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg>
+                                <p class="tooltip tooltip--bottom">Descending</p>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text--center">Misc</h3>
+                        <div class="combos-search__misc" _="
+                        on change from <input/> in me
+                            trigger submit on the closest parent <form/>
+                        end">
+                            <label class="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg>
+                                <p>Show Unverified</p>
+                                <input type="checkbox" name="show_unverified">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="combos-search__submit">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
+                <p>Search</p>
+            </button>
+        </form>
+        <div class="modal hidden" _="
+        init
+            set global userCount to 0
+        end
+        behavior UserAdd(addAsGuest)
+            init
+                if my innerText is in the innerText of .user-selected
+                    remove me
+                end
+            end
+            on click
+                get the previous .hs-template
+                set newUser to it.cloneNode(true)
+                remove .hs-template from newUser
+                get the first <p/> in newUser
+                if addAsGuest
+                    set its innerText to the value of the first <input[type='search']/>
+                else
+                    set its innerText to my innerText
+                end
+                get the first <input/> in newUser
+                if addAsGuest
+                    set its @value to the value of the first <input[type='search']/>
+                else
+                    set its @value to my innerText
+                end
+                put newUser at the start of the previous .form__users
+                increment global userCount
+                send usercountchanged to the first <button/> in .form__users
+                if userCount >= 2
+                    add .hidden to the closest .modal
+                end
+                remove me
+            end
+        end
+        behavior UserRemove
+            on click
+                decrement global userCount
+                get the innerText of the previous <p/>
+                send usercountchanged to the first <button/> in .form__users
+                remove the closest parent .user-selected
+            end
+        end">
+            <div class="modal-content">
+                <div class="hs-template user-selected">
+                    <p class="text--center"></p>  
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                    <input name="user" type="hidden">
+                </div>
+                <div class="modal-header">
+                    <h2 class="text--center">Select Users</h2>
+                    <p>Search for users and press them to add them, or add the search as a guest.</p>
+                    <input autocomplete="off" type="search" placeholder="Search users" name="filter_users" hx-get hx-trigger="searchfilled" hx-target="next .modal-main" _="
+                    on input
+                        if my.value.length > 2
+                            wait 200ms
+                            send searchfilled to me
+                            remove .hidden from .guest-button
+                        else
+                            add .hidden to .guest-button
+                    end">
+                </div>
+                <div class="modal-main user-select">
+                    {% partialdef users %}
+                    {% for user in users %}
+                    <p _="install UserAdd(addAsGuest: false)">{{ user.username }}</p>
+                    {% endfor %}
+                    <button class="guest-button" type="button" _="
+                    install UserAdd(addAsGuest: true)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+                        Add as Guest
+                    </button>
+                    {% endpartialdef %}
+                </div>
+                <div class="modal-actions">
+                    <button type="button" _="
+                    on click
+                        add .hidden to the closest .modal
+                    end">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="combos-search__found">
+    <h2 class="text--header">{% if combos %}{{ count }} Combos Found{% else %}No combos found {% endif %}</h2>
+    <section id="combos-search__section">
+        {% include 'partials/pagination.html' with form='#combos-search__form' %}
+        <div class="section-content combos">
+            {% for combo in combos %}
+            {% include 'partials/combo.html' %}
+            {% endfor %}
+        </div>
+        {% include 'partials/pagination.html' with form='#combos-search__form' %}
+    </section>
+</div>
+{% endblock content %}

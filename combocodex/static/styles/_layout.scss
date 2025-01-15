@@ -36,9 +36,9 @@ section {
 
 .section-content {
     margin-inline: auto;
-    width: 75%;
+    width: 70%;
 
     & > div + div:not(.combo) {
-        margin-top: 3rem;
+        margin-top: 2rem;
     }
 }

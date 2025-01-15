@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.text import slugify
 from django.db.models import F, Q
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 from django.urls import reverse
 
 class AbstractModel(models.Model):
@@ -64,7 +65,7 @@ class ComboManager(models.Manager):
         users = []
         guests = []
         is_verified = False
-        if submitter:
+        if submitter and submitter.is_authenticated:
             is_verified = submitter.is_trusted
         for username in post.getlist('user'):
             try:
@@ -94,6 +95,31 @@ class ComboManager(models.Manager):
         except Request.DoesNotExist:
             pass
         return combo
+    
+    def search(self, legends, weapons, users, ordering='created_on', show_unverified=False, page_number=1):
+        from user.models import User
+        combos = self.verified() if not show_unverified else self.all()
+        for username in users:
+            try:
+                user = User.objects.get(username=username)
+                combos = combos.filter(users=user)
+            except User.DoesNotExist:
+                guest = Guest.objects.get_or_create(username=username)
+                combos = combos.filter(guests=guest)
+        if len(legends) == 2 and legends[0] == legends[1]:
+            combos = combos.filter(Q(legend_one=legends[0], legend_two=legends[0]))
+        else:
+            for legend in legends:
+                combos = combos.filter(Q(legend_one=legend) | Q(legend_two=legend))
+        if len(weapons) == 2 and weapons[0] == weapons[1]:
+            combos = combos.filter(Q(weapon_one=weapons[0], weapon_two=weapons[0]))
+        else:
+            for weapon in weapons:
+                combos = combos.filter(Q(weapon_one=weapon) | Q(weapon_two=weapon))
+        combos = combos.order_by(ordering)
+        paginator = Paginator(combos, 10)
+        page = paginator.get_page(page_number)
+        return page.object_list, page, combos.count()
     
 
 class Combo(models.Model):

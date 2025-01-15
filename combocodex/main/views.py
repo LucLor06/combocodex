@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from user.models import User
-from main.models import Combo, WebsiteSocial, DailyChallenge, Legend
+from main.models import Combo, WebsiteSocial, DailyChallenge, Legend, Weapon
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -22,7 +22,6 @@ def combos_submit(request):
     if request.method == 'POST':
         print(request.FILES)
         try:
-            user = request.user if request.user.is_authenticated else None
             Combo.objects.create_from_post(request.POST, request.FILES, request.user)
             message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
         except:
@@ -62,3 +61,20 @@ def combos_combo(request, pk):
     combo = Combo.objects.get(pk=pk)
     context = {'combo': combo, 'similar_combos': combo.get_similar()}
     return render(request, 'combos/combo.html', context)
+
+def combos_search(request):
+    if 'filter_users' in request.GET:
+        users = User.objects.filter(username__icontains=request.GET['filter_users'])
+        return render(request, 'combos/submit.html#users', {'users': users})
+    page_number = request.GET.get('page', 1)
+    weapons = request.GET.getlist('weapon', [])
+    legends =  request.GET.getlist('legend', [])
+    order_by = request.GET.get('order_by', 'created_on') 
+    show_unverified = bool(request.GET.get('show_unverified', False))
+    users = request.GET.getlist('user', [])
+    combos, page, count = Combo.objects.search(legends, weapons, users, order_by, show_unverified, page_number)
+    context = {'combos': combos, 'page': page, 'count': count}
+    if len(request.GET) > 0 and 'filter_users' not in request.GET:
+        return render(request, 'combos/search.html', context)
+    context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all()})
+    return render(request, 'combos/search.html', context)

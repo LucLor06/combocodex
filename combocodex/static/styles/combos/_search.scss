@@ -1,0 +1,44 @@
+.combos-search__form {
+    display: flex;
+    flex-direction: column;
+
+    button {
+        margin-block: 0;
+    }
+
+    .legend-weapon__pairs {
+        min-width: 320px;
+    }
+
+    .combos-search__form-advanced {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        gap: 1rem;
+        
+
+        & > div {
+            min-width: 320px;
+        }
+    }
+
+    .combos-search__show-advanced {
+        margin-inline: auto;
+        width: max-content;
+    }
+
+    .combos-search__submit {
+        margin-inline: auto;
+        width: max-content;
+    }
+
+    .combos-search__order-by {
+        position: relative;
+    }
+
+    .combos-search__order-by--function {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+    }
+}

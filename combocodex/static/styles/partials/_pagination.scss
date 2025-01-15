@@ -1,0 +1,14 @@
+.pagination {
+    margin-inline: auto;
+    width: 70%;
+    position: relative;
+    margin-block: .5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+
+    .pagination__count {
+        position: absolute;
+        right: 2rem;
+    }
+}

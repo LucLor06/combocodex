@@ -1,0 +1,21 @@
+{% if page.has_other_pages %}
+<form class="pagination" hx-get hx-target="#combos-search__section" hx-swap="outerHTML" hx-select="#combos-search__section" hx-include="{{ form }}">
+    <button {% if not page.has_previous %}class="disabled"{% endif %} name="page" value="1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-240v-480h80v480h-80Zm440 0L440-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
+        <p class="tooltip">First page</p>
+    </button>
+    <button {% if not page.has_previous %}class="disabled"{% endif %}  name="page" {% if page.has_previous %}value="{{ page.previous_page_number }}"{% endif %}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-80 240-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
+        <p class="tooltip">Previous page</p>
+    </button>
+    <button {% if not page.has_next %}class="disabled"{% endif %} name="page" {% if page.has_next %}value="{{ page.next_page_number }}"{% endif %}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z"/></svg>
+        <p class="tooltip">Next page</p>
+    </button>
+    <button {% if not page.has_next %}class="disabled"{% endif %} name="page" value="{{ page.paginator.num_pages }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m280-240-56-56 184-184-184-184 56-56 240 240-240 240Zm360 0v-480h80v480h-80Z"/></svg>
+        <p class="tooltip">Last page</p>
+    </button>
+    <p class="pagination__count">{{ page.number }}/{{ page.paginator.num_pages }}</p>
+</form>
+{% endif %}

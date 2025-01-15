@@ -70,7 +70,6 @@ a {
 
 .text--secondary {
     font-size: $font-size-md;
-    margin: 1rem;
     opacity: 0.5;
 }
 
@@ -119,6 +118,11 @@ a {
     transition: opacity 250ms 0ms;
     padding: .25rem .5rem;
     border-radius: .5rem;
+
+    &.tooltip--bottom {
+        bottom: unset;
+        top: 100%;
+    }
 }
 
 *:has(> .tooltip) { 

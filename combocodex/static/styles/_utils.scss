@@ -1,0 +1,15 @@
+.expandable {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 250ms, opacity 500ms;
+
+    & > * {
+        overflow: hidden;
+    }
+}
+
+.expandable.expanded {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}

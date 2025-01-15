@@ -5,6 +5,7 @@
 @import '_nav.scss';
 @import '_inputs.scss';
 @import '_home.scss';
+@import '_utils.scss';
 
 @import 'partials/_socials.scss';
 @import 'partials/_daily-challenges.scss';
@@ -12,7 +13,9 @@
 @import 'partials/legends-weapons.scss';
 @import 'partials/_modal.scss';
 @import 'partials/_user-select-modal.scss';
-@import 'partials/_submit-form.scss';
+@import 'partials/_submit-search-form.scss';
+@import 'partials/_pagination.scss';
 
 @import 'combos/_submit.scss';
 @import 'combos/_verify.scss';
+@import 'combos/_search.scss';

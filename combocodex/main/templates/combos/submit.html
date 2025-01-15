@@ -20,6 +20,7 @@ Combos | Submit
         behavior PairAdd
             on click
                 set weapon to me.cloneNode(true)
+                remove @_ from weapon
                 get <input/> in weapon
                 set its @name to `weapon_${pairNumber}`
                 get the first .legend in the closest .pair-container
@@ -27,12 +28,12 @@ Combos | Submit
                 get <input/> in legend
                 set its @name to `legend_${pairNumber}`
                 if pairNumber == 'one'
-                    get #submit__pair-one
+                    get #legend-weapon__pair-one
                     put legend at the end of it
                     put weapon at the end of it
                     set global pairNumber to 'two'
                 else
-                    get #submit__pair-two
+                    get #legend-weapon__pair-two
                     put legend at the end of it
                     put weapon at the end of it
                     add .disabled to .pair-container
@@ -63,20 +64,20 @@ Combos | Submit
             </div>
             {% endfor %}
         </div>
-        <form class="submit-form" id="combos-submit" method="post" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin">
+        <form class="submit-search-form" id="combos-submit" method="post" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin">
             {% csrf_token %}
             <div>
                 <h3 class="text--center">Legends/Weapons</h3>
-                <div class="submit__pairs">
-                    <div class="submit__pair" id="submit__pair-one"></div>
-                    <div class="submit__pair" id="submit__pair-two">
-                        <div class="submit__pair-clear">
+                <div class="legend-weapon__pairs">
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-one"></div>
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-two">
+                        <div class="legend-weapon__pair-clear">
                             <p class="tooltip">Clear</p>
                             <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="
                             on click
-                                get .legend in .submit__pair
+                                get .legend in .legend-weapon__pair
                                 remove it
-                                get .weapon in .submit__pair
+                                get .weapon in .legend-weapon__pair
                                 remove it
                                 remove .disabled from .pair-container
                                 remove .hidden from .weapons
@@ -90,7 +91,7 @@ Combos | Submit
             </div>
             <div>
                 <h3 class="text--center">Users/Guests</h3>
-                <div class="combos-submit__users">
+                <div class="form__users">
                     <button type="button" _="
                     on click
                         remove .hidden from the next .modal
@@ -167,9 +168,9 @@ Combos | Submit
                 else
                     set its @value to my innerText
                 end
-                put newUser at the start of the previous .combos-submit__users
+                put newUser at the start of the previous .form__users
                 increment global userCount
-                send usercountchanged to the first <button/> in .combos-submit__users
+                send usercountchanged to the first <button/> in .form__users
                 if userCount >= 2
                     add .hidden to the closest .modal
                 end
@@ -180,7 +181,7 @@ Combos | Submit
             on click
                 decrement global userCount
                 get the innerText of the previous <p/>
-                send usercountchanged to the first <button/> in .combos-submit__users
+                send usercountchanged to the first <button/> in .form__users
                 remove the closest parent .user-selected
             end
         end">

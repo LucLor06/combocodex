@@ -1,4 +1,4 @@
-.submit-form {
+.submit-search-form {
     margin-block: 1rem;
     display: flex;
     flex-flow: row wrap;
@@ -16,14 +16,14 @@
     }
 }
 
-.submit__pairs {
+.legend-weapon__pairs {
     display: flex;
     padding: .5rem;
     gap: .5rem;
     justify-content: center;
     position: relative;
 
-    .submit__pair {
+    .legend-weapon__pair {
         box-sizing: content-box;
         border: solid 2px $color-secondary;
         background-color: $color-base;
@@ -36,7 +36,7 @@
         align-items: center;
         position: relative;
 
-        .submit__pair-clear {
+        .legend-weapon__pair-clear {
             position: absolute !important;
             top: .25rem;
             right: .25rem;
@@ -59,6 +59,11 @@
             }
         }
     }
+}
+
+.form__users {
+    display: flex;
+    flex-direction: column;
 }
 
 #submit-button {
