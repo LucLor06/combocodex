@@ -80,12 +80,16 @@ def combos_search(request):
     context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all()})
     return render(request, 'combos/search.html', context)
 
+def requests_list(request):
+    requests = Request.objects.incomplete()
+    context = {'requests': requests}
+    return render(request, 'requests/requests.html', context)
+
 def requests_submit(request):
     if request.method == 'POST':
         legends = [request.POST['legend_one'], request.POST['legend_two']]
         weapons = [request.POST['weapon_one'], request.POST['weapon_two']]
         existing_requests = Request.objects.filter(Q(legend_one=legends[0], weapon_one=weapons[0], legend_two=legends[1], weapon_two=weapons[1]) | Q(legend_one=legends[1], weapon_one=weapons[1], legend_two=legends[0], weapon_two=weapons[0]))
-        print(existing_requests)
         if existing_requests.exists():
             message = 'There is already a request for this open!'
             return render(request, 'partials/modal-message.html', {'message': message})

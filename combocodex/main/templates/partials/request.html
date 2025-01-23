@@ -1,0 +1,16 @@
+<div class="request">
+    <p class="text--center text--xs">Requested by {% if request.user %}{{ request.user.username }}{% else %}Guest{% endif %}</p>
+    <div class="request__pairs">
+        <div class="request__pair">
+            <img src="{{ request.legend_one.icon }}">
+            <img src="{{ request.weapon_one.icon }}">
+        </div>
+        <div class="request__pair">
+            <img src="{{ request.legend_two.icon }}">
+            <img src="{{ request.weapon_two.icon }}">
+        </div>
+    </div>
+    {% if request.notes %}
+    <p class="tooltip">{{ request.notes }}</p>
+    {% endif %}
+</div>

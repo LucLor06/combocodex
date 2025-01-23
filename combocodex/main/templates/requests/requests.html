@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Requests | Requests
+{% endblock title %}
+
+{% block header %}
+<h1>Requests</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>View requests made by others. Submit your own requests <a>here</a>.</p>
+        <div class="requests">
+            {% for request in requests %}
+            {% include 'partials/request.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
