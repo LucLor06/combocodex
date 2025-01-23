@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Requests | Submit
+{% endblock title %}
+
+{% block header %}
+<h1>Submit Request</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <script type="text/hyperscript">
+        init
+            set global pairNumber to 'one'
+            set global pairsFilled to false
+        end
+        behavior PairAdd
+            on click
+                set weapon to me.cloneNode(true)
+                remove @_ from weapon
+                get <input/> in weapon
+                set its @name to `weapon_${pairNumber}`
+                get the first .legend in the closest .pair-container
+                set legend to it.cloneNode(true)
+                get <input/> in legend
+                set its @name to `legend_${pairNumber}`
+                if pairNumber == 'one'
+                    get #legend-weapon__pair-one
+                    put legend at the end of it
+                    put weapon at the end of it
+                    set global pairNumber to 'two'
+                else
+                    get #legend-weapon__pair-two
+                    put legend at the end of it
+                    put weapon at the end of it
+                    add .disabled to .pair-container
+                    add .hidden to .weapons
+                    set global pairsFilled to true
+                    trigger validationchanged
+                end
+            end
+        end
+    </script>
+    <div class="section-content">
+        <p>Press a Legend/Weapon pair to add it to your request. Order does not matter.</p>
+        <div class="legends">
+            {% for legend in legends %}
+            <div class="pair-container">
+                <div class="legend">
+                    <img src="{{ legend.icon }}">
+                    <input type="hidden" value="{{ legend.id }}">
+                </div>
+                <div class="weapons">
+                    {% for weapon in legend.weapons.all %}
+                    <div class="weapon" _="install PairAdd">
+                        <img src="{{ weapon.icon }}">
+                        <input type="hidden" value="{{ weapon.id }}">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <form autocomplete="off" class="submit-search-form" id="requests-submit" hx-post hx-target="main" hx-swap="beforebegin">
+            {% csrf_token %}
+            <div>
+                <h3 class="text--center">Legends/Weapons</h3>
+                <div class="legend-weapon__pairs">
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-one"></div>
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-two">
+                        <div class="legend-weapon__pair-clear">
+                            <p class="tooltip">Clear</p>
+                            <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="
+                            on click
+                                get .legend in .legend-weapon__pair
+                                remove it
+                                get .weapon in .legend-weapon__pair
+                                remove it
+                                remove .disabled from .pair-container
+                                remove .hidden from .weapons
+                                set global pairsFilled to false
+                                trigger validationchanged
+                                set global pairNumber to 'one'
+                            end"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="text--center">Notes</h3>
+                <textarea rows="3" maxlength="60" name="notes" placeholder="Not required" _="
+                on keydown[key is 'Enter']
+                    halt the event
+                end"></textarea>
+            </div>
+        </form>
+        <button id="submit-button" type="submit" class="disabled" form="requests-submit" _="
+        on validationchanged from document
+            if pairsFilled
+                remove .disabled from me
+            else
+                add .disabled to me
+            end
+        end">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+            <p>Submit</p>
+        </button>
+    </div>
+</section>
+{% endblock content %}

@@ -96,8 +96,9 @@ class ComboManager(models.Manager):
             pass
         return combo
     
-    def search(self, legends, weapons, users, ordering='created_on', show_unverified=False, page_number=1):
+    def search(self, legends, weapons, users=[], ordering='created_on', show_unverified=False, page_number=1, **kwargs):
         from user.models import User
+        paginate = kwargs.pop('paginate', True)
         combos = self.verified() if not show_unverified else self.all()
         for username in users:
             try:
@@ -117,10 +118,12 @@ class ComboManager(models.Manager):
             for weapon in weapons:
                 combos = combos.filter(Q(weapon_one=weapon) | Q(weapon_two=weapon))
         combos = combos.order_by(ordering)
-        paginator = Paginator(combos, 10)
-        page = paginator.get_page(page_number)
-        return page.object_list, page, combos.count()
-    
+        if paginate:
+            paginator = Paginator(combos, 10)
+            page = paginator.get_page(page_number)
+            return page.object_list, page, combos.count()
+        else:
+            return combos, combos.count()
 
 class Combo(models.Model):
     CODEX_COINS = 5
@@ -167,6 +170,15 @@ class RequestManager(models.Manager):
     def incomplete(self):
         return self.filter(combo__isnull=True)
     
+    def create_from_post(self, post, submitter):
+        legend_one = Legend.objects.get(id=post.get('legend_one'))
+        weapon_one = Weapon.objects.get(id=post.get('weapon_one'))
+        legend_two = Legend.objects.get(id=post.get('legend_two'))
+        weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
+        notes = post.get('notes')
+        request = Request.objects.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, notes=notes, user=submitter)
+        return request
+    
 
 class Request(models.Model):
     CODEX_COINS = 5
@@ -177,6 +189,7 @@ class Request(models.Model):
     weapon_one = models.ForeignKey('Weapon', related_name='requests_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='requests_two', on_delete=models.CASCADE)
     weapon_two = models.ForeignKey('Weapon', related_name='requests_two', on_delete=models.CASCADE)
+    notes = models.TextField(blank=True, null=True)
     objects = RequestManager()
 
     def __str__(self):

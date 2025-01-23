@@ -1,0 +1,22 @@
+#requests-submit {
+    textarea {
+        width: 100%;
+        box-sizing: content-box;
+        padding: .25rem .5rem;
+        height: $font-size-xl;
+        margin-top: 1rem;
+    }
+}
+
+.modal-main.combos {
+    justify-content: flex-start;
+    display: flex;
+    .combo {
+        width: 100%;
+    }
+
+    textarea {
+        margin-top: auto;
+        width: 100%;
+    }
+}

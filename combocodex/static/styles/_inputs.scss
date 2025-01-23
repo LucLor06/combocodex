@@ -1,4 +1,4 @@
-button, input {
+button, input, textarea {
     color: $color-text;
     font-size: $font-size-sm;
 }
@@ -37,7 +37,7 @@ button, input[type='submit'], .button {
 }
 
 
-input:is([type='text'], [type='search']) {
+input:is([type='text'], [type='search']), textarea {
     display: block;
     margin-inline: auto;
     background-color: $color-base;
@@ -49,6 +49,10 @@ input:is([type='text'], [type='search']) {
     &:focus {
         outline: none;
     }
+}
+
+textarea {
+    resize: none;
 }
 
 input[type='file'] {
@@ -65,4 +69,10 @@ label input:is([type='checkbox'], [type='radio']) {
 
 label.button:has(input:is([type='checkbox'], [type='radio']):not(:checked)) {
     opacity: .5;
+}
+
+.button--secondary {
+    background-color: transparent;
+    color: $color-secondary;
+    border: solid 2px $color-secondary;
 }

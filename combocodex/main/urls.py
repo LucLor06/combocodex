@@ -8,4 +8,5 @@ urlpatterns = [
     path('combos/search/', views.combos_search, name='combos-search'),
     path('combos/<pk>/view/', views.combos_view, name='combos-view'),
     path('combos/<pk>/', views.combos_combo, name='combos-combo'),
+    path('requests/submit/', views.requests_submit, name='requests-submit')
 ]
