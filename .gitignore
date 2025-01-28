@@ -4,4 +4,6 @@ combocodex/static/CACHE
 
 combocodex/static/admin
 
+combocodex/media
+
 .env

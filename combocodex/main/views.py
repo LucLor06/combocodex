@@ -70,7 +70,7 @@ def combos_search(request):
     page_number = request.GET.get('page', 1)
     weapons = request.GET.getlist('weapon', [])
     legends =  request.GET.getlist('legend', [])
-    order_by = request.GET.get('order_by', 'created_on') 
+    order_by = request.GET.get('order_by', '-id') 
     show_unverified = bool(request.GET.get('show_unverified', False))
     users = request.GET.getlist('user', [])
     combos, page, count = Combo.objects.search(legends, weapons, users, order_by, show_unverified, page_number)

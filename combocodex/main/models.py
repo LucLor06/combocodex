@@ -78,7 +78,7 @@ class ComboManager(models.Manager):
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
         video = files.get('video')
-        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, is_verified=is_verified)
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
         combo.users.set(users)
         combo.guests.set(guests)
         try:
@@ -94,9 +94,11 @@ class ComboManager(models.Manager):
            request.save()
         except Request.DoesNotExist:
             pass
+        if is_verified:
+            combo = combo.verify()
         return combo
     
-    def search(self, legends, weapons, users=[], ordering='created_on', show_unverified=False, page_number=1, **kwargs):
+    def search(self, legends, weapons, users=[], ordering='-id', show_unverified=False, page_number=1, **kwargs):
         from user.models import User
         paginate = kwargs.pop('paginate', True)
         combos = self.verified() if not show_unverified else self.all()
@@ -143,7 +145,7 @@ class Combo(models.Model):
     objects = ComboManager()
 
     class Meta:
-        ordering = ['is_outdated', '-created_on']
+        ordering = ['-id']
 
     def get_absolute_url(self):
         return reverse('combos-combo', kwargs={'pk': self.pk})
