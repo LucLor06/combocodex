@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.functional import cached_property
 from django.db.models import Prefetch, Q
+from django.utils.text import slugify
 
 class User(AbstractUser):
     is_trusted = models.BooleanField(default=False)
@@ -51,7 +52,23 @@ class User(AbstractUser):
     
 class AbstractShopItem(models.Model):
     name = models.CharField(max_length=32)
-    price = models.PositiveSmallIntegerField()
+    price = models.PositiveSmallIntegerField(default=10)
+    slug = models.SlugField(blank=True, editable=False)
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class UserColor(AbstractShopItem):
+    def css_class(self):
+        return f'user-color--{self.slug}'
+
+    def icon(self):
+        return f'/static/user_colors/{self.slug}.png'
