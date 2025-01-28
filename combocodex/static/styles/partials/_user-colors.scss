@@ -1,0 +1,128 @@
+@mixin gradient-text($color_one, $color_two: $color_one, $color_three: $color_one) {
+    background: linear-gradient(to right, $color-three 0%, $color_two 30%, $color_one 50%, $color_two 70%, $color_three 90%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    margin: 0 auto;
+    display: inline;
+    max-width: fit-content;
+}
+.user-color--blue {
+    @include gradient-text(#1077EF)
+}
+.user-color--yellow {
+    @include gradient-text(#FAE658)
+}
+.user-color--green {
+    @include gradient-text(#25C76D)
+}
+.user-color--brown {
+    @include gradient-text(#723A18)
+}
+.user-color--orange {
+    @include gradient-text(#F58219)
+}
+.user-color--purple {
+    @include gradient-text(#874CD0, #7767E9)
+}
+.user-color--cyan {
+    @include gradient-text(#50CDD6, #FCA92E)
+}
+.user-color--sunset {
+    @include gradient-text(#D82F79, #5E247F)
+}
+.user-color--grey {
+    @include gradient-text(#5B6A7C, #FDB440)
+}
+.user-color--pink {
+    @include gradient-text(#F382C0, #AE96FF)
+}
+.user-color--red {
+    @include gradient-text(#CF2032)
+}
+.user-color--winter-holiday {
+    @include gradient-text(#E7EBEC, #B9302F, #006256)
+}
+.user-color--lovestruck {
+    @include gradient-text(#E5F6F7, #FFC6E9, #E70712)
+}
+.user-color--lucky-clover {
+    @include gradient-text(#EFE9B7, #44D407, #44673D)
+}
+.user-color--heatwave {
+    @include gradient-text(#01F9F2, #FFE681, #FF926D)
+}
+.user-color--haunting {
+    @include gradient-text(#FF9D27, #483362, #27232C)
+}
+.user-color--home-team {
+    @include gradient-text(#E9C053, #630030, #273350)
+}
+.user-color--gala {
+    @include gradient-text(#E5FBFF, #443F72, #161C35)
+}
+.user-color--verdant-bloom {
+    @include gradient-text(#FFBBA7, #B0D08F, #FDDDAF)
+}
+.user-color--charged-og {
+    @include gradient-text(#EAEFE6, #95C93C, #333033)
+}
+.user-color--ravens-honor {
+    @include gradient-text(#8F2FEC, #352F46, #15131B)
+}
+.user-color--soul-fire {
+    @include gradient-text(#AEFFAF, #4665A1, #232B5F)
+}
+.user-color--synthwave {
+    @include gradient-text(#74FFE3, #FF23A0, #342A8D)
+}
+.user-color--frozen-forest {
+    @include gradient-text(#DBEAF4, #36A182, #3E5563)
+}
+.user-color--coat-of-lions {
+    @include gradient-text(#D5D9EA, #9E0839, #622E46)
+}
+.user-color--starlight {
+    @include gradient-text(#E1DDD8, #AFD9EB, #4A7AAB)
+}
+.user-color--willow-leaves {
+    @include gradient-text(#A2CE69, #7E5962, #384A63)
+}
+.user-color--pact-of-poison {
+    @include gradient-text(#E3FF82, #BBEB83, #8B5D9B)
+}
+.user-color--darkheart {
+    @include gradient-text(#F5F3FF, #FE0174, #484F6B)
+}
+.user-color--white {
+    @include gradient-text(#EEF4F5, #6680AA)
+}
+.user-color--black {
+    @include gradient-text(#680A1E, #41454C, #232426)
+}
+.user-color--skyforged {
+    @include gradient-text(#97A7BF, #2854D2, #001E3F)
+}
+.user-color--goldforged {
+    @include gradient-text(#C3CDEB, #F6D356, #2854D2)
+}
+.user-color--community-colors {
+    @include gradient-text(#FAC206, #2B5E94, #8A6453)
+}
+.user-color--community-colors-v2 {
+    @include gradient-text(#CAF1FC, #D67E9F, #795963)
+}
+.user-color--esports {
+    @include gradient-text(#FFD733, #008CB3, #002232)
+}
+.user-color--esports-v2 {
+    @include gradient-text(#F83628, #6C2433, #352831)
+}
+.user-color--esports-v3 {
+    @include gradient-text(#FFE578, #01BD97, #018289)
+}
+.user-color--esports-v4 {
+    @include gradient-text(#FFE3D7, #FFC799, #FF9295)
+}
+.user-color--armageddon {
+    @include gradient-text(#f3ffbb, #ffaf72, #8d1b2b)
+}
