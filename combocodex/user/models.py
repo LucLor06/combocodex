@@ -48,3 +48,10 @@ class User(AbstractUser):
     def daily_challenges(self):
         from main.models import DailyChallenge
         return DailyChallenge.objects.prefetch_related('combos').filter(combos__users=self).distinct()
+    
+class AbstractShopItem(models.Model):
+    name = models.CharField(max_length=32)
+    price = models.PositiveSmallIntegerField()
+
+    class Meta:
+        abstract = True
