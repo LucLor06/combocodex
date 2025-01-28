@@ -1,0 +1,8 @@
+.accounts-signup__form {
+    & > div {
+        margin-block: 1rem;
+    }
+    input, button {
+        margin-left: 0;
+    }
+}

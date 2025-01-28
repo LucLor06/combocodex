@@ -6,3 +6,4 @@ path = find_dotenv()
 load_dotenv(path)
 
 DJANGO_SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Sign Up
+{% endblock title %}
+
+{% block header %}
+<h1>Sign Up</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>Fill out the form below to make an account.</p>
+        {% if form.errors %}
+        <div>
+            {% for error in form.non_field_errors %}
+            <p class="text--xs text--error">{{ error }}</p>
+            {% endfor %}
+            {% for field in form %}
+            {% for error in field.errors %}
+            <p class="text--xs text--error">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="post" class="accounts-signup__form" _="
+        init
+            set global emailValid to false
+            set global usernameValid to false
+            set global passwordValid to false
+        end">
+            {% csrf_token %}
+            <div>
+                <h3>Email</h3>
+                <input required name="email" type="email" maxlength="50" _="
+                on input
+                    if '@' in my.value
+                        set global emailValid to true
+                    else
+                        set global emailValid to false
+                    end
+                    trigger validationchanged
+                end">
+            </div>
+            <div>
+                <h3>Username</h3>
+                <input required name="username" type="text" maxlength="25" _="
+                on input
+                    if my.value.length > 0
+                        set global usernameValid to true
+                    else
+                        set global usernameValid to false
+                    end
+                    trigger validationchanged
+                end">
+            </div>
+            <div>
+                <h3>Password</h3>
+                <input required name="password1" type="password" minlength="8" maxlength="25" _="
+                on input
+                    if my.value.length > 8
+                        if my.value == the value of the next <input/>
+                            set global passwordValid to true
+                            add .hidden to the next <p/>
+                        else
+                            set global passwordValid to false
+                            remove .hidden  from the next <p/>
+                        end
+                    end
+                    trigger validationchanged
+                end">
+            </div>
+            <div>
+                <h3>Confirm Password</h3>
+                <input required name="password2" type="password" minlength="8" maxlength="25" _="
+                on input
+                    if my.value == the value of the previous <input/>
+                        set global passwordValid to true
+                        add .hidden to the next <p/>
+                    else
+                        set global passwordValid to false
+                        remove .hidden  from the next <p/>
+                    end
+                    trigger validationchanged
+                end">
+                <p class="text--secondary text--xs hidden">Passwords do not match</p>
+            </div>
+            <button class="disabled" type="submit" _="
+            on validationchanged from document
+                if emailValid and usernameValid and passwordValid
+                    remove .disabled from me
+                else
+                    add .disabled to me
+                end
+            end">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
+                <p>Sign Up</p>
+            </button>
+        </form>
+        <a class="text--xs" href="{% url 'account_login' %}">Login</a>
+        <a class="text--xs" href="{% url 'account_reset_password' %}">Reset Password</a>
+        <a class="text--xs" href="{% url 'email-resend' %}">Resend Email Verification</a>
+    </div>
+</section>
+{% endblock content %}

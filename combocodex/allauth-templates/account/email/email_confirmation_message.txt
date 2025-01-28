@@ -1,0 +1,9 @@
+Hello {{ user.username }}.
+ 
+You have recently signed up to ComboCodex under the email {{ email }}. 
+In order to complete your registration you must activate your account via the url provided below:
+{{ activate_url }}
+
+Note: This link will expire in 3 days.
+
+Best regards, The ComboCodex Team.

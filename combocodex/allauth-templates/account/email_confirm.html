@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Confirm Email
+{% endblock title %}
+
+{% block header %}
+<h1>Confirm Email</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        {% if confirmation %}
+        {% if can_confirm %}
+        <p>Verify user {{ confirmation.email_address.user }} under "{{ confirmation.email_address.email }}"?</p>
+        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+            {% csrf_token %}
+            <button type="submit">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                <p>Verify</p>
+            </button>
+        </form>
+        {% else %}
+        <p>This email verification is expired or invalid, you can send a new one <a href="{% url 'email-resend' %}">here</a>.</p>
+        {% endif %}
+        {% else %}
+        <p>The email account {{ confirmation.email_address.email }} has already been verified.</p>
+        {% endif %}
+    </div>
+</section> 
+{% endblock content %}

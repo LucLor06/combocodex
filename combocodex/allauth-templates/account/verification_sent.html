@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Email Verification Sent
+{% endblock title %}
+
+{% block header %}
+<h1>Verification Sent</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>An email has been sent containing details on verifying your account. This process expires in three days and can be refreshed <a href="{% url 'email-resend' %}">here</a>.</p>
+    </div>
+</section>
+{% endblock content %}

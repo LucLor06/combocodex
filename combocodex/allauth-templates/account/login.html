@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Login
+{% endblock title %}
+
+{% block header %}
+<h1>Login</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>Fill out the form below to login.</p>
+        {% if form.errors %}
+        <div>
+            {% for error in form.non_field_errors %}
+            <p class="text--xs text--error">{{ error }}</p>
+            {% endfor %}
+            {% for field in form %}
+            {% for error in field.errors %}
+            <p class="text--xs text--error">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="post" class="accounts-login__form" _="
+        init
+            set global usernameValid to false
+            set global passwordValid to false
+        end">
+            {% csrf_token %}
+            <div>
+                <h3>Username</h3>
+                <input required name="login" type="text" maxlength="25" _="
+                on input
+                    if my.value.length > 0
+                        set global usernameValid to true
+                    else
+                        set global usernameValid to false
+                    end
+                    trigger validationchanged
+                end">
+            </div>
+            <div>
+                <h3>Password</h3>
+                <input required name="password" type="password" minlength="8" maxlength="25" _="
+                on input
+                    if my.value.length > 8
+                        set global passwordValid to true
+                    else
+                        set global passwordValid to false
+                    end
+                    trigger validationchanged
+                end">
+            </div>
+            <input type="checkbox" class="hidden" name="remember" checked>
+            <button class="disabled" type="submit" _="
+            on validationchanged from document
+                if usernameValid and passwordValid
+                    remove .disabled from me
+                else
+                    add .disabled to me
+                end
+            end">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-120v-80h280v-560H480v-80h280q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H480Zm-80-160-55-58 102-102H120v-80h327L345-622l55-58 200 200-200 200Z"/></svg>
+                <p>Login</p>
+            </button>
+        </form>
+        <a class="text--xs" href="{% url 'account_signup' %}">Sign Up</a>
+        <a class="text--xs" href="{% url 'account_reset_password' %}">Reset Password</a>
+        <a class="text--xs" href="{% url 'email-resend' %}">Resend Email Verification</a>
+    </div>
+</section>
+{% endblock content %}

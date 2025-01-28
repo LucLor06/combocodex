@@ -37,7 +37,7 @@ button, input[type='submit'], .button {
 }
 
 
-input:is([type='text'], [type='search']), textarea {
+input:is([type='text'], [type='search'], [type='email'], [type='password']), textarea {
     display: block;
     margin-inline: auto;
     background-color: $color-base;
