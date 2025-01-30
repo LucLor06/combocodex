@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Inventory
+{% endblock title %}
+
+{% block header %}
+<h1>Inventory</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>Click on an item to apply it. Items can be bought in the shop <a>here</a>.</p>
+    </div>
+</section>
+<h2 class="text--header">User Colors</h2>
+<section>
+    <div class="section-content">
+        <div class="user-colors">
+            {% for user_color in user_colors %}
+            <label class="user-color">
+                <img src="{{ user_color.icon }}">
+                <input type="radio" name="user_color" value="{{ user_color.id }}" hx-post hx-swap="none" hx-trigger="change"{% if user_color == user.user_color %} checked{% endif %}>
+                <p class="tooltip">{{ user_color.name }}</p>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

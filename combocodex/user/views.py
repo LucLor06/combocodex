@@ -30,3 +30,12 @@ def shop(request):
             user_color.purchase(request.user)
     context = {'user_colors': UserColor.objects.exclude(users=request.user)}
     return render(request, 'shop.html', context)
+
+@login_required
+def inventory(request):
+    context = {'user_colors': request.user.user_colors.all()}
+    if request.POST:
+        if 'user_color' in request.POST:
+            user_color = UserColor.objects.get(id=request.POST['user_color'])
+            user_color.set(request.user)
+    return render(request, 'inventory.html', context)
