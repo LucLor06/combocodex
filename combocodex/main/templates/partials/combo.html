@@ -51,7 +51,7 @@ end"{% endif %}>
             </div>
             <div class="combo-data__users">
                 {% for user in combo.users.all %}
-                <p class="text--xs">{{ user.username }}</p>
+                <a class="text--xs {{ user.user_color.css_class }}">{{ user.username }}</a>
                 {% endfor %}
                 {% for guest in combo.guests.all %}
                 <p class="text--xs">{{ guest.username }}</p>

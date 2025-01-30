@@ -7,6 +7,8 @@ from django.utils.text import slugify
 class User(AbstractUser):
     is_trusted = models.BooleanField(default=False)
     codex_coins = models.PositiveIntegerField(default=0)
+    user_color = models.ForeignKey('UserColor', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
+    user_colors = models.ManyToManyField('UserColor', blank=True, related_name='users')
 
     def check_trusted(self):
         from main.models import Combo
@@ -72,3 +74,14 @@ class UserColor(AbstractShopItem):
 
     def icon(self):
         return f'/static/user_colors/{self.slug}.png'
+    
+    def purchase(self, user):
+        if user.codex_coins >= self.price:
+            user.codex_coins -= self.price
+            user.user_colors.add(self)
+            user.save()
+
+    def set(self, user):
+        if user.user_colors.filter(id=self.id).exists():
+            user.user_color = self
+            user.save()

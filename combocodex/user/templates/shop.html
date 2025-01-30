@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Shop
+{% endblock title %}
+
+{% block header %}
+<h1>Shop</h1>
+{% endblock header %}
+
+{% block content %}
+<form id="accounts-shop__form" hx-post hx-select="#accounts-shop__form">
+    <section>
+        <div class="section-content">
+            <p>Purchase items using codex coins. Items can be applied in your inventory <a>here</a>.</p>
+        </div>
+    </section>
+    <h2 class="text--header">User Colors</h2>
+    <section>
+        <div class="section-content">
+            {% if user_colors %}
+            <p>User colors change the way your name appears to others.</p>
+            <div class="user-colors">
+                {% for user_color in user_colors %}
+                <div class="user-color">
+                    <img src="{{ user_color.icon }}">
+                    <h4 class="text--center {{ user_color.css_class }}">{{ user_color.name }}</h4>
+                    <button {% if user.codex_coins < user_color.price %}class="disabled"{% endif %} type="submit" name="user_color" value="{{ user_color.id }}">
+                        <p>{{ user_color.price }}</p>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>You have purchased all the user colors!</p>
+            {% endif %}
+        </div>
+    </section>
+</form>
+{% endblock content %}

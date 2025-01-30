@@ -5,6 +5,8 @@
     margin: 0 auto;
     display: inline;
     max-width: fit-content;
+    font-family: 'BebasNeue';
+    text-decoration: none;
 }
 .user-color--blue {
     @include gradient-text(#1077EF)

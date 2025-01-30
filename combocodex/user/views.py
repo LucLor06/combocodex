@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import User
+from .models import User, UserColor
 from django.contrib.auth.decorators import login_required
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
@@ -20,3 +20,13 @@ def email_resend(request):
             message = 'An account with that email does not exist.'
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'account/verification_resend.html')
+
+@login_required
+def shop(request):
+    if request.method == 'POST':
+        if 'user_color' in request.POST:
+            print(request.POST)
+            user_color = UserColor.objects.get(id=request.POST['user_color'])
+            user_color.purchase(request.user)
+    context = {'user_colors': UserColor.objects.exclude(users=request.user)}
+    return render(request, 'shop.html', context)
