@@ -111,6 +111,7 @@ Combos | Submit
                         else
                             set its innerText to my innerText
                         end
+                        set its @class to the @class of the first <p/> in me
                         get the first <input/> in newUser
                         if addAsGuest
                             set its @value to the value of the first <input[type='search']/>
@@ -140,7 +141,7 @@ Combos | Submit
                         increment global userCount
                         send usercountchanged to the first <button/> in .form__users
                     end">
-                        <p class="text--center">{{ user.username }}</p>  
+                        <p class="text--center {{ user.user_color.css_class }}">{{ user.username }}</p>  
                         <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                         <input name="user" type="hidden" value="{{ user.username }}">
                     </div>
@@ -218,7 +219,7 @@ Combos | Submit
                 <div class="modal-main user-select">
                     {% partialdef users %}
                     {% for user in users %}
-                    <p _="install UserAdd(addAsGuest: false)">{{ user.username }}</p>
+                    <div _="install UserAdd(addAsGuest: false)"><p class="{{ user.user_color.css_class }}">{{ user.username }}</p></div>
                     {% endfor %}
                     <button class="guest-button" type="button" _="
                     install UserAdd(addAsGuest: true)">
