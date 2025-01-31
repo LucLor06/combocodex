@@ -26,7 +26,7 @@ class User(AbstractUser):
     def collect_codex_coins(self):
         from main.models import Combo, DailyChallenge, Request
         combos = self.combos.count() * Combo.CODEX_COINS
-        requests = Request.objects.filter(combos__users=self).count() * Request.CODEX_COINS
+        requests = Request.objects.filter(combo__users=self).count() * Request.CODEX_COINS
         daily_challenges = DailyChallenge.objects.filter(combos__users=self).count() * DailyChallenge.CODEX_COINS
         self.codex_coins += (combos + requests + daily_challenges)
         self.save()
