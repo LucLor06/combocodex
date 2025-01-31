@@ -9,6 +9,8 @@ class User(AbstractUser):
     codex_coins = models.PositiveIntegerField(default=0)
     user_color = models.ForeignKey('UserColor', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_colors = models.ManyToManyField('UserColor', blank=True, related_name='users')
+    user_theme = models.ForeignKey('UserTheme', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
+    user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
 
     def check_trusted(self):
         from main.models import Combo
@@ -84,4 +86,19 @@ class UserColor(AbstractShopItem):
     def set(self, user):
         if user.user_colors.filter(id=self.id).exists():
             user.user_color = self
+            user.save()
+
+class UserTheme(AbstractShopItem):
+    def icon(self):
+        return f'/static/user_themes/{self.slug}.png'
+    
+    def purchase(self, user):
+        if user.codex_coins >= self.price:
+            user.codex_coins -= self.price
+            user.user_themes.add(self)
+            user.save()
+
+    def set(self, user):
+        if user.user_themes.filter(id=self.id).exists():
+            user.user_theme = self
             user.save()
