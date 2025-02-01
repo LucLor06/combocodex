@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 
 def home(request):
-    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count()}
+    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.objects.weekly_user()}
     return render(request, 'home.html', context)
 
 def combos_view(request, pk):
@@ -44,7 +44,7 @@ def combos_verify(request):
             for combo in Combo.objects.unverified():
                 combo.verify()
             message = 'All combos verified!'
-        elif is_accepted =='true':
+        elif is_accepted == 'true':
             is_outdated = bool(request.POST.get('is_outdated', False))
             is_map_specific = bool(request.POST.get('is_map_specific', False))
             combo.is_outdated = is_outdated

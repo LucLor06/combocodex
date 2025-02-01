@@ -1,4 +1,4 @@
-.user-colors, .user-themes {
+.user-colors, .user-themes, .user-backgrounds {
     display: flex;
     flex-flow: row wrap;
     gap: .5rem;
@@ -11,7 +11,6 @@
         align-items: center;
         gap: .5rem;
         width: $size-icon-lg;
-        
 
         img {
             aspect-ratio: 1/1;
@@ -23,14 +22,26 @@
 
         button {
             margin-top: auto;
+            padding: .125rem .25rem;
+
+            p {
+                margin: .25rem;
+                font-size: $font-size-xs;
+            }
         }
 
         &:has(input[type='radio']) {
             cursor: pointer;
         }
 
+        &:has(input[type='radio']:checked) {
+            img {
+                background: radial-gradient(var(--color-secondary) 10%, transparent 70%);
+            }
+        }
+
         &:has(input[type='radio']:not(:checked)) {
-            opacity: 0.5;
+            opacity: 0.3;
             transition: opacity 125ms, opacity 125ms;
 
             &:hover {

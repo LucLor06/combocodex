@@ -42,4 +42,18 @@ Inventory
         </div>
     </div>
 </section>
+<h2 class="text--header">User Backgrounds</h2>
+<section>
+    <div class="section-content">
+        <div class="user-backgrounds">
+            {% for user_background in user_backgrounds %}
+            <label class="user-background">
+                <img src="{{ user_background.image }}">
+                <input type="radio" name="user_background" value="{{ user_background.id }}" hx-post hx-target="body" hx-trigger="change"{% if user_background == user.user_background %} checked{% endif %}>
+                <p class="tooltip">{{ user_background.name }}</p>
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endblock content %}

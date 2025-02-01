@@ -32,6 +32,9 @@
                 --color-secondary: color-mix(in srgb, var(--color-primary) 95%, white 5%);
                 --color-tertriary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
             }
+            body {
+                background-image: url({{ user.user_background.image }});
+            }
         </style>
         {% include 'navigation.html' %}
         <header>{% block header %}{% endblock header %}</header>

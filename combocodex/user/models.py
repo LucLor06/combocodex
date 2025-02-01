@@ -1,8 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.functional import cached_property
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch, Q, Count
 from django.utils.text import slugify
+from datetime import datetime, timedelta
+
+class UserManager(models.Manager):
+    def weekly_user(self):
+        today = datetime.now().date()
+        date = today - timedelta(days=today.weekday())
+        users = self.annotate(combo_count=Count('combos', filter=Q(combos__created_on__range=(date, date + timedelta(days=7)))))
+        return users.order_by('-combo_count').first()
 
 class User(AbstractUser):
     is_trusted = models.BooleanField(default=False)
@@ -13,6 +21,7 @@ class User(AbstractUser):
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
     user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
+    objects = UserManager()
 
     def check_trusted(self):
         from main.models import Combo

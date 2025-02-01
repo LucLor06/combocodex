@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import User, UserColor, UserTheme
+from .models import User, UserColor, UserTheme, UserBackground
 from django.contrib.auth.decorators import login_required
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
@@ -30,12 +30,15 @@ def shop(request):
         elif 'user_theme' in request.POST:
             user_theme = UserTheme.objects.get(id=request.POST['user_theme'])
             user_theme.purchase(request.user)
-    context = {'user_colors': UserColor.objects.exclude(users=request.user), 'user_themes': UserTheme.objects.exclude(users=request.user)}
+        elif 'user_background' in request.POST:
+            user_background = UserBackground.objects.get(id=request.POST['user_background'])
+            user_background.purchase(request.user)
+    context = {'user_colors': UserColor.objects.exclude(users=request.user), 'user_themes': UserTheme.objects.exclude(users=request.user), 'user_backgrounds': UserBackground.objects.exclude(users=request.user)}
     return render(request, 'shop.html', context)
 
 @login_required
 def inventory(request):
-    context = {'user_colors': request.user.user_colors.all(), 'user_themes': request.user.user_themes.all()}
+    context = {'user_colors': request.user.user_colors.all(), 'user_themes': request.user.user_themes.all(), 'user_backgrounds': request.user.user_backgrounds.all()}
     if request.POST:
         if 'user_color' in request.POST:
             user_color = UserColor.objects.get(id=request.POST['user_color'])
@@ -43,4 +46,7 @@ def inventory(request):
         elif 'user_theme' in request.POST:
             user_theme = UserTheme.objects.get(id=request.POST['user_theme'])
             user_theme.set(request.user)
+        elif 'user_background' in request.POST:
+            user_background = UserBackground.objects.get(id=request.POST['user_background'])
+            user_background.set(request.user)
     return render(request, 'inventory.html', context)
