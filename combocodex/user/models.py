@@ -11,6 +11,8 @@ class User(AbstractUser):
     user_colors = models.ManyToManyField('UserColor', blank=True, related_name='users')
     user_theme = models.ForeignKey('UserTheme', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
+    user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
+    user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
 
     def check_trusted(self):
         from main.models import Combo
@@ -54,6 +56,7 @@ class User(AbstractUser):
         from main.models import DailyChallenge
         return DailyChallenge.objects.prefetch_related('combos').filter(combos__users=self).distinct()
     
+
 class AbstractShopItem(models.Model):
     name = models.CharField(max_length=32)
     price = models.PositiveSmallIntegerField(default=10)
@@ -69,6 +72,7 @@ class AbstractShopItem(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
 
 class UserColor(AbstractShopItem):
     def css_class(self):
@@ -88,6 +92,7 @@ class UserColor(AbstractShopItem):
             user.user_color = self
             user.save()
 
+
 class UserTheme(AbstractShopItem):
     primary_color = models.CharField(max_length=7)
 
@@ -103,4 +108,20 @@ class UserTheme(AbstractShopItem):
     def set(self, user):
         if user.user_themes.filter(id=self.id).exists():
             user.user_theme = self
+            user.save()
+
+
+class UserBackground(AbstractShopItem):
+    def image(self):
+        return f'/static/user_backgrounds/{self.slug}.png'
+    
+    def purchase(self, user):
+        if user.codex_coins >= self.price:
+            user.codex_coins -= self.price
+            user.user_backgrounds.add(self)
+            user.save()
+    
+    def set(self, user):
+        if user.user_backgrounds.filter(id=self.id).exists():
+            user.user_background = self
             user.save()
