@@ -132,6 +132,7 @@ class Combo(models.Model):
     is_verified = models.BooleanField(default=False)
     is_outdated = models.BooleanField(default=False)
     is_map_specific = models.BooleanField(default=False)
+    is_alternate_gamemode = models.BooleanField(default=False)
     created_on = models.DateField(auto_now_add=True)
     legend_one = models.ForeignKey('Legend', related_name='combos_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)
