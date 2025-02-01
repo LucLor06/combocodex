@@ -11,7 +11,7 @@ button, input[type='submit'], .button {
     padding: .25rem .5rem;
     border: none;
     gap: .25rem;
-    background-color: $color-secondary;
+    background-color: var(--color-secondary);
     color: $color-text;
     border-radius: .5rem;
     transition: scale 125ms, opacity 125ms;
@@ -44,7 +44,7 @@ input:is([type='text'], [type='search'], [type='email'], [type='password']), tex
     font-size: $font-size-sm;
     padding: .25rem .5rem;
     border-radius: .5rem;
-    border: 2px solid $color-secondary;
+    border: 2px solid var(--color-secondary);
 
     &:focus {
         outline: none;
@@ -73,6 +73,6 @@ label.button:has(input:is([type='checkbox'], [type='radio']):not(:checked)) {
 
 .button--secondary {
     background-color: transparent;
-    color: $color-secondary;
-    border: solid 2px $color-secondary;
+    color: var(--color-secondary);
+    border: solid 2px var(--color-secondary);
 }

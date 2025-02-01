@@ -26,6 +26,13 @@
     </script>
 </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <style>
+            :root {
+                --color-primary: {{ user.user_theme.primary_color }};
+                --color-secondary: color-mix(in srgb, var(--color-primary) 95%, white 5%);
+                --color-tertriary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
+            }
+        </style>
         {% include 'navigation.html' %}
         <header>{% block header %}{% endblock header %}</header>
         <main>{% block content %}{% endblock content %}</main>

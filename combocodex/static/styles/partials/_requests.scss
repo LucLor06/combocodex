@@ -11,7 +11,7 @@
 }
 
 .request {
-    border: solid 2px $color-secondary;
+    border: solid 2px var(--color-secondary);
     border-radius: 1rem;
     display: flex;
     flex-direction: column;

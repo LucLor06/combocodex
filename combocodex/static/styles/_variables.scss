@@ -1,8 +1,12 @@
 $color-base: rgba(0, 0, 0, 0.9);
 $color-text: #ffffff;
-$color-primary: #165a4c;
-$color-secondary: #239063;
-$color-tertriary: #92c9b2;
+
+:root {
+    --color-primary: #239063;
+    --color-secondary: color-mix(in srgb, var(--color-primary) 90%, white 10%);
+    --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
+}
+
 $color-error: #b33831;
 
 $size-icon-md: clamp(3rem, 4vw, 6rem);

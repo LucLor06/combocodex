@@ -1,6 +1,6 @@
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from .models import User
+from .models import User, UserTheme
 from main.models import Guest
 
 @receiver(post_save, sender=User)
@@ -13,3 +13,5 @@ def user_post_save(sender, instance: User, created, **kwargs):
             pass
         instance.collect_codex_coins()
         instance.check_trusted()
+        classic_theme = UserTheme.objects.get(name='Classic')
+        instance.user_themes.add(classic_theme)

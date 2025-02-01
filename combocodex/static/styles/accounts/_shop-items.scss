@@ -1,14 +1,15 @@
-.user-colors {
+.user-colors, .user-themes {
     display: flex;
     flex-flow: row wrap;
-    gap: .25rem;
+    gap: .5rem;
+    margin-block: 1rem;
 
     & > * {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: .25rem;
+        gap: .5rem;
         width: $size-icon-lg;
         
 

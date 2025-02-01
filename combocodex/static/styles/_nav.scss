@@ -92,7 +92,7 @@ nav {
         border-style: solid;
         border-width: .125rem;
         opacity: 0.75;
-        color: $color-primary;
+        color: var(--color-primary);
     }
 
     a {
@@ -117,13 +117,13 @@ nav {
             height: $font-size-lg;
             
             path {
-                fill: $color-secondary;
+                fill: var(--color-secondary);
             }
         }
 
         &:hover, &:focus-visible {
             transition: background-color 250ms;
-            background-color: $color-secondary;
+            background-color: var(--color-secondary);
 
             svg, path {
                 fill: white;

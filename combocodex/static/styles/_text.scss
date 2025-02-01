@@ -26,7 +26,7 @@ h1, h2, h3, h4, h5 {
 }
 
 h2, h3, h4, h5 {
-    color: $color-secondary;
+    color: var(--color-secondary);
 }
 
 h1 {
@@ -59,13 +59,13 @@ p {
 }
 
 b {
-    color: $color-primary;
+    color: var(--color-primary);
 }
 
 a {
     cursor: pointer;
     text-decoration: underline;
-    color: $color-tertriary;
+    color: var(--color-tertriary);
 }
 
 .text--secondary {
@@ -74,7 +74,7 @@ a {
 }
 
 .text--tertriary {
-    color: $color-tertriary;
+    color: var(--color-tertriary);
 }
 
 .text--center {
@@ -82,7 +82,7 @@ a {
 }
 
 .text--primary {
-    color: $color-primary;
+    color: var(--color-primary);
 }
 
 .text--error {
@@ -144,12 +144,12 @@ svg, path {
 
 svg {
     display: block;
-    fill: $color-tertriary;
+    fill: var(--color-tertriary);
     width: $font-size-sm;
     height: $font-size-sm;
 
     path {
-        fill: $color-tertriary;
+        fill: var(--color-tertriary);
         width: 100%;
     }
 }

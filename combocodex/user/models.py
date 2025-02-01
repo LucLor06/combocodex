@@ -89,6 +89,8 @@ class UserColor(AbstractShopItem):
             user.save()
 
 class UserTheme(AbstractShopItem):
+    primary_color = models.CharField(max_length=7)
+
     def icon(self):
         return f'/static/user_themes/{self.slug}.png'
     

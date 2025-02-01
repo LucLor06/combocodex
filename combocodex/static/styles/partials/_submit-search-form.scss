@@ -25,7 +25,7 @@
 
     .legend-weapon__pair {
         box-sizing: content-box;
-        border: solid 2px $color-secondary;
+        border: solid 2px var(--color-secondary);
         background-color: $color-base;
         border-radius: 1rem;
         height: $font-size-xl;

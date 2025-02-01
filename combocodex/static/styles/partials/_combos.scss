@@ -17,7 +17,7 @@
 .combo {
     display: block;
     position: relative;
-    border: solid 2px $color-secondary;
+    border: solid 2px var(--color-secondary);
     border-radius: 2rem;
     overflow-y: hidden;
     margin-inline: auto;
