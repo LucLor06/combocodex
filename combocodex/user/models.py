@@ -5,13 +5,6 @@ from django.db.models import Prefetch, Q, Count
 from django.utils.text import slugify
 from datetime import datetime, timedelta
 
-class UserManager(models.Manager):
-    def weekly_user(self):
-        today = datetime.now().date()
-        date = today - timedelta(days=today.weekday())
-        users = self.annotate(combo_count=Count('combos', filter=Q(combos__created_on__range=(date, date + timedelta(days=7)))))
-        return users.order_by('-combo_count').first()
-
 class User(AbstractUser):
     is_trusted = models.BooleanField(default=False)
     codex_coins = models.PositiveIntegerField(default=0)
@@ -21,7 +14,6 @@ class User(AbstractUser):
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
     user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
-    objects = UserManager()
 
     def check_trusted(self):
         from main.models import Combo
@@ -65,6 +57,12 @@ class User(AbstractUser):
         from main.models import DailyChallenge
         return DailyChallenge.objects.prefetch_related('combos').filter(combos__users=self).distinct()
     
+    @classmethod
+    def weekly_user(cls):
+        today = datetime.now().date()
+        date = today - timedelta(days=today.weekday())
+        users = cls.objects.annotate(combo_count=Count('combos', filter=Q(combos__created_on__range=(date, date + timedelta(days=7)))))
+        return users.order_by('-combo_count').first()
 
 class AbstractShopItem(models.Model):
     name = models.CharField(max_length=32)

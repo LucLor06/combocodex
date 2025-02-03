@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
 from django.shortcuts import redirect
+from django.contrib.auth import logout
+from django.contrib.auth.forms import PasswordResetForm
 from datetime import datetime, timedelta
 from django.utils import timezone
 
@@ -50,3 +52,19 @@ def inventory(request):
             user_background = UserBackground.objects.get(id=request.POST['user_background'])
             user_background.set(request.user)
     return render(request, 'inventory.html', context)
+
+@login_required
+def settings(request):
+    errors = []
+    if request.method == 'POST':
+        if 'email' in request.POST:
+            email = EmailAddress.objects.filter(email__iexact=request.POST.get('email'))
+            if email.exists():
+                errors.append('An account with this email already exists')
+            else:
+                EmailAddress.objects.get(user=request.user).delete()
+                email = EmailAddress.objects.create(user=request.user, email=request.POST['email'], verified=False, primary=True)
+                send_email_confirmation(request, request.user, email=request.POST['email'])
+                logout(request)
+                return redirect('account_email_verification_sent')     
+    return render(request, 'account/settings.html', {'errors': errors})

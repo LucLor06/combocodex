@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Settings
+{% endblock title %}
+
+{% block header %}
+<h1>Settings</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <div>
+            <h3>Email</h3>
+            <p>Your email is currently "{{ user.email }}"</p>
+            <p>If you'd like to change your email please use the form below. Note you will have to verify the new email.</p>
+            {% if errors %}
+            <div>
+                {% for error in errors %}
+                <p class="text--xs text--error">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <form autocomplete="off" class="accounts-settings-email__form" method="post">
+                {% csrf_token %}
+                <div>
+                    <h3>New Email</h3>
+                    <input name="email" type="email" _="
+                    on input
+                        if '@' is in my value
+                            set global emailValid to true
+                        else
+                            set global emailValid to false
+                        end
+                        trigger validationchanged
+                    end">
+                </div>
+                <button class="disabled" type="submit" _="
+                on validationchanged from document
+                    if emailValid
+                        remove .disabled from me
+                    else
+                        add .disabled to me
+                    end
+                end">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                    <p>Change Email</p>
+                </button>
+            </form>
+        </div>
+        <div>
+            <h3>Password</h3>
+            <p>You can begin resetting your password by pressing the button below</p>
+            <form method="post" action="{% url 'account_reset_password' %}" class="accounts-settings-password__form">
+                {% csrf_token %}
+                <button type="submit" name="email" value="{{ user.email }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                    <p>Reset Password</p>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock content %}

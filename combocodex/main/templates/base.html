@@ -27,6 +27,7 @@
 </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         <style>
+            {% if user.is_authenticated %}
             :root {
                 --color-primary: {{ user.user_theme.primary_color }};
                 --color-secondary: color-mix(in srgb, var(--color-primary) 95%, white 5%);
@@ -35,6 +36,7 @@
             body {
                 background-image: url({{ user.user_background.image }});
             }
+            {% endif %}
         </style>
         {% include 'navigation.html' %}
         <header>{% block header %}{% endblock header %}</header>
