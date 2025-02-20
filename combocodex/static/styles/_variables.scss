@@ -1,9 +1,9 @@
-$color-base: rgba(0, 0, 0, 0.8);
+$color-base: rgba(0, 0, 0, 0.9);
 $color-text: #ffffff;
 
 :root {
     --color-primary: #239063;
-    --color-secondary: color-mix(in srgb, var(--color-primary) 90%, white 10%);
+    --color-secondary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
     --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
 }
 

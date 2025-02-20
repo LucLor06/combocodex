@@ -76,3 +76,8 @@ label.button:has(input:is([type='checkbox'], [type='radio']):not(:checked)) {
     color: var(--color-secondary);
     border: solid 2px var(--color-secondary);
 }
+
+.button--center {
+    display: block;
+    margin-inline: auto;
+}

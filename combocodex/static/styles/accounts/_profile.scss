@@ -1,0 +1,41 @@
+.accounts-profile__stats {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    & > div {
+        width: clamp(100px, 20%, 300px);
+    }
+}
+
+.accounts-profile a {
+    display: block;
+}
+
+.accounts-profile__form {
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
+    margin-inline: auto;
+    width: clamp(340px, 70%, 1200px);
+    gap: 1rem;
+
+    label {
+        font-size: $font-size-lg;
+        font-family: 'BebasNeue';
+        cursor: pointer;
+        transition: color 200ms, scale 200ms;
+
+        &:has(input:checked) {
+            color: var(--color-secondary);
+            scale: 1.2;
+        }
+        
+        &:hover:not(:has(input:checked)) {
+            color: var(--color-tertriary);
+            scale: 1.05;
+        }
+    }
+}

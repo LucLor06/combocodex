@@ -30,6 +30,12 @@
     }
 }
 
+.legend, .weapon {
+    &.no-pointer {
+        cursor: default;
+    }
+}
+
 .pair-container {
     position: relative;
     opacity: .5;

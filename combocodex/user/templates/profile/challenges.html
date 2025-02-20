@@ -1,0 +1,12 @@
+<section>
+    <div class="section-content">
+        <h2>Daily Challenges</h2>
+        <h3 class="text--secondary">{{ user.daily_challenges.count }}/{{ daily_challenges.count }} | {{ daily_challenges_percent }}%</h3>
+        <div class="daily-challenges">
+            {% for daily_challenge in daily_challenges %}
+            {% include 'partials/daily-challenge.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+

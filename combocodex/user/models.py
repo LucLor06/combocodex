@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.functional import cached_property
-from django.db.models import Prefetch, Q, Count
+from django.db.models import Prefetch, Q, Count, F
 from django.utils.text import slugify
 from datetime import datetime, timedelta
 
@@ -56,6 +56,11 @@ class User(AbstractUser):
     def daily_challenges(self):
         from main.models import DailyChallenge
         return DailyChallenge.objects.prefetch_related('combos').filter(combos__users=self).distinct()
+    
+    @cached_property
+    def completed_requests(self):
+        from main.models import Request
+        return Request.objects.select_related('combo').filter(combo__users=self)
     
     @classmethod
     def weekly_user(cls):

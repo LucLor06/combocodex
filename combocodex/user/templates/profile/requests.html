@@ -1,0 +1,44 @@
+<section>
+    <div class="section-content">
+        <script type="text/hyperscript">
+            behavior ToggleHidden
+                init
+                    set element open to true
+                end 
+                on click
+                    if open
+                        add .hidden to the next <div/>
+                        set my innerHTML to 'Show'
+                    else
+                        remove .hidden from the next <div/>
+                        set my innerHTML to 'Hide'
+                    end
+                    set element open to not open
+                end
+            end
+        </script>
+        {% if user.requests.exists %}
+        <h2>{{ user.username }}'s Requests</h2>
+        <h3 class="text--secondary">{{ user.requests.count }} request{{ user.requests.count|pluralize }}</h3>
+        {% if user.requests.count > 5 %}
+        <button _="install ToggleHidden">Hide</button>
+        {% endif %}
+        <div class="requests">
+            {% for request in user.requests.all %}
+            {% include 'partials/request.html' %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if user.requests_completed.exists %}
+        <h2>Requests Completed</h2>
+        <h3 class="text--secondary">{{ user.completed_requests.count }}/{{ requests.count }} | {{ completed_requests_percent }}%</h3>
+        {% if user.completed_requests.count > 5 %}
+        <button _="install ToggleHidden">Hide</button>
+        {% endif %}
+        <div class="requests">
+            {% for request in user.completed_requests.all %}
+            {% include 'partials/request.html' %}
+            {% endfor %}
+        </div>
+        {% endif %}
+</section>

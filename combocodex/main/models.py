@@ -104,10 +104,10 @@ class ComboManager(models.Manager):
         combos = self.verified() if not show_unverified else self.all()
         for username in users:
             try:
-                user = User.objects.get(username=username)
+                user = User.objects.get(username__iexact=username)
                 combos = combos.filter(users=user)
             except User.DoesNotExist:
-                guest = Guest.objects.get_or_create(username=username)
+                guest = Guest.objects.get_or_create(username__iexact=username)
                 combos = combos.filter(guests=guest)
         if len(legends) == 2 and legends[0] == legends[1]:
             combos = combos.filter(Q(legend_one=legends[0], legend_two=legends[0]))

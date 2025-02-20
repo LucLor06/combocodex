@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.forms import PasswordResetForm
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 def email_resend(request):
     if request.method == "POST":
@@ -68,3 +69,32 @@ def settings(request):
                 logout(request)
                 return redirect('account_email_verification_sent')     
     return render(request, 'account/settings.html', {'errors': errors})
+
+def profile(request, pk):
+    from main.models import Legend, Weapon, Request, DailyChallenge
+    user = get_object_or_404(User, pk=pk)
+    legends = Legend.objects.all()
+    weapons = Weapon.objects.all()
+    context = {'user': user}
+    if 'view' in request.GET:
+        view = request.GET['view']
+        if view == 'general':
+            context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
+            return render(request, 'profile/general.html', context)
+        elif view == 'requests':
+            requests = Request.objects.all()
+            context.update({'requests': requests, 'requests_percent': round((user.requests.count() / requests.count()) * 100, 2), 'completed_requests_percent': round((user.completed_requests.count() / requests.count()) * 100, 2)})
+            return render(request, 'profile/requests.html', context)
+        elif view == 'items':
+            user_colors = UserColor.objects.all()
+            user_themes = UserTheme.objects.all()
+            user_backgrounds = UserBackground.objects.all()
+            context.update({'user_colors': user_colors, 'user_themes': user_themes, 'user_backgrounds': user_backgrounds, 'user_colors_percent': round((user.user_colors.count() / user_colors.count()) * 100, 2), 'user_themes_percent': round((user.user_themes.count() / user_themes.count()) * 100, 2), 'user_backgrounds_percent': round((user.user_backgrounds.count() / user_backgrounds.count()) * 100, 2)})
+            return render(request, 'profile/items.html', context)
+        elif view == 'challenges':
+            daily_challenges = DailyChallenge.objects.all()
+            context.update({'daily_challenges': daily_challenges, 'daily_challenges_percent': round((user.daily_challenges.count() / daily_challenges.count()) * 100, 2)})
+            return render(request, 'profile/challenges.html', context)
+    else:
+        context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
+    return render(request, 'profile/profile.html', context)

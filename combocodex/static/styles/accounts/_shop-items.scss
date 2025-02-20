@@ -41,7 +41,7 @@
         }
 
         &:has(input[type='radio']:not(:checked)) {
-            opacity: 0.3;
+            opacity: 0.66;
             transition: opacity 125ms, opacity 125ms;
 
             &:hover {

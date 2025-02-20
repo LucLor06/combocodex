@@ -5,5 +5,6 @@ urlpatterns = [
     path('resend-email/', views.email_resend, name='email-resend'),
     path('shop/', views.shop, name='shop'),
     path('inventory/', views.inventory, name='inventory'),
-    path('settings/', views.settings, name='settings')
+    path('settings/', views.settings, name='settings'),
+    path('profile/<pk>/', views.profile, name='profile'),
 ]

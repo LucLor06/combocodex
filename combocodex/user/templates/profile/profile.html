@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load partials %}
+
+{% block title %}
+{{ user.username }} | Profile
+{% endblock title %}
+
+{% block header %}
+<h1>{{ user.username }}</h1>
+{% endblock header %}
+
+{% block content %}
+<section class="accounts-profile">
+    <div class="section-content">
+        <div class="accounts-profile__stats">
+            <div>
+                <p class="text--sm text--center">Joined On</p>
+                <h3 class="text--center">{{ user.date_joined.date }}</h3>
+            </div>
+            <div>
+                <h2 class="text--center">{{ user.combos.count }}</h2>
+                <p class="text--sm text--center">Combo{{ user.combos.count|pluralize }} in the Codex</p>
+                <a href="{% url 'combos-search' %}?user={{ user.username }}#combos" class="text--xs text--center">See all</a>
+            </div>
+            <div>
+                <h2 class="text--center">{{ user.codex_coins }}</h2>
+                <p class="text--sm text--center">Codex Coins</p>
+            </div>
+        </div>
+    </div>
+</section>
+<form class="accounts-profile__form" autocomplete="off" hx-get hx-trigger="change" hx-target="#accounts-profile__content">
+    <label>
+        General
+        <input name="view" type="radio" value="general" checked>
+    </label>
+    {% if user.requests.exists or user.completed_requests.exists %}
+    <label>
+        Requests
+        <input name="view" type="radio" value="requests">
+    </label>
+    {% endif %}
+    {% if user.daily_challenges.exists %}
+    <label>
+        Challenges
+        <input name="view" type="radio" value="challenges">
+    </label>
+    {% endif %}
+    <label>
+        Items
+        <input name="view" type="radio" value="items">
+    </label>
+</form>
+<div id="accounts-profile__content">
+    {% include 'profile/general.html' %}
+</div>
+{% endblock content %}

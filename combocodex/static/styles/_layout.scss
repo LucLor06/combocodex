@@ -24,8 +24,18 @@ main {
     display: flex;
     flex-direction: column;
 
-    :last-child:is(section) {
+    & > :last-child:is(section) {
         flex-grow: 1;
+    }
+    & > :last-child:is(div) {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+
+        & > :last-child:is(section) {
+            flex-grow: 1;
+        }
+
     }
 }
 
@@ -37,9 +47,9 @@ section {
 
 .section-content {
     margin-inline: auto;
-    width: 70%;
+    width: clamp(340px, 70%, 1200px);
 
-    & > div + div:not(.combo) {
-        margin-top: 2rem;
+    & > div:not(.combo) {
+        margin-block: 1rem;
     }
 }

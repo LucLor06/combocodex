@@ -1,12 +1,15 @@
 <div class="daily-challenge">
-    <div class="daily-challenge__pair">
-        <p class="tooltip">{{ daily_challenge.legend_one.name }} ({{ daily_challenge.weapon_one.name }})</p>
-        <img src="{{ daily_challenge.legend_one.icon }}">
-        <img src="{{ daily_challenge.weapon_one.icon }}">
-    </div>
-    <div class="daily-challenge__pair">
-        <p class="tooltip">{{ daily_challenge.legend_two.name }} ({{ daily_challenge.weapon_two.name }})</p>
-        <img src="{{ daily_challenge.legend_two.icon }}">
-        <img src="{{ daily_challenge.weapon_two.icon }}">
+    <p class="text--center text--xs">{{ daily_challenge.created_on }}</p>
+    <div class="daily-challenge__pairs">
+        <div class="daily-challenge__pair">
+            <p class="tooltip">{{ daily_challenge.legend_one.name }} ({{ daily_challenge.weapon_one.name }})</p>
+            <img src="{{ daily_challenge.legend_one.icon }}">
+            <img src="{{ daily_challenge.weapon_one.icon }}">
+        </div>
+        <div class="daily-challenge__pair">
+            <p class="tooltip">{{ daily_challenge.legend_two.name }} ({{ daily_challenge.weapon_two.name }})</p>
+            <img src="{{ daily_challenge.legend_two.icon }}">
+            <img src="{{ daily_challenge.weapon_two.icon }}">
+        </div>
     </div>
 </div>

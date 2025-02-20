@@ -1,0 +1,32 @@
+<section>
+    <div class="section-content">
+        <h2>Colors</h2>
+        <h3 class="text--secondary">{{ user.user_colors.count }}/{{ user_colors.count }} | {{ user_colors_percent }}%</h3>
+        <div class="user-colors">
+            {% for user_color in user_colors %}
+            <div class="user-color{% if user_color not in user.user_colors.all %} disabled{% endif %}">
+                <img src="{{ user_color.icon }}">
+            </div>
+            {% endfor %}
+        </div>
+        <h2>Themes</h2>
+        <h3 class="text--secondary">{{ user.user_themes.count }}/{{ user_themes.count }} | {{ user_themes_percent }}%</h3>
+        <div class="user-themes">
+            {% for user_theme in user_themes %}
+            <div class="user-theme{% if user_theme not in user.user_themes.all %} disabled{% endif %}">
+                <img src="{{ user_theme.icon }}">
+            </div>
+            {% endfor %}
+        </div>
+        <h2>Backgrounds</h2>
+        <h3 class="text--secondary">{{ user.user_backgrounds.count }}/{{ user_backgrounds.count }} | {{ user_backgrounds_percent }}%</h3>
+        <div class="user-backgrounds">
+            {% for user_background in user_backgrounds %}
+            <div class="user-background{% if user_background not in user.user_backgrounds.all %} disabled{% endif %}">
+                <img src="{{ user_background.image }}">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+

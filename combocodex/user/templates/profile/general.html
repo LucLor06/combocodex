@@ -1,0 +1,23 @@
+<section>
+    <div class="section-content">
+        <h2>Legends</h2>
+        <h3 class="text--secondary">{{ user.legends.count }}/{{ legends.count }} | {{ legends_percent }}%</h3>
+        <div class="legends">
+            {% for legend in legends %}
+            <div class="legend no-pointer{% if legend not in user.legends.all %} disabled{% endif %}">
+                <img src="{{ legend.icon }}">
+            </div>
+            {% endfor %}
+        </div>
+        <h2>Weapons</h2>
+        <h3 class="text--secondary">{{ user.weapons.count }}/{{ weapons.count }} | {{ weapons_percent }}%</h3>
+        <div class="weapons">
+            {% for weapon in weapons %}
+            <div class="weapon no-pointer{% if weapon not in user.weapons.all %} disabled{% endif %}">
+                <img src="{{ weapon.icon }}">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
