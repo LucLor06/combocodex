@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+User Search
+{% endblock title %}
+
+{% block header %}
+<h1>User Search</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>Search for users via username</p>
+        <form class="accounts-search__form" id="accounts-search__form" hx-get hx-target="#accounts-search__target" hx-select="#accounts-search__target" hx-trigger="input from:input delay:250ms" hx-swap="outerHTML">
+            <input type="text" name="user">
+        </form>
+    </div>
+</section>
+<div id="accounts-search__target">
+    <h2 class="text--header">{{ users.count }} user{{ users.count|pluralize }} found</h2>
+    <section>
+        {% include 'partials/pagination.html' with target='#accounts-search__target' form='#accounts-search__form' %}
+        <div class="section-content users">
+            {% for user in users %}
+            {% include 'partials/user.html' %}
+            {% endfor %}
+        </div>
+        {% include 'partials/pagination.html' with target='#accounts-search__target' form='#accounts-search__form' %}
+    </section>
+</div>
+{% endblock content %}

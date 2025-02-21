@@ -4,6 +4,7 @@ from django.utils.functional import cached_property
 from django.db.models import Prefetch, Q, Count, F
 from django.utils.text import slugify
 from datetime import datetime, timedelta
+from django.urls import reverse
 
 class User(AbstractUser):
     is_trusted = models.BooleanField(default=False)
@@ -14,6 +15,9 @@ class User(AbstractUser):
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
     user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
+
+    def get_absolute_url(self):
+        return reverse('profile', kwargs={'pk': self.pk})
 
     def check_trusted(self):
         from main.models import Combo

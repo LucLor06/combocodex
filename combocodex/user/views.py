@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import User, UserColor, UserTheme, UserBackground
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
@@ -98,3 +99,13 @@ def profile(request, pk):
     else:
         context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
     return render(request, 'profile/profile.html', context)
+
+def search(request):
+    username = request.GET.get('user')
+    users = User.objects.all() if not username else User.objects.filter(username__icontains=username)  
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(users, 15)
+    page = paginator.get_page(page_number)
+    users = page.object_list
+    context = {'users': users, 'page': page}
+    return render(request, 'search.html', context)
