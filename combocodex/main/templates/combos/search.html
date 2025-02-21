@@ -10,6 +10,11 @@ Combos | Search
 {% endblock header %}
 
 {% block content %}
+<script type="text/hyperscript">
+    on load
+
+    end
+</script>
 <section>
     <div class="section-content">
         <p>Click on a legend/weapon to add them to your query. <b>Nothing is required.</b></p>
@@ -83,7 +88,7 @@ Combos | Search
             </div>
             {% endfor %}
         </div>
-        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get hx-target="#combos-search__found" hx-select="#combos-search__found">
+        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-select="#combos-search__found">
             <div>
                 <h3 class="text--center">Legends/Weapons</h3>
                 <p class="text--center text--xs text--secondary">Click/tap items to remove</p>
