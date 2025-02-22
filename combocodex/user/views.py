@@ -10,6 +10,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
 def email_resend(request):
     if request.method == "POST":
@@ -103,9 +104,23 @@ def profile(request, pk):
 def search(request):
     username = request.GET.get('user')
     users = User.objects.all() if not username else User.objects.filter(username__icontains=username)  
+    user_count = users.count()
     page_number = request.GET.get('page', 1)
     paginator = Paginator(users, 15)
     page = paginator.get_page(page_number)
     users = page.object_list
-    context = {'users': users, 'page': page}
+    context = {'users': users, 'page': page, 'user_count': user_count}
     return render(request, 'search.html', context)
+
+def leaderboard(request):
+    ordering = request.GET.get('order_by', '-total')
+    if ordering == '-total':
+        print('yes')
+        users = User.objects.annotate(total=(Count('combos') + Count('combos__request') + Count('combos__daily_challenge', distinct=True)))
+    elif ordering == '-completed_requests':
+        users = User.objects.annotate(completed_requests=Count('combos__request'))
+    elif ordering == '-daily_challenges':
+        users = User.objects.annotate(daily_challenges=Count('combos__daily_challege', distinct=True))
+    users = users.order_by(ordering)
+    context = {'users': users[:20]}
+    return render(request, 'leaderboard.html', context)

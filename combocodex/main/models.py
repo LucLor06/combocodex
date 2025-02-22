@@ -126,6 +126,20 @@ class ComboManager(models.Manager):
             return page.object_list, page, combos.count()
         else:
             return combos, combos.count()
+        
+    def spreadsheet_data(self):
+        combinations = {}
+        for legend_one in Legend.objects.prefetch_related('weapons'):
+            for weapon_one in legend_one.weapons.all():
+                for legend_two in Legend.objects.prefetch_related('weapons'):
+                    for weapon_two in legend_two.weapons.all():
+                        combos = self.filter(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one)).exclude(is_outdated=True)
+                        count = combos.count()
+                        link = ''
+                        if count > 0:
+                            link = combos.latest('id').get_absolute_url()
+                        combinations[f'{legend_one.name}-{weapon_one.name}_{legend_two.name}-{weapon_two.name}'] = {'count': count, 'link': link}
+        print(combinations)
 
 class Combo(models.Model):
     CODEX_COINS = 5

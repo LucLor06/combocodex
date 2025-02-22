@@ -18,7 +18,7 @@ User Search
     </div>
 </section>
 <div id="accounts-search__target">
-    <h2 class="text--header">{{ users.count }} user{{ users.count|pluralize }} found</h2>
+    <h2 class="text--header">{{ user_count }} user{{ user_count|pluralize }} found</h2>
     <section>
         {% include 'partials/pagination.html' with target='#accounts-search__target' form='#accounts-search__form' %}
         <div class="section-content users">
