@@ -7,6 +7,7 @@ urlpatterns = [
     path('combos/verify/', views.combos_verify, name='combos-verify'),
     path('combos/search/', views.combos_search, name='combos-search'),
     path('combos/<pk>/view/', views.combos_view, name='combos-view'),
+    path('combos/spreadsheet/', views.combos_spreadsheet, name='combos-spreadsheet'),
     path('combos/<pk>/', views.combos_combo, name='combos-combo'),
     path('requests/submit/', views.requests_submit, name='requests-submit'),
     path('requests/', views.requests_list, name='requests')

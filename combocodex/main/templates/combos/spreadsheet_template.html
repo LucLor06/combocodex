@@ -1,0 +1,69 @@
+{% load tags %}
+<div class="spreadsheet">
+    <div>
+        <div class="spreadsheet__row-head">
+            <div class="spreadsheet__row-head-spacer"></div>
+            {% for legend in legends %}
+            <div>
+                <img src="{{ legend.icon }}">
+                <div>
+                    {% for weapon in legend.weapons.all %}
+                    {% if weapon.name != 'Unarmed' %}
+                    <img src="{{ weapon.icon }}">
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="spreadsheet__column">
+            {% for legend_one in legends %}
+            <div>
+                <div class="spreadsheet__column-head-item">
+                    <img src="{{ legend_one.icon }}">
+                    <div>
+                        {% for weapon in legend_one.weapons.all %}
+                        {% if weapon.name != 'Unarmed' %}
+                        <img src="{{ weapon.icon }}">
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="spreadsheet__column-data">
+                    {% for legend_two in legends %}
+                    {% for weapon_two in legend_two.weapons.all %}
+                    {% if weapon_two.name != 'Unarmed' %}
+                    <div>
+                        {% for weapon_one in legend_one.weapons.all %}
+                        {% if weapon_one.name != 'Unarmed' %}
+                        {% with legend_one.name|add:weapon_one.name|add:legend_two.name|add:weapon_two.name as combo_name %}
+                        {% with combo=combos|get:combo_name %}
+                        <a id="{{ legend_one.slug }}-{{ weapon_one.slug }}-{{ legend_two.slug }}-{{ weapon_two.slug }}" {% if combo.link %}href="{{ combo.link }}"{% endif %} {% if combo.link %}style="background-color: green;"{% endif %}>
+                            <div class="tooltip">
+                                <div class="spreadsheet__pairs">
+                                    <div class="spreadsheet__pair">
+                                        <img src="{{ legend_one.icon }}">
+                                        <img src="{{ weapon_one.icon }}">
+                                    </div>
+                                    <div class="spreadsheet__pair">
+                                        <img src="{{ legend_two.icon }}">
+                                        <img src="{{ weapon_two.icon }}">
+                                    </div>
+                                </div>
+                                <p class="text--center text--xs"><span id="{{ legend_one.slug }}-{{ weapon_one.slug }}-{{ legend_two.slug }}-{{ weapon_two.slug }}__combo-count">{{ combo.count }} combo{{ combo.count|pluralize }}</span> | <span id="{{ legend_one.slug }}-{{ weapon_one.slug }}-{{ legend_two.slug }}-{{ weapon_two.slug }}__combo-percent">{{ combo.percent }}</span>%</p>
+                            </div>
+                        </a>
+                        {% endwith %}
+                        {% endwith %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

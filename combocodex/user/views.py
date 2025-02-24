@@ -115,7 +115,6 @@ def search(request):
 def leaderboard(request):
     ordering = request.GET.get('order_by', '-total')
     if ordering == '-total':
-        print('yes')
         users = User.objects.annotate(total=(Count('combos') + Count('combos__request') + Count('combos__daily_challenge', distinct=True)))
     elif ordering == '-completed_requests':
         users = User.objects.annotate(completed_requests=Count('combos__request'))

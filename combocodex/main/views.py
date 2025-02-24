@@ -65,6 +65,9 @@ def combos_combo(request, pk):
     context = {'combo': combo, 'similar_combos': combo.get_similar()}
     return render(request, 'combos/combo.html', context)
 
+def combos_spreadsheet(request):
+    return render(request, 'combos/spreadsheet.html')
+
 def combos_search(request):
     if 'filter_users' in request.GET:
         users = User.objects.filter(username__icontains=request.GET['filter_users'])

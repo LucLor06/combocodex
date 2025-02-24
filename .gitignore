@@ -7,3 +7,5 @@ combocodex/static/admin
 combocodex/media
 
 .env
+
+combocodex/main/templates/combos/rendered_sheet.html

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load tags %}
+
+{% block title %}
+Spreadsheet
+{% endblock title %}
+
+{% block header %}
+<h1>Spreadsheet</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="spreadsheet-content">
+        {% include 'combos/rendered_sheet.html' %}   
+    </div>
+</section>
+{% endblock %}

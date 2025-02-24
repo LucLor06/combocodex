@@ -4,6 +4,8 @@ from django.db.models import F, Q
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.urls import reverse
+from bs4 import BeautifulSoup
+from config.settings import BASE_DIR
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
@@ -129,6 +131,7 @@ class ComboManager(models.Manager):
         
     def spreadsheet_data(self):
         combinations = {}
+        combo_count = self.count()
         for legend_one in Legend.objects.prefetch_related('weapons'):
             for weapon_one in legend_one.weapons.all():
                 for legend_two in Legend.objects.prefetch_related('weapons'):
@@ -138,8 +141,11 @@ class ComboManager(models.Manager):
                         link = ''
                         if count > 0:
                             link = combos.latest('id').get_absolute_url()
-                        combinations[f'{legend_one.name}-{weapon_one.name}_{legend_two.name}-{weapon_two.name}'] = {'count': count, 'link': link}
-        print(combinations)
+                        percent = round((count/combo_count) * 100, 2)
+                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count, 'link': link, 'percent': percent}
+        return combinations
+    
+    
 
 class Combo(models.Model):
     CODEX_COINS = 5
@@ -175,10 +181,43 @@ class Combo(models.Model):
             self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
             for user in self.users.all():
                 user.check_trusted()
+            self.update_spreadsheet()
         return self
     
     def get_similar(self):
         return Combo.objects.select_weapons_legends().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
+
+    def get_exact(self, exclude_self=False):
+        combos = Combo.objects.verified().filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
+        if exclude_self:
+            combos = combos.exclude(id=self.id)
+        return combos
+    
+    def update_spreadsheet(self, deleting=False):
+        from .apps import spreadsheet_soup
+        if not self.is_outdated:
+            cell_id_one = f'{self.legend_one.slug}-{self.weapon_one.slug}-{self.legend_two.slug}-{self.weapon_two.slug}'
+            cell_id_two = f'{self.legend_two.slug}-{self.weapon_two.slug}-{self.legend_one.slug}-{self.weapon_one.slug}'
+            combos = self.get_exact(exclude_self=deleting)
+            combo_count = combos.count()
+            combo_percent = round((combo_count / Combo.objects.count()) * 100, 2)
+            for cell_id in [cell_id_one, cell_id_two]:
+                print(cell_id)
+                cell = spreadsheet_soup.find(id=cell_id)
+                if combo_count > 0:
+                    cell['style'] = 'background-color: green;'
+                    link = self.get_absolute_url() if not deleting else combos.latest('id').get_absolute_url()
+                    cell['href'] = link
+                else:
+                    del cell['style']
+                    del cell['href']
+                cell_count = cell.find(id=f'{cell_id}__combo-count')
+                cell_count.string = f'{combo_count} combos'
+                cell_percent = cell.find(id=f'{cell_id}__combo-percent')
+                cell_percent.string = f'{combo_percent}'
+            with open(str(BASE_DIR / 'main/templates/combos/rendered_sheet.html'), 'w') as sheet:
+                sheet.write(spreadsheet_soup.prettify())
+
 
 class RequestManager(models.Manager):
     def complete(self):

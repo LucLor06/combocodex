@@ -1,0 +1,149 @@
+.spreadsheet-content {
+    margin-inline: auto;
+    width: 90%;
+}
+
+.spreadsheet {
+    text-align: initial;
+    width: 100%;
+    padding-left: 10px !important;
+    overflow: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    & > div {
+        margin: 1.5% auto;
+    }
+
+    a {
+        margin-block: 0;
+
+        cursor: default;
+
+        &[href] {
+            cursor: pointer;
+        }
+    }
+
+    
+    .tooltip {
+        border-radius: 1rem;
+        flex-direction: column;
+        align-items: center;
+        padding: .5rem;
+        transition: opacity 0ms;
+        z-index: 99;
+        opacity: 1;
+        display: none;
+    }
+}
+
+.spreadsheet__row-head {
+    border-bottom: none;
+    display: inline-flex;
+    margin-inline: auto;
+
+    .spreadsheet__row-head-spacer {
+        width: 75px;
+    }
+
+    img {
+        height: auto;
+    }
+
+    & > div {
+        display: flex;
+        width: 50px;
+        flex-direction: column;
+
+        & > img {
+            width: 100%;
+        }
+
+        & > div {
+            width: 100%;
+            display: flex;
+
+            img {
+                width: 50%;
+                flex: 1;
+            }
+        }
+    }
+}
+
+.spreadsheet__column {
+    display: flex;
+    flex-flow: column nowrap;
+
+    & > div {
+        display: flex;
+        margin-inline: auto;
+
+        .spreadsheet__column-head-item {
+            display: flex;
+            width: 75px;
+
+            img {
+                height: auto;
+            }
+
+            & > img {
+                width: 50px;
+            }
+
+            & > div {
+                width: 25px;
+                display: flex;
+                flex-direction: column;
+
+                img {
+                    width: 100%;
+                    flex: 1;
+                }
+            }
+        }
+        .spreadsheet__column-data {
+            display: flex;
+
+            & > div {
+                width: 25px;
+                height: 50px;
+                display: flex;
+                flex-direction: column;
+
+                & > a {
+                    height: 50%;
+                    width: 100%;
+
+                    &:hover {
+                        outline: solid 1px var(--color-tertriary);
+
+                        .tooltip {
+                            display: flex;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.spreadsheet__pairs {
+    margin-block: .5rem;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+
+    .spreadsheet__pair {
+        display: flex;
+        width: clamp(4rem, 50%, 8rem);
+
+        img {
+            flex: 1;
+            width: $size-icon-xs;
+        }
+    }
+}
