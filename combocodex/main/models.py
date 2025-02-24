@@ -194,8 +194,9 @@ class Combo(models.Model):
         return combos
     
     def update_spreadsheet(self, deleting=False):
-        from .apps import spreadsheet_soup
+        from .apps import MainConfig
         if not self.is_outdated:
+            spreadsheet_soup = MainConfig.get_spreadsheet()
             cell_id_one = f'{self.legend_one.slug}-{self.weapon_one.slug}-{self.legend_two.slug}-{self.weapon_two.slug}'
             cell_id_two = f'{self.legend_two.slug}-{self.weapon_two.slug}-{self.legend_one.slug}-{self.weapon_one.slug}'
             combos = self.get_exact(exclude_self=deleting)
@@ -266,6 +267,7 @@ class DailyChallenge(models.Model):
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
     
+
 class WebsiteSocial(AbstractModel):
     link = models.URLField()
     
