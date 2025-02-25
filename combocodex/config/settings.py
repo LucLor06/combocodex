@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-from environment_variables import DJANGO_SECRET_KEY, EMAIL_PASSWORD
+from environment_variables import DJANGO_SECRET_KEY, EMAIL_PASSWORD, R2_ACCESS_KEY, R2_ACCOUNT_ID, R2_BUCKET_NAME, R2_SECRET_ACCESS_KEY, R2_DEV_ID
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,7 +70,8 @@ INSTALLED_APPS = [
     'user',
     'template_partials',
     'allauth',
-    'allauth.account'
+    'allauth.account',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -117,6 +118,23 @@ DATABASES = {
     }
 }
 
+STORAGES = {
+    'default': {
+        'BACKEND': 'config.storages.R2DevStorage',
+        'OPTIONS': {
+            'access_key': R2_ACCESS_KEY,
+            'secret_key': R2_SECRET_ACCESS_KEY,
+            'bucket_name': R2_BUCKET_NAME,
+            'endpoint_url': f'https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com',
+            'default_acl': 'public-read',
+            'querystring_auth': False,
+        },
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -160,7 +178,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / 'static/'
 
-MEDIA_URL = '/media/'
+MEDIA_URL = f'https://pub-{R2_DEV_ID}.r2.dev/'
 
 MEDIA_ROOT = BASE_DIR / 'media/'
 
