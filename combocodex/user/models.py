@@ -141,3 +141,12 @@ class UserBackground(AbstractShopItem):
         if user.user_backgrounds.filter(id=self.id).exists():
             user.user_background = self
             user.save()
+
+
+class Mail(models.Model):
+    users = models.ManyToManyField('User', related_name='mail')
+    subject = models.TextField()
+    content = models.TextField()
+    link = models.URLField(blank=True, null=True)
+    created_on = models.DateField(auto_now_add=True)
+    read = models.BooleanField(default=False)
