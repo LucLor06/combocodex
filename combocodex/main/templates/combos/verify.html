@@ -14,7 +14,7 @@ Combos | Verify
         {% if combo %}
         <h3 class="text--center">{{ combos_count }} pending verification</h3>
         {% include 'partials/combo.html' with no_view=True %}
-        <form class="combos-verify__form" hx-post hx-swap="beforebegin" hx-target="main">
+        <form autocomplete="off" class="combos-verify__form" hx-post hx-swap="beforebegin" hx-target="main">
             {% csrf_token %}
             <div class="combos-verify__form--options">
                 <label class="button">
@@ -34,18 +34,58 @@ Combos | Verify
                 </label>
             </div>
             <div class="combos-verify__form--actions">
-                <button name="is_accepted" value="true">
+                <button name="action" value="accept">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
                     <p>Accept</p>
                 </button>
-                <button name="is_accepted" value="all">
+                <button name="action" value="accept_all">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
                     <p>Accept All</p>
                 </button>
-                <button name="is_accepted" class="button--error" value="false">
+                <button type="button" class="button--error" _="
+                on click
+                    remove .hidden from the next .modal
+                end">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                     <p>Reject</p>
                 </button>
+                <div class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="text--center">Reject Combo</h2>
+                            <p>Select reason(s) for rejection</p>
+                        </div>
+                        <div class="modal-main combos-verify__reason">
+                            <label class="button">
+                                <p>Stun not showing</p>
+                                <input type="checkbox" name="reason" value="Stun not showing">
+                            </label>
+                            <label class="button">
+                                <p>Combo is DI-able</p>
+                                <input type="checkbox" name="reason" value="Combo is DI-able">
+                            </label>
+                            <label class="button">
+                                <p>Combo not true</p>
+                                <input type="checkbox" name="reason" value="Combo not true">
+                            </label>
+                            <label class="button">
+                                <p>Poor video quality</p>
+                                <input type="checkbox" name="reason" value="Poor video quality">
+                            </label>
+                            <label class="button">
+                                <p>Too similar/duplicate combo</p>
+                                <input type="checkbox" name="reason" value="Combo is too similar/a duplicate of existing combos">
+                            </label>
+                            <label class="button">
+                                <p>This isn't even Brawlhalla 😭</p>
+                                <input type="checkbox" name="reason" value="This isn't even Brawlhalla 😭">
+                            </label>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="submit" name="action" value="reject">Reject</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
         {% else %}

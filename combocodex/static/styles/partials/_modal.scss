@@ -25,22 +25,26 @@
         .modal-actions {
             margin-top: auto;
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
+
+            button, .button {
+                width: fit-content;
+            }
         }
 
         .modal-main {
-            flex-grow: 1;
             overflow-y: scroll;
             margin-inline: auto;
-            width: 80%;
+            width: clamp(310px, 80%, 1200px);
+            overflow-x: hidden;
         }
     }
 }
 
-.modal-content {
-    height: 100%;
-}
-
 .modal-main.combos {
     width: 95% !important;
+}
+
+.modal--message {
+    z-index: 999;
 }

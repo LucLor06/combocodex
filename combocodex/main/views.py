@@ -9,7 +9,7 @@ def home(request):
     context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user()}
     return render(request, 'home.html', context)
 
-def combos_view(request, pk):
+def combos_increment_view(request, pk):
     combo = Combo.objects.get(pk=pk)
     combo.views += 1
     combo.save()
@@ -39,12 +39,8 @@ def combos_verify(request):
         pass
     context = {'combo': combo, 'combos_count': Combo.objects.unverified().count()}
     if request.method == 'POST':
-        is_accepted = request.POST['is_accepted']
-        if is_accepted == 'all':
-            for combo in Combo.objects.unverified():
-                combo.verify()
-            message = 'All combos verified!'
-        elif is_accepted == 'true':
+        action = request.POST.get('action', 'accept')
+        if action == 'accept':
             is_outdated = bool(request.POST.get('is_outdated', False))
             is_map_specific = bool(request.POST.get('is_map_specific', False))
             is_alternate_gamemode = bool(request.POST.get('is_alternate_gamemode', False))
@@ -54,9 +50,14 @@ def combos_verify(request):
             combo.save()
             combo.verify()
             message = 'Combo verified!'
-        else:
-            combo.delete()
+        elif action == 'accept_all':
+            for combo in Combo.objects.unverified():
+                combo.verify()
+            message = 'All combos verified!'
+        elif action == 'reject':
             message = 'Combo rejected.'
+            reasoning = '. '.join(request.POST.getlist('reason')) + '.' if 'reason' in request.POST else None
+            combo.reject(reasoning)
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/verify.html', context)
 
@@ -108,3 +109,18 @@ def requests_submit(request):
             return render(request, 'requests/found.html', context)
     context = {'legends': Legend.objects.all()}
     return render(request, 'requests/submit.html', context)
+
+
+@staff_member_required
+def requests_delete(request, pk):
+    combo_request = Request.objects.get(pk=pk)
+    if combo_request.user:
+        from user.models import Mail
+        reasoning = '. '.join(request.POST.getlist('reason')) + '.' if 'reason' in request.POST else None
+        mail_content = f'Your request {combo_request.legend_one.name} ({combo_request.weapon_one.name}) {combo_request.legend_two.name} ({combo_request.weapon_two.name}) has been deleted.'
+        if reasoning:
+            mail_content += f' The following reason(s) were provided: {reasoning}'
+        mail = Mail.objects.create(subject='Request Deleted', type='bad', content=mail_content)
+        mail.users.add(combo_request.user)
+    combo_request.delete()
+    return HttpResponse(status=200)

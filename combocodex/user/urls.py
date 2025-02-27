@@ -8,5 +8,6 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('search/', views.search, name='search'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
+    path('mail/', views.mail, name='mail'),
     path('profile/<pk>/', views.profile, name='profile'),
 ]

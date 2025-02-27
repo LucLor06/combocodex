@@ -56,10 +56,6 @@ p {
     a {
         margin: 0;
     }
-
-    & + p {
-        margin-top: 1rem;
-    }
 }
 
 b {
@@ -117,6 +113,10 @@ a {
 
 .text--xxs {
     font-size: $font-size-xxs;
+}
+
+hr {
+    border: solid 1px var(--color-secondary);
 }
 
 .tooltip {

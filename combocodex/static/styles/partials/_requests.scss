@@ -17,8 +17,9 @@
     flex-direction: column;
     align-items: center;
     padding: .5rem;
+    position: relative;
 
-    p {
+    & > p {
         margin: 0;
     }
 
@@ -42,5 +43,16 @@
 
     .tooltip {
         max-width: 100%;
+    }
+}
+
+.request__delete {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    svg {
+        width: $size-icon-xxs;
+        height: $size-icon-xxs;
     }
 }

@@ -1,4 +1,4 @@
-<div class="combo"{% if not no_view %} hx-trigger="comboviewed" hx-post="{% url 'combos-view' combo.pk %}" hx-swap="none" _="
+<div class="combo"{% if not no_view %} hx-trigger="comboviewed" hx-post="{% url 'combos-increment-view' combo.pk %}" hx-swap="none" _="
 init
     set element viewed to false
 end

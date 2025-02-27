@@ -83,19 +83,6 @@ class ComboManager(models.Manager):
         combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
         combo.users.set(users)
         combo.guests.set(guests)
-        try:
-            daily_challenge = DailyChallenge.objects.get(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one))
-            if daily_challenge.created_on == combo.created_on:
-                combo.daily_challenge = daily_challenge
-                combo.save()
-        except DailyChallenge.DoesNotExist:
-            pass
-        try:
-           request = Request.objects.get(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one))
-           request.combo = combo
-           request.save()
-        except Request.DoesNotExist:
-            pass
         if is_verified:
             combo = combo.verify()
         return combo
@@ -146,7 +133,6 @@ class ComboManager(models.Manager):
         return combinations
     
     
-
 class Combo(models.Model):
     CODEX_COINS = 5
     is_verified = models.BooleanField(default=False)
@@ -176,14 +162,42 @@ class Combo(models.Model):
 
     def verify(self):
         if not self.is_verified:
+            from user.models import Mail
             self.is_verified = True
             self.save()
             self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
+            self.update_spreadsheet()
+            mail = Mail.objects.create(subject='Combo Verified', type='good', content=f'Your combo {self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name}) has been verified.', link=self.get_absolute_url())
+            mail.users.set(self.users.all())
+            try:
+                request = Request.objects.get(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one)).exclude(user__in=self.users.all())
+                request.complete(self)
+            except Request.DoesNotExist:
+                pass
+            try:
+                daily_challenge = DailyChallenge.objects.get(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
+                if daily_challenge.created_on == self.created_on:
+                    self.daily_challenge = daily_challenge
+                    self.users.update(codex_coins=F('codex_coins') + DailyChallenge.CODEX_COINS)
+            except DailyChallenge.DoesNotExist:
+                pass
+            self.save()
             for user in self.users.all():
                 user.check_trusted()
-            self.update_spreadsheet()
         return self
     
+    def reject(self, reasoning=None):
+        if not self.is_verified:
+            from user.models import Mail
+            mail_content = f'Your combo {self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name}) has been rejected.'
+            if reasoning:
+                mail_content += f' The following reason(s) were provided: {reasoning}'
+            mail = Mail.objects.create(subject='Combo Rejected', type='bad', content=mail_content)
+            mail.users.set(self.users.all())
+            self.delete()
+            return True
+        return False
+
     def get_similar(self):
         return Combo.objects.select_weapons_legends().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
 
@@ -203,7 +217,6 @@ class Combo(models.Model):
             combo_count = combos.count()
             combo_percent = round((combo_count / Combo.objects.count()) * 100, 2)
             for cell_id in [cell_id_one, cell_id_two]:
-                print(cell_id)
                 cell = spreadsheet_soup.find(id=cell_id)
                 if combo_count > 0:
                     cell['style'] = 'background-color: green;'
@@ -255,6 +268,16 @@ class Request(models.Model):
     def display_name(self):
         return 'Guest' if not self.user else self.user.username
     
+    def complete(self, combo):
+        self.combo = combo
+        if self.user:
+            from user.models import Mail
+            mail = Mail.objects.create(subject='Request Completed', type='good', content=f'Your request for {combo.legend_one.name} ({combo.weapon_one.name}) {combo.legend_two.name} ({combo.weapon_two.name}) has been completed!', link=combo.get_absolute_url())
+            mail.users.add(self.user)
+            self.user.codex_coins += Request.CODEX_COINS
+            self.user.save()
+        self.save()
+        return self
     
 class DailyChallenge(models.Model):
     CODEX_COINS = 10

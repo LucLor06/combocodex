@@ -144,9 +144,17 @@ class UserBackground(AbstractShopItem):
 
 
 class Mail(models.Model):
-    users = models.ManyToManyField('User', related_name='mail')
+    users = models.ManyToManyField('User', blank=True, related_name='mail')
+    TYPE_CHOICES = [
+        ('good', 'Good'),
+        ('bad', 'Bad')
+    ]
+    type = models.CharField(max_length=8, choices=TYPE_CHOICES, default='good')
     subject = models.TextField()
     content = models.TextField()
-    link = models.URLField(blank=True, null=True)
+    link = models.CharField(blank=True, null=True, max_length=64)
     created_on = models.DateField(auto_now_add=True)
     read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-id']

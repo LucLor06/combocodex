@@ -64,7 +64,10 @@ Combos | Submit
             </div>
             {% endfor %}
         </div>
-        <form class="submit-search-form" id="combos-submit" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin">
+        <form class="submit-search-form" id="combos-submit" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin" _="
+        on submit
+            add .disabled to #submit-button
+        end">
             {% csrf_token %}
             <div>
                 <h3 class="text--center">Legends/Weapons</h3>

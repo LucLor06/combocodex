@@ -72,6 +72,17 @@ def settings(request):
                 return redirect('account_email_verification_sent')     
     return render(request, 'account/settings.html', {'errors': errors})
 
+@login_required
+def mail(request):
+    show = request.GET.get('show', 'unread')
+    mail = request.user.mail.all()
+    if show == 'unread':
+        mail = mail.filter(read=False)
+    mailbox = list(mail)
+    mail.update(read=True)
+    context = {'mailbox': mailbox}
+    return render(request, 'mail.html', context)
+
 def profile(request, pk):
     from main.models import Legend, Weapon, Request, DailyChallenge
     user = get_object_or_404(User, pk=pk)
