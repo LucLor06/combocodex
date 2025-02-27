@@ -18,27 +18,28 @@
     display: block;
     position: relative;
     border: solid 2px var(--color-secondary);
-    border-radius: 2rem;
+    border-radius: 1rem;
     overflow-y: hidden;
     margin-inline: auto;
     width: clamp(320px, 60%, 1200px);
+    overflow-x: visible;
+    overflow-y: clip;
 
     video {
         display: block;
         width: 100%;
-        border-radius: 2rem;
+        border-radius: 1rem;
     }
 
     .combo-data {
-        padding: 1rem 1rem 1rem 1rem;
+        padding: .5rem;
         background-color: rgba(0, 0, 0, .95);
         display: flex;
-        gap: .5rem;
         position: absolute;
         width: 100%;
         bottom: 0;
-        border-bottom-right-radius: 2rem;
-        border-bottom-left-radius: 2rem;
+        border-bottom-right-radius: 1rem;
+        border-bottom-left-radius: 1rem;
         transition: transform 250ms;
 
         p {
@@ -49,31 +50,30 @@
             margin: 0;
         }
 
-        & > * {
-            flex: 1;
-        }
-
         .combo-data__pairs {
+            width: 50%;
             display: flex;
-            gap: 2rem;
+            gap: 2vw;
             align-items: center;
 
             .combo-data__pair {
                 display: flex;
-                width: clamp(4rem, 50%, 8rem);
+                width: 50%;
 
                 img {
                     flex: 1;
-                    width: 100%;
+                    width: 50%;
                 }
             }
         }
 
         .combo-data__info {
+            width: fit-content;
             display: flex;
             flex-direction: column;
             gap: .25rem;
             align-items: flex-end;
+            margin-left: auto;
 
             & > div {
                 user-select: none;

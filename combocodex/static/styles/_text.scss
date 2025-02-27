@@ -1,9 +1,9 @@
 $font-size-xl: clamp(48px, 5vw, 96px);
-$font-size-lg: clamp(32px, 3vw, 64px);
-$font-size-md: clamp(16px, 1.5vw, 36px);
-$font-size-sm: clamp(12px, 1.25vw, 28px);
-$font-size-xs: clamp(10px, 1vw, 20px);
-$font-size-xxs: clamp(10px, .75vw, 18px);
+$font-size-lg: clamp(40px, 3vw, 64px);
+$font-size-md: clamp(20px, 1.5vw, 36px);
+$font-size-sm: clamp(16px, 1.25vw, 28px);
+$font-size-xs: clamp(12px, 1vw, 20px);
+$font-size-xxs: clamp(12px, .75vw, 18px);
 
 @font-face {
     font-family: 'BebasNeue';
