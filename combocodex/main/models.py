@@ -1,11 +1,14 @@
 from django.db import models
 from django.utils.text import slugify
 from django.db.models import F, Q
-from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.urls import reverse
-from bs4 import BeautifulSoup
 from config.settings import BASE_DIR
+from secrets import token_urlsafe
+import io
+from PIL import Image
+import imageio
+from django.core.files.base import ContentFile
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
@@ -50,7 +53,13 @@ class Guest(models.Model):
 
 def combo_video_upload_to(instance, filename):
     ext = filename.split('.')[-1]
-    return f'combos/{instance.legend_one.slug}_{instance.weapon_one.slug}|{instance.legend_two.slug}_{instance.weapon_two.slug}.{ext}'
+    token = token_urlsafe(6)
+    return f'combos/videos/{instance.legend_one.slug}-{instance.weapon_one.slug}-{instance.legend_two.slug}-{instance.weapon_two.slug}-{token}.{ext}'
+
+def combo_post_upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    token = token_urlsafe(6)
+    return f'combos/posters/{instance.legend_one.slug}-{instance.weapon_one.slug}-{instance.legend_two.slug}-{instance.weapon_two.slug}-{token}.{ext}'
 
 class ComboManager(models.Manager):
     def select_weapons_legends(self):
@@ -80,7 +89,13 @@ class ComboManager(models.Manager):
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
         video = files.get('video')
-        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video)
+        video_bytes = io.BytesIO(video.read())
+        video_bytes.seek(0)
+        frame = imageio.get_reader(video_bytes, format="mp4").get_next_data()
+        image = io.BytesIO()
+        Image.fromarray(frame).save(image, format='JPEG', optimize=True, quality=25)
+        poster = ContentFile(image.getvalue(), name='temp.jpg')
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, poster=poster)
         combo.users.set(users)
         combo.guests.set(guests)
         if is_verified:
@@ -147,6 +162,7 @@ class Combo(models.Model):
     users = models.ManyToManyField('user.User', blank=True, related_name='combos')
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
     video = models.FileField(upload_to=combo_video_upload_to)
+    poster = models.ImageField(upload_to=combo_post_upload_to)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL)
     views = models.PositiveIntegerField(default=0)
     objects = ComboManager()
@@ -158,7 +174,7 @@ class Combo(models.Model):
         return reverse('combos-combo', kwargs={'pk': self.pk})
 
     def __str__(self):
-        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
+        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})' 
 
     def verify(self):
         if not self.is_verified:

@@ -24,12 +24,8 @@ def combos_submit(request):
         users = User.objects.filter(username__icontains=request.GET['filter_users'])
         return render(request, 'combos/submit.html#users', {'users': users})
     if request.method == 'POST':
-        print(request.FILES)
-        try:
-            Combo.objects.create_from_post(request.POST, request.FILES, request.user)
-            message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
-        except:
-            message = 'An error occured. Try again later. If the issue persists reach out on our discord!'
+        Combo.objects.create_from_post(request.POST, request.FILES, request.user)
+        message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/submit.html', context)
 
