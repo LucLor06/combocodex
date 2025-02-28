@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Help
+{% endblock title %}
+
+{% block header %}
+<h1>Help</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <p>Jump to</p>
+        <div>
+            <a href="#general">General</a>
+        </div>
+        <div>
+            <a href="#terminology">Terminology</a>
+        </div>
+    </div>
+</section>
+<h2 class="text--header" id="general">General</h2>
+<section>
+    <div class="section-content">
+        <div>
+            <h3>What is a team combo?</h3>
+            <p>A team combo is simply a true combo that involves two or more players that kills starting at zero damage. Some may argue a team combo does not need to kill starting from zero, but that falls more under the term of a "followup" than a full team combo.</p>
+        </div>
+        <div>
+            <h3>Notating team combos</h3>
+            <p>While there are many different ways people have come up to notate team combos, the most simple is generally using ">" to indicate a weapon switch and stating the weapon/legend that starts the combo.</p>
+            <p>A Kaya (Spear) Asuri (Sword) combo would be notated as follows:</p>
+            <p>Sword nlight > nlight > dlight sair > dsig > dsig > dlight sair > gc nsig</p>
+            <p>It is common to not include movement within the combo notation, on the other hand gravity cancels are commonly notated.</p>
+        </div>
+    </div>
+</section>
+<h2 class="text--header" id="terminology">Terminology</h2>
+<section>
+    <div class="section-content">
+        <div>
+            <h3>True</h3>
+            <p>There are no dodge frames (the opponent cannot dodge) between two or more consecutive moves.</p>
+        </div>
+        <div>
+            <h3>Directional Influence (DI)</h3>
+            <p>When two of the same moves on the same weapon hit in a true combo, the opponent can use directional influence to move out of the combo despite it being theoretically inescapable. Different variations of moves (e.g. slight fused/split on Chakram or slight bridge/start on Greatsword) still count towards DI. For more detailed information <a href="https://www.youtube.com/watch?app=desktop&v=ked4XmAqDkI&t=0s&ab_channel=Swirft">watch this great video by Swirft</a>.</p>
+        </div>
+    </div>
+</section>
+{% endblock content %}

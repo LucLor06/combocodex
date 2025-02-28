@@ -46,10 +46,17 @@
     }
 }
 
-.request__delete {
+.request__actions {
     position: absolute;
     top: 0;
     right: 0;
+    display: flex;
+    gap: .25rem;
+    align-items: center;
+
+    & > * {
+        cursor: pointer;
+    }
 
     svg {
         width: $size-icon-xxs;

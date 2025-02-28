@@ -13,37 +13,44 @@
     {% if request.notes %}
     <p class="tooltip">{{ request.notes }}</p>
     {% endif %}
-    {% if include_deletion and request.user.is_staff %}
-    <div class="request__delete" _="
-    on click
-        remove .hidden from the next .modal    
-    end">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
-    </div>
-    <form class="modal hidden" hx-post="{% url 'requests-delete' request.pk %}" hx-target="closest .request" hx-swap="outerHTML">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="text--center">Delete Request</h2>
-                <p>Select reason(s) for deletion</p>
-            </div>
-            <div class="modal-main combos-verify__rejection">
-                <label class="button">
-                    <p>Notes too silly</p>
-                    <input type="checkbox" name="reason" value="Notes too silly">
-                </label>
-                <label class="button">
-                    <p>The combos for this are already great</p>
-                    <input type="checkbox" name="reason" value="The combos for this are already great">
-                </label>
-                <label class="button">
-                    <p>We're not gonna do this</p>
-                    <input type="checkbox" name="reason" value="We're not gonna do this">
-                </label>
-            </div>
-            <div class="modal-actions">
-                <button type="submit">Delete</button>
-            </div>
+    <div class="request__actions">
+        {% if request.combo %}
+        <a href="{{ request.combo.get_absolute_url }}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>  
+        </a>
+        {% endif %}
+        {% if include_deletion and request.user.is_staff %}
+        <div _="
+        on click
+            remove .hidden from the next .modal    
+        end">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
         </div>
-    </form>
-    {% endif %}
+        <form class="modal hidden" hx-post="{% url 'requests-delete' request.pk %}" hx-target="closest .request" hx-swap="outerHTML">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="text--center">Delete Request</h2>
+                    <p>Select reason(s) for deletion</p>
+                </div>
+                <div class="modal-main combos-verify__rejection">
+                    <label class="button">
+                        <p>Notes too silly</p>
+                        <input type="checkbox" name="reason" value="Notes too silly">
+                    </label>
+                    <label class="button">z
+                        <p>The combos for this are already great</p>
+                        <input type="checkbox" name="reason" value="The combos for this are already great">
+                    </label>
+                    <label class="button">
+                        <p>We're not gonna do this</p>
+                        <input type="checkbox" name="reason" value="We're not gonna do this">
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit">Delete</button>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+    </div>
 </div>

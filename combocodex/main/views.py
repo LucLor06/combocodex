@@ -9,6 +9,9 @@ def home(request):
     context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user()}
     return render(request, 'home.html', context)
 
+def help(request):
+    return render(request, 'help.html')
+
 def combos_increment_view(request, pk):
     combo = Combo.objects.get(pk=pk)
     combo.views += 1
