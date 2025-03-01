@@ -27,12 +27,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
         </div>
         <form class="modal hidden" hx-post="{% url 'requests-delete' request.pk %}" hx-target="closest .request" hx-swap="outerHTML">
-            <div class="modal-content">
-                <div class="modal-header">
+            <div class="modal__content">
+                <div class="modal__header">
                     <h2 class="text--center">Delete Request</h2>
                     <p>Select reason(s) for deletion</p>
                 </div>
-                <div class="modal-main combos-verify__rejection">
+                <div class="modal__main combos-verify__rejection">
                     <label class="button">
                         <p>Notes too silly</p>
                         <input type="checkbox" name="reason" value="Notes too silly">
@@ -46,7 +46,7 @@
                         <input type="checkbox" name="reason" value="We're not gonna do this">
                     </label>
                 </div>
-                <div class="modal-actions">
+                <div class="modal__actions">
                     <button type="submit">Delete</button>
                 </div>
             </div>

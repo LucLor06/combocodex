@@ -10,6 +10,41 @@ Combos | Submit
 {% endblock header %}
 
 {% block content %}
+<div class="modal {% if read_rules %}hidden{% endif %}">
+    <div class="modal__content">
+        <div class="modal__header">
+            <h2 class="text--center">Rules</h2>
+        </div>
+        <div class="modal__main">
+            <p>Combos must be done in Brawlhaven, Demon Island or Shipwreck</p>
+            <p>Combo must start with 0 damage</p>
+            <p>Must not be DI-Able (exception if DI is on the final move)</p>
+            <p>Combo must be completely true</p>
+            <p>Stun must be visible in the video</p>
+            <p>Combos must start with a grounded light attack, they can't be started with signature, aerial, gravity cancel or weapon throw</p>
+            <p>Bot must start grounded</p>
+            <p>Combos cannot start with unarmed unless it is an unarmed combo</p>
+            <p>Make sure your video is trimmed to include the start and end of the combo</p>
+            <p>Combo must kill in stun</p>       
+            <p>Combos must be done in Brawlhaven, Demon Island or Shipwreck</p>
+            <p>Combo must start with 0 damage</p>
+            <p>Must not be DI-Able (exception if DI is on the final move)</p>
+            <p>Combo must be completely true</p>
+            <p>Stun must be visible in the video</p>
+            <p>Combos must start with a grounded light attack, they can't be started with signature, aerial, gravity cancel or weapon throw</p>
+            <p>Bot must start grounded</p>
+            <p>Combos cannot start with unarmed unless it is an unarmed combo</p>
+            <p>Make sure your video is trimmed to include the start and end of the combo</p>
+            <p>Combo must kill in stun</p>              
+        </div>
+        <div class="modal__actions">
+            <button _="
+            on click
+                add .hidden to the closest .modal
+            end">Done</button>
+        </div>
+    </div>
+</div>
 <section>
     <script type="text/hyperscript">
         init
@@ -45,7 +80,10 @@ Combos | Submit
         end
     </script>
     <div class="section-content">
-        <p>Press a Legend/Weapon pair to add it to your combo. Order does not matter.</p>
+        <p>Press a Legend/Weapon pair to add it to your combo. Order does not matter. Ensure you follow <a _="
+        on click
+            remove .hidden from the previous .modal
+        end">the rules</a>.</p>
         <div class="legends">
             {% for legend in legends %}
             <div class="pair-container">
@@ -200,16 +238,16 @@ Combos | Submit
             <p>Submit</p>
         </button>
         <div class="modal hidden">
-            <div class="modal-content">
+            <div class="modal__content">
                 <div class="hs-template user-selected">
                     <p class="text--center"></p>  
                     <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                     <input name="user" type="hidden">
                 </div>
-                <div class="modal-header">
+                <div class="modal__header">
                     <h2 class="text--center">Select Users</h2>
                     <p>Search for users and press them to add them, or add the search as a guest.</p>
-                    <input autocomplete="off" type="search" placeholder="Search users" name="filter_users" hx-get hx-trigger="searchfilled" hx-target="next .modal-main" _="
+                    <input autocomplete="off" type="search" placeholder="Search users" name="filter_users" hx-get hx-trigger="searchfilled" hx-target="next .modal__main" _="
                     on input
                         if my.value.length > 2
                             wait 200ms
@@ -219,7 +257,7 @@ Combos | Submit
                             add .hidden to .guest-button
                     end">
                 </div>
-                <div class="modal-main user-select">
+                <div class="modal__main user-select">
                     {% partialdef users %}
                     {% for user in users %}
                     <div _="install UserAdd(addAsGuest: false)"><p class="{{ user.user_color.css_class }}">{{ user.username }}</p></div>
@@ -231,7 +269,7 @@ Combos | Submit
                     </button>
                     {% endpartialdef %}
                 </div>
-                <div class="modal-actions">
+                <div class="modal__actions">
                     <button type="button" _="
                     on click
                         add .hidden to the closest .modal

@@ -23,6 +23,11 @@
         on keyup[key is 'Escape'] from document
             add .hidden to .modal
         end
+        on click from .modal
+            if event.target matches .modal
+                add .hidden to event.target
+            end
+        end
     </script>
 </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>

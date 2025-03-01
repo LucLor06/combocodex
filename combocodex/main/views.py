@@ -2,7 +2,7 @@ from django.shortcuts import render
 from user.models import User
 from main.models import Combo, WebsiteSocial, DailyChallenge, Legend, Weapon, Request
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
 
 def home(request):
@@ -19,7 +19,10 @@ def combos_increment_view(request, pk):
     return HttpResponse('')
 
 def combos_submit(request):
-    context = {'legends': Legend.objects.prefetch_related('weapons')}
+    read_rules = request.session.get('read_rules', False)
+    if not read_rules:
+        request.session['read_rules'] = True
+    context = {'legends': Legend.objects.prefetch_related('weapons'), 'read_rules': read_rules}
     if 'filter_users' in request.GET:
         users = User.objects.filter(username__icontains=request.GET['filter_users'])
         return render(request, 'combos/submit.html#users', {'users': users})

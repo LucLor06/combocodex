@@ -2,7 +2,8 @@
     display: flex;
     flex-flow: row wrap;
     gap: .5rem;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
 
     & > div {
         cursor: pointer;
