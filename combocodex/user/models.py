@@ -15,6 +15,7 @@ class User(AbstractUser):
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
     user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
+    favorite_combos = models.ManyToManyField('main.Combo', blank=True, related_name='favorite_users')
 
     def get_absolute_url(self):
         return reverse('profile', kwargs={'pk': self.pk})

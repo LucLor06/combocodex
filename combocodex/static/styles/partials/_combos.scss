@@ -100,3 +100,21 @@
         }
     }
 }
+
+.combo-favorite {
+    cursor: pointer;
+    margin: 0;
+
+    .combo-favorite--unfavorite {
+        display: none;
+    }
+
+    &:has(input:checked) {
+        .combo-favorite--unfavorite {
+            display: block;
+        }
+        .combo-favorite--favorite {
+            display: none;
+        }
+    }
+}

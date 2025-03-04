@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from user.models import User
 from main.models import Combo, WebsiteSocial, DailyChallenge, Legend, Weapon, Request
 from django.db.models import Q
 from django.http import HttpResponse, HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user()}
@@ -17,6 +18,16 @@ def combos_increment_view(request, pk):
     combo.views += 1
     combo.save()
     return HttpResponse('')
+
+@login_required
+def combos_favorite(request, pk):
+    combo = get_object_or_404(Combo, pk=pk)
+    if 'favorite' in request.POST:
+        request.user.favorite_combos.add(combo)
+    else:
+        request.user.favorite_combos.remove(combo)
+    return HttpResponse(status=200)
+
 
 def combos_submit(request):
     read_rules = request.session.get('read_rules', False)

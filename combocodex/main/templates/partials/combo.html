@@ -54,6 +54,19 @@ end"{% endif %}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg>
                     <p class="text--xs text--tertriary views">{{ combo.views }}</p>
                 </div>
+                {% if request.user.is_authenticated %}
+                <label class="combo-favorite">
+                    <div class="combo-favorite--favorite">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg>
+                        <p class="tooltip">Favorite</p>
+                    </div>
+                    <div class="combo-favorite--unfavorite">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m233-120 65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Z"/></svg>
+                        <p class="tooltip">Unfavorite</p>
+                    </div>
+                    <input autocomplete="off" name="favorite" value="{{ combo.pk }}" hx-post="{% url 'combos-favorite' combo.pk %}" hx-swap="none" hx-trigger="change" type="checkbox"{% if combo in request.user.favorite_combos.all %} checked{% endif %}>
+                </label>
+                {% endif %}
             </div>
             <div class="combo-data__users">
                 {% for user in combo.users.all %}

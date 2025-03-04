@@ -108,6 +108,10 @@ def profile(request, pk):
             daily_challenges = DailyChallenge.objects.all()
             context.update({'daily_challenges': daily_challenges, 'daily_challenges_percent': round((user.daily_challenges.count() / daily_challenges.count()) * 100, 2)})
             return render(request, 'profile/challenges.html', context)
+        elif view == 'favorites':
+            favorites = user.favorite_combos.all()
+            context.update({'combos': favorites})
+            return render(request, 'profile/favorites.html', context)
     else:
         context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
     return render(request, 'profile/profile.html', context)

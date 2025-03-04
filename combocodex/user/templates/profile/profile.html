@@ -50,6 +50,12 @@
         Items
         <input name="view" type="radio" value="items">
     </label>
+    {% if user.favorite_combos.exists %}
+    <label>
+        Favorites
+        <input name="view" type="radio" value="favorites">
+    </label>
+    {% endif %}
 </form>
 <div id="accounts-profile__content">
     {% include 'profile/general.html' %}
