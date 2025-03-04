@@ -23,7 +23,7 @@
     justify-content: center;
     position: relative;
 
-    .legend-weapon__pair {
+    .legend-weapon__pair, & > div {
         box-sizing: content-box;
         border: solid 2px var(--color-secondary);
         background-color: $color-base;

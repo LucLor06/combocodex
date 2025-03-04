@@ -125,7 +125,7 @@ def search(request):
     page = paginator.get_page(page_number)
     users = page.object_list
     context = {'users': users, 'page': page, 'user_count': user_count}
-    return render(request, 'search.html', context)
+    return render(request, 'user-search.html', context)
 
 def leaderboard(request):
     ordering = request.GET.get('order_by', '-total')

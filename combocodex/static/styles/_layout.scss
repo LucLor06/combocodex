@@ -27,6 +27,7 @@ main {
     & > :last-child:is(section) {
         flex-grow: 1;
     }
+    
     & > :last-child:is(div) {
         flex-grow: 1;
         display: flex;

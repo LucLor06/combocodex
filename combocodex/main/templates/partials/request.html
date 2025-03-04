@@ -1,5 +1,5 @@
 <div class="request">
-    <p class="text--center text--xs">Requested by {% if request.user %}<a class="{{ request.user.user_color.css_class }}">{{ request.user.username }}</a>{% else %}Guest{% endif %}</p>
+    <p class="text--center text--xs">Requested by {% if request.user %}<a class="{{ request.user.user_color.css_class }}" href="{{ request.user.get_absolute_url }}">{{ request.user.username }}</a>{% else %}Guest{% endif %}</p>
     <div class="request__pairs">
         <div class="request__pair">
             <img src="{{ request.legend_one.icon }}">

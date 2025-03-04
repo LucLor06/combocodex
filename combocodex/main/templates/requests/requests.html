@@ -11,7 +11,7 @@ Requests | Requests
 {% block content %}
 <section>
     <div class="section-content">
-        <p>View requests made by others. Submit your own requests <a>here</a>.</p>
+        <p>View requests made by others. Submit your own requests <a href="{% url 'requests-submit' %}">here</a>.</p>
         <div class="requests">
             {% for request in requests %}
             {% include 'partials/request.html' with include_deletion=True %}

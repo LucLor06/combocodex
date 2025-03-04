@@ -23,6 +23,9 @@
         on keyup[key is 'Escape'] from document
             add .hidden to .modal
         end
+        on keydown[key is 'Enter'] from <input/>
+            halt the event
+        end
         on click from .modal
             if event.target matches .modal
                 add .hidden to event.target

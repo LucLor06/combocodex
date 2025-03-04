@@ -16,8 +16,8 @@
             </div>
             <div class="home-info__description">
                 <p>ComboCodex is the place for team combo enthusiasts!</p>
-                <p><b>Looking for combos?</b> Try <a>searching for combos</a>, <a>requesting combos</a>, or <a>using the spreadsheet</a>!</p>
-                <p><b>Want to get involved?</b> <a>Sign up</a>, <a>submit combos</a>, and check out some of our socials below!</p>
+                <p><b>Looking for combos?</b> Try <a href="{% url 'combos-search' %}">searching for combos</a>, <a href="{% url 'requests-submit' %}">requesting combos</a>, or <a href="{% url 'combos-spreadsheet' %}">using the spreadsheet</a>!</p>
+                <p><b>Want to get involved?</b> <a href="{% url 'account_signup' %}">Sign up</a>, <a href="{% url 'combos-submit' %}">submit combos</a>, and check out some of our socials below!</p>
                 <div class="home-info__socials socials">
                     {% for social in socials %}
                     {% include 'partials/social.html' %}
@@ -36,7 +36,7 @@
             </div>
             <div>
                 <h3 class="text--center">Weekly User</h3>
-                <a class="home__weekly-user text--center text--lg {{ weekly_user.user_color.css_class }}">{{ weekly_user.username }}</a>
+                <a class="home__weekly-user text--center text--lg {{ weekly_user.user_color.css_class }}" href="{{ weekly_user.get_absolute_url }}">{{ weekly_user.username }}</a>
             </div>
         </div>
     </div>
