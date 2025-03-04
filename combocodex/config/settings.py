@@ -73,7 +73,8 @@ INSTALLED_APPS = [
     'template_partials',
     'allauth',
     'allauth.account',
-    'storages'
+    'storages',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
