@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from django.urls import reverse
 
 class User(AbstractUser):
+    discord_id = models.BigIntegerField(blank=True, null=True, unique=True)
     is_trusted = models.BooleanField(default=False)
     codex_coins = models.PositiveIntegerField(default=0)
     user_color = models.ForeignKey('UserColor', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
