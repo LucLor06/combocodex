@@ -27,6 +27,7 @@
             margin-top: auto;
             display: flex;
             justify-content: center;
+            gap: 1rem;
 
             button, .button {
                 width: 80%;
@@ -42,16 +43,21 @@
             margin-inline: auto;
             width: clamp(310px, 90%, 1200px);
             overflow-x: hidden;
-            
-            p {
-                margin-block: 1.5rem;
-            }
+        }
+
+        textarea {
+            width: 80%;
+            margin-inline: auto;
         }
     }
 }
 
 .modal__main.combos {
     width: 95% !important;
+
+    .combo {
+        width: 100%;
+    }
 }
 
 .modal-message {

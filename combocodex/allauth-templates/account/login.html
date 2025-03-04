@@ -46,7 +46,7 @@ Login
                 <h3>Password</h3>
                 <input required name="password" type="password" minlength="8" maxlength="25" _="
                 on input
-                    if my.value.length > 8
+                    if my.value.length > 3
                         set global passwordValid to true
                     else
                         set global passwordValid to false
@@ -67,7 +67,7 @@ Login
                 <p>Login</p>
             </button>
         </form>
-        <a class="text--xs" href="{% url 'account_signup' %}">Sign Up</a>
+        <a class="text--xs" href="{% url 'account_signup' %}">Register</a>
         <a class="text--xs" href="{% url 'account_reset_password' %}">Reset Password</a>
         <a class="text--xs" href="{% url 'email-resend' %}">Resend Email Verification</a>
     </div>

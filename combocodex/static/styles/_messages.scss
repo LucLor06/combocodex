@@ -1,0 +1,47 @@
+@keyframes messages {
+    0%, 100% {
+        transform: translateY(110%);
+        opacity: 0;
+    }
+
+    25%, 75% {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+.messages {
+    position: fixed;
+    bottom: .5rem;
+    right: .5rem;
+    animation: messages 5s forwards;
+    z-index: 999;
+
+    & > div {
+        width: fit-content;
+        background-color: $color-base;
+        border-radius: .5rem;
+        border: solid 2px $color-text;
+        padding: .25rem .5rem;
+
+        p {
+            text-align: center;
+        }
+
+        &.success {
+            border-color: $color-success;
+
+            p {
+                color: $color-success;
+            }
+        }
+
+        &.error {
+            border-color: $color-error;
+
+            p {
+                color: $color-error;
+            }
+        }
+    }
+}

@@ -46,6 +46,8 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username'
 
 LOGIN_REDIRECT_URL = 'home'
 
+LOGIN_URL = '/login/'
+
 # Email
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

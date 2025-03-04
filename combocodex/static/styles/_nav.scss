@@ -64,8 +64,8 @@ nav {
         margin: 0;
         z-index: 3;
         display: block;
-        width: clamp(24px, 2.25vw, 48px);
-        height: clamp(24px, 2.25vw, 48px);
+        width: $size-icon-xs;
+        height: $size-icon-xs;
 
         svg {
             opacity: 0.75;
@@ -84,7 +84,7 @@ nav {
 }
 
 .nav__main {
-    margin-top: 2rem;
+    margin-top: 2vw;
 
     hr {
         margin: .5rem auto;

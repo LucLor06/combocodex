@@ -7,6 +7,7 @@ $color-text: #ffffff;
     --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
 }
 
+$color-success: #91db69;
 $color-error: #b33831;
 
 $size-icon-md: clamp(3rem, 4vw, 6rem);

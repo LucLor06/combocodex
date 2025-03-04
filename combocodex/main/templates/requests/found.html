@@ -1,26 +1,26 @@
 <div class="modal">
-    <form class="modal-content" autocomplete="off" hx-post hx-include="#requests-submit">
-        <div class="modal-header">
+    <form class="modal__content" autocomplete="off" hx-post hx-include="#requests-submit">
+        <div class="modal__header">
             <p>We found {{ count }} combos that already exist for your request! If you still want to request, please let us know why the existing combos do not work for you!</p>
         </div>
-        <div class="modal-main combos">
+        <div class="modal__main combos">
             {% for combo in combos %}
             {% include 'partials/combo.html' %}
             {% endfor %}
-            <textarea name="notes" rows="3" placeholder="Please tell us why these combos don't work for you!" _="
-            init
+        </div>
+        <textarea name="notes" rows="3" placeholder="Please tell us why these combos don't work for you!" _="
+        init
+            set global textFilled to false
+        end
+        on input
+            if my.value.length >= 5
+                set global textFilled to true
+            else
                 set global textFilled to false
             end
-            on input
-                if my.value.length >= 5
-                    set global textFilled to true
-                else
-                    set global textFilled to false
-                end
-                trigger validationchanged on the next <button[type='submit']/>
-            end">{{ notes }}</textarea>
-        </div>
-        <div class="modal-actions">
+            trigger validationchanged on the next <button[type='submit']/>
+        end">{{ notes }}</textarea>
+        <div class="modal__actions">
             <button class="button--secondary" type="button" _="
             on click
                 location.reload()
