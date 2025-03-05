@@ -1,6 +1,6 @@
 from rest_framework.generics import ListAPIView
-from main.models import Combo
-from .serializers import ComboSerailizer
+from main.models import Combo, Legend, Weapon
+from .serializers import ComboSerailizer, LegendSerializer, WeaponSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
@@ -14,7 +14,17 @@ class ComboListView(ListAPIView):
         weapons = self.request.query_params.getlist('weapon', [])
         combos, count = Combo.objects.search(legends, weapons, paginate=False)
         return combos
+
+
+class LegendListView(ListAPIView):
+    queryset = Legend.objects.all()
+    serializer_class = LegendSerializer 
     
+
+class WeaponListView(ListAPIView):
+    queryset = Weapon.objects.all()
+    serializer_class = WeaponSerializer
+
 @api_view(['POST'])
 def api_user_link(request):
     username = request.POST.get('username')

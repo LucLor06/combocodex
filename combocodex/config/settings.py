@@ -75,7 +75,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'storages',
     'rest_framework',
-    'api'
+    'api',
 ]
 
 MIDDLEWARE = [
