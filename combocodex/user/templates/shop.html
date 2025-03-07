@@ -9,16 +9,19 @@ Shop
 {% endblock header %}
 
 {% block content %}
-<form id="accounts-shop__form" hx-post hx-select="#accounts-shop__form">
+<form id="accounts-shop__form" hx-post hx-select="#accounts-shop__form" hx-swap="outerHTML">
     <section>
         <div class="section-content">
             <p>Purchase items using codex coins. Items can be applied in your inventory <a href="{% url 'inventory' %}">here</a>.</p>
+            {% if not user_colors.exists and not user_themes.exists and not user_backgrounds.exists %}
+            <h3 class="text--center">You have purchased all items in the shop. Congrats.</h3>
+            {% endif %}
         </div>
     </section>
+    {% if user_colors.exists %}
     <h2 class="text--header">User Colors</h2>
     <section>
         <div class="section-content">
-            {% if user_colors %}
             <p>User colors change the way your name appears to others.</p>
             <div class="user-colors">
                 {% for user_color in user_colors %}
@@ -32,15 +35,13 @@ Shop
                 </div>
                 {% endfor %}
             </div>
-            {% else %}
-            <p>You have purchased all the user colors!</p>
-            {% endif %}
         </div>
     </section>
+    {% endif %}
+    {% if user_themes.exists %}
     <h2 class="text--header">User Themes</h2>
     <section>
         <div class="section-content">
-            {% if user_themes %}
             <p>User themes change the way the site looks for you!</p>
             <div class="user-themes">
                 {% for user_theme in user_themes %}
@@ -54,15 +55,13 @@ Shop
                 </div>
                 {% endfor %}
             </div>
-            {% else %}
-            <p>You have purchased all the user themes!</p>
-            {% endif %}
         </div>
     </section>
+    {% endif %}
+    {% if user_backgrounds.exists %}
     <h2 class="text--header">User Backgrounds</h2>
     <section>
         <div class="section-content">
-            {% if user_backgrounds %}
             <p>User backgrounds change the what the background of the site looks like for you!</p>
             <div class="user-backgrounds">
                 {% for user_background in user_backgrounds %}
@@ -76,10 +75,8 @@ Shop
                 </div>
                 {% endfor %}
             </div>
-            {% else %}
-            <p>You have purchased all the user background!</p>
-            {% endif %}
         </div>
     </section>
+    {% endif %}
 </form>
 {% endblock content %}

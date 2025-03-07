@@ -35,7 +35,7 @@
 </head>
     <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         {% if request.user.is_authenticated %}
-        <style>
+        <style id="user-styling" hx-swap-oob="outerHTML">
             :root {
                 --color-primary: {{ request.user.user_theme.primary_color }};
                 --color-secondary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
@@ -48,7 +48,10 @@
         {% endif %}
         {% include 'navigation.html' %}
         <header>{% block header %}{% endblock header %}</header>
-        <main>{% block content %}{% endblock content %}</main>
+        <main>
+            {% block content %}
+            {% endblock content %}
+        </main>
         <div id="messages" class="messages" hx-swap-oob="outerHTML">
             {% for message in messages %}
               <div {% if message.tags %} class="{{ message.tags }}"{% endif %}>

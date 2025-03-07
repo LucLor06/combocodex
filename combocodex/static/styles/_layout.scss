@@ -24,11 +24,11 @@ main {
     display: flex;
     flex-direction: column;
 
-    & > :last-child:is(section) {
+    & > :last-child:is(section, form) {
         flex-grow: 1;
     }
     
-    & > :last-child:is(div) {
+    & > :last-child:is(div, form) {
         flex-grow: 1;
         display: flex;
         flex-direction: column;

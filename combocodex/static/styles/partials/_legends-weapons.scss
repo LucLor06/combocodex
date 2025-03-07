@@ -72,7 +72,7 @@
 
     .weapon {
         display: block;
-        width: $size-icon-sm;
+        width: $size-icon-xs;
         opacity: .5;
         transition: opacity 100ms, scale 100ms;
         cursor: pointer;
@@ -87,7 +87,7 @@
         opacity: 1;
         scale: 1.05;
         
-        &> .weapons {
+        & > .weapons {
             pointer-events: all;
             opacity: 1;
         }

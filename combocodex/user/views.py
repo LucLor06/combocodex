@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.contrib import messages
 
 def email_resend(request):
     if request.method == "POST":
@@ -32,12 +33,17 @@ def shop(request):
         if 'user_color' in request.POST:
             user_color = UserColor.objects.get(id=request.POST['user_color'])
             user_color.purchase(request.user)
+            item = user_color
         elif 'user_theme' in request.POST:
             user_theme = UserTheme.objects.get(id=request.POST['user_theme'])
             user_theme.purchase(request.user)
+            item = user_theme
         elif 'user_background' in request.POST:
             user_background = UserBackground.objects.get(id=request.POST['user_background'])
             user_background.purchase(request.user)
+            item = user_background
+        if item:
+            messages.add_message(request, messages.SUCCESS, f'Purchased {item.name}')
     context = {'user_colors': UserColor.objects.exclude(users=request.user), 'user_themes': UserTheme.objects.exclude(users=request.user), 'user_backgrounds': UserBackground.objects.exclude(users=request.user)}
     return render(request, 'shop.html', context)
 
@@ -47,13 +53,21 @@ def inventory(request):
     if request.POST:
         if 'user_color' in request.POST:
             user_color = UserColor.objects.get(id=request.POST['user_color'])
+            previous_item = request.user.user_color
             user_color.set(request.user)
+            item = user_color
         elif 'user_theme' in request.POST:
             user_theme = UserTheme.objects.get(id=request.POST['user_theme'])
+            previous_item = request.user.user_theme
             user_theme.set(request.user)
+            item = user_theme
         elif 'user_background' in request.POST:
             user_background = UserBackground.objects.get(id=request.POST['user_background'])
+            previous_item = request.user.user_background
             user_background.set(request.user)
+            item = user_background
+        if item:
+            messages.add_message(request, messages.SUCCESS, f'Changed from {previous_item.name} to {item.name}')
     return render(request, 'inventory.html', context)
 
 @login_required

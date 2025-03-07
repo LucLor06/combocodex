@@ -12,8 +12,12 @@ Inventory
 <section>
     <div class="section-content">
         <p>Click on an item to apply it. Items can be bought in the shop <a href="{% url 'shop' %}">here</a>.</p>
+        {% if not user_colors.exists and not user_themes.exists and not user_background.exists %}
+        <h3 class="text--center">You have no items!</h3>
+        {% endif %}
     </div>
 </section>
+{% if user_colors.exists %}
 <h2 class="text--header">User Colors</h2>
 <section>
     <div class="section-content">
@@ -21,13 +25,15 @@ Inventory
             {% for user_color in user_colors %}
             <label class="user-color">
                 <img src="{{ user_color.icon }}">
-                <input type="radio" name="user_color" value="{{ user_color.id }}" hx-post hx-swap="none" hx-trigger="change"{% if user_color == user.user_color %} checked{% endif %}>
+                <input autocomplete="off" type="radio" name="user_color" value="{{ user_color.id }}" hx-post hx-swap="none" hx-trigger="change"{% if user_color == user.user_color %} checked{% endif %}>
                 <p class="tooltip">{{ user_color.name }}</p>
             </label>
             {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
+{% if user_themes.exists %}
 <h2 class="text--header">User Themes</h2>
 <section>
     <div class="section-content">
@@ -35,13 +41,15 @@ Inventory
             {% for user_theme in user_themes %}
             <label class="user-theme">
                 <img src="{{ user_theme.icon }}">
-                <input type="radio" name="user_theme" value="{{ user_theme.id }}" hx-post hx-target="body" hx-trigger="change"{% if user_theme == user.user_theme %} checked{% endif %}>
+                <input autocomplete="off" type="radio" name="user_theme" value="{{ user_theme.id }}" hx-post hx-swap="none" hx-trigger="change"{% if user_theme == user.user_theme %} checked{% endif %}>
                 <p class="tooltip">{{ user_theme.name }}</p>
             </label>
             {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
+{% if user_backgrounds.exists %}
 <h2 class="text--header">User Backgrounds</h2>
 <section>
     <div class="section-content">
@@ -49,11 +57,12 @@ Inventory
             {% for user_background in user_backgrounds %}
             <label class="user-background">
                 <img src="{{ user_background.image }}">
-                <input type="radio" name="user_background" value="{{ user_background.id }}" hx-post hx-target="body" hx-trigger="change"{% if user_background == user.user_background %} checked{% endif %}>
+                <input autocomplete="off" type="radio" name="user_background" value="{{ user_background.id }}" hx-post hx-swap="none" hx-select="body" hx-trigger="change"{% if user_background == user.user_background %} checked{% endif %}>
                 <p class="tooltip">{{ user_background.name }}</p>
             </label>
             {% endfor %}
         </div>
     </div>
 </section>
+{% endif %}
 {% endblock content %}
