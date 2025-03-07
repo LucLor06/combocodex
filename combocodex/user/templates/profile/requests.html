@@ -29,7 +29,7 @@
             {% endfor %}
         </div>
         {% endif %}
-        {% if user.requests_completed.exists %}
+        {% if user.completed_requests.exists %}
         <h2>Requests Completed</h2>
         <h3 class="text--secondary">{{ user.completed_requests.count }}/{{ requests.count }} | {{ completed_requests_percent }}%</h3>
         {% if user.completed_requests.count > 5 %}

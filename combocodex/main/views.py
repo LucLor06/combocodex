@@ -114,7 +114,8 @@ def requests_submit(request):
             return render(request, 'partials/modal-message.html', {'message': message})
         combos, count = Combo.objects.search(legends, weapons, paginate=False)
         if 'confirmation' in request.POST or not combos.exists():
-            Request.objects.create_from_post(request.POST, request.user)
+            user = request.user if type(request.user) == User else None
+            Request.objects.create_from_post(request.POST, user)
             message = 'Request submitted!'
             return render(request, 'partials/modal-message.html', {'message': message})
         if combos.exists():

@@ -54,6 +54,10 @@
     gap: .25rem;
     align-items: center;
 
+    a {
+        margin: 0;
+    }
+
     & > * {
         cursor: pointer;
     }

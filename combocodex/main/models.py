@@ -71,14 +71,15 @@ class ComboManager(models.Manager):
     def unverified(self):
         return self.select_weapons_legends().filter(is_verified=False)
     
-    def create_from_post(self, post, files, submitter=None):
+    def create_from_post(self, post, files, submitter=None, **kwargs):
         from user.models import User
         users = []
         guests = []
+        usernames = post.getlist('user') if not kwargs.get('users') else kwargs.get('users')
         is_verified = False
         if submitter and submitter.is_authenticated:
             is_verified = submitter.is_trusted
-        for username in post.getlist('user'):
+        for username in usernames:
             try:
                 users.append(User.objects.get(username=username))
             except User.DoesNotExist:
@@ -111,8 +112,9 @@ class ComboManager(models.Manager):
                 user = User.objects.get(username__iexact=username)
                 combos = combos.filter(users=user)
             except User.DoesNotExist:
-                guest = Guest.objects.get_or_create(username__iexact=username)
-                combos = combos.filter(guests=guest)
+                if username != '':
+                    guest = Guest.objects.get_or_create(username__iexact=username)
+                    combos = combos.filter(guests=guest)
         if len(legends) == 2 and legends[0] == legends[1]:
             combos = combos.filter(Q(legend_one=legends[0], legend_two=legends[0]))
         else:
@@ -186,7 +188,7 @@ class Combo(models.Model):
             mail = Mail.objects.create(subject='Combo Verified', type='good', content=f'Your combo {self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name}) has been verified.', link=self.get_absolute_url())
             mail.users.set(self.users.all())
             try:
-                request = Request.objects.get(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one)).exclude(user__in=self.users.all())
+                request = Request.objects.incomplete().get(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
                 request.complete(self)
             except Request.DoesNotExist:
                 pass
@@ -243,8 +245,6 @@ class Combo(models.Model):
                     del cell['href']
                 cell_count = cell.find(id=f'{cell_id}__combo-count')
                 cell_count.string = f'{combo_count} combos'
-                cell_percent = cell.find(id=f'{cell_id}__combo-percent')
-                cell_percent.string = f'{combo_percent}'
             with open(str(BASE_DIR / 'main/templates/combos/rendered_sheet.html'), 'w') as sheet:
                 sheet.write(spreadsheet_soup.prettify())
 
