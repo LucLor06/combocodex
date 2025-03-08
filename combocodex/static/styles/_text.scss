@@ -92,7 +92,10 @@ a {
 .text--header {
     color: white;
     text-align: center;
-    margin-block: 1rem;
+    padding-block: 1rem;
+    background-color: $color-base;
+
+    margin: 0;
 }
 
 .text--lg {

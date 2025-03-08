@@ -11,9 +11,8 @@ User Search
 {% block content %}
 <section>
     <div class="section-content">
-        <p>Search for users via username</p>
         <form class="accounts-search__form" id="accounts-search__form" hx-get hx-target="#accounts-search__target" hx-select="#accounts-search__target" hx-trigger="input from:input delay:250ms" hx-swap="outerHTML">
-            <input type="text" name="user">
+            <input type="text" name="user" placeholder="Username">
         </form>
     </div>
 </section>

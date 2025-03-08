@@ -18,7 +18,7 @@
                 <h3 class="text--center">{{ user.date_joined.date }}</h3>
             </div>
             <div>
-                <h2 class="text--center">{{ user.combos.count }}</h2>
+                <h2 class="text--center">{{ user.combos.verified.count }}</h2>
                 <p class="text--sm text--center">Combo{{ user.combos.count|pluralize }} in the Codex</p>
                 <a href="{% url 'combos-search' %}?user={{ user.username }}#combos" class="text--xs text--center">See all</a>
             </div>

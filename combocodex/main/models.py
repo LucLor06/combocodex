@@ -217,7 +217,7 @@ class Combo(models.Model):
         return False
 
     def get_similar(self):
-        return Combo.objects.select_weapons_legends().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
+        return Combo.objects.verified().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
 
     def get_exact(self, exclude_self=False):
         combos = Combo.objects.verified().filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
