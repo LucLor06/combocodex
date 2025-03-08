@@ -15,7 +15,7 @@ def user_post_save(sender, instance: User, created, **kwargs):
         instance.check_trusted()
         classic_theme = UserTheme.objects.get(name='Classic')
         instance.user_themes.add(classic_theme)
-        instance.user_theme = classic_theme
+        classic_theme.set(instance)
         classic_background = UserBackground.objects.get(name='Classic')
         instance.user_backgrounds.add(classic_background)
         instance.user_background = classic_background

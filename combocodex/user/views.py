@@ -49,7 +49,12 @@ def shop(request):
 
 @login_required
 def inventory(request):
-    context = {'user_colors': request.user.user_colors.all(), 'user_themes': request.user.user_themes.all(), 'user_backgrounds': request.user.user_backgrounds.all()}
+    context = {'user_colors': request.user.user_colors.all(), 'user_themes': request.user.user_themes.exclude(name='Custom'), 'user_backgrounds': request.user.user_backgrounds.all()}
+    try:
+        custom_theme = request.user.user_themes.get(name='Custom')
+        context['custom_theme'] = custom_theme
+    except UserTheme.DoesNotExist:
+        pass
     if request.POST:
         if 'user_color' in request.POST:
             user_color = UserColor.objects.get(id=request.POST['user_color'])
@@ -61,6 +66,12 @@ def inventory(request):
             previous_item = request.user.user_theme
             user_theme.set(request.user)
             item = user_theme
+        elif 'custom_theme' in request.POST:
+            previous_item = request.user.user_theme
+            request.user.user_theme = context['custom_theme']
+            request.user.theme_color = request.POST['custom_theme']
+            item = context['custom_theme']
+            request.user.save()
         elif 'user_background' in request.POST:
             user_background = UserBackground.objects.get(id=request.POST['user_background'])
             previous_item = request.user.user_background

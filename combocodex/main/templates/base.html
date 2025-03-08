@@ -37,7 +37,7 @@
         {% if request.user.is_authenticated %}
         <style id="user-styling" hx-swap-oob="outerHTML">
             :root {
-                --color-primary: {{ request.user.user_theme.primary_color }};
+                --color-primary: {{ request.user.theme_color }};
                 --color-secondary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
                 --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
             }

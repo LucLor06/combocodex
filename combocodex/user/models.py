@@ -13,6 +13,7 @@ class User(AbstractUser):
     user_color = models.ForeignKey('UserColor', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_colors = models.ManyToManyField('UserColor', blank=True, related_name='users')
     user_theme = models.ForeignKey('UserTheme', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
+    theme_color = models.CharField(max_length=7, default='#239063')
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
     user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
@@ -126,6 +127,7 @@ class UserTheme(AbstractShopItem):
     def set(self, user):
         if user.user_themes.filter(id=self.id).exists():
             user.user_theme = self
+            user.theme_color = self.primary_color
             user.save()
 
 

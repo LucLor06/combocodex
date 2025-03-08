@@ -45,9 +45,35 @@ Inventory
                 <p class="tooltip">{{ user_theme.name }}</p>
             </label>
             {% endfor %}
+            {% if custom_theme %}
+            <label class="user-theme" _="
+            on click
+                remove .hidden from the next .modal
+            end">
+                <img src="{{ custom_theme.icon }}">
+                <input autocomplete="off" type="radio" name="user_theme" value="{{ custom_theme.id }}"{% if custom_theme == user.user_theme %} checked{% endif %}>
+                <p class="tooltip">{{ custom_theme.name }}</p>
+            </label>
+            {% endif %}
         </div>
     </div>
 </section>
+<div class="modal hidden">
+    <div class="modal__content">
+        <div class="modal__header">
+            <p>Select a custom theme color</p>
+        </div>
+        <div class="modal__main">
+            <input type="color" value="{{ user.theme_color }}" name="custom_theme" hx-post hx-swap="none" hx-trigger="change">
+        </div>
+        <div class="modal__actions">
+            <button _="
+            on click
+                add .hidden to the closest .modal
+            end">Done</button>
+        </div>
+    </div>
+</div>
 {% endif %}
 {% if user_backgrounds.exists %}
 <h2 class="text--header">User Backgrounds</h2>
