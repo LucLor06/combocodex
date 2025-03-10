@@ -5,9 +5,10 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 def home(request):
-    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('-id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user()}
+    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user(), 'today_combo_count': Combo.objects.filter(created_on=datetime.today()).count()}
     return render(request, 'home.html', context)
 
 def help(request):
@@ -121,7 +122,7 @@ def requests_submit(request):
         if combos.exists():
             context = {'combos': combos, 'count': count, 'notes': request.POST.get('notes')}
             return render(request, 'requests/found.html', context)
-    context = {'legends': Legend.objects.all()}
+    context = {'legends': Legend.objects.exclude(name='Universal')}
     return render(request, 'requests/submit.html', context)
 
 

@@ -9,6 +9,9 @@ import io
 from PIL import Image
 import imageio
 from django.core.files.base import ContentFile
+from datetime import datetime
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
@@ -156,7 +159,7 @@ class Combo(models.Model):
     is_outdated = models.BooleanField(default=False)
     is_map_specific = models.BooleanField(default=False)
     is_alternate_gamemode = models.BooleanField(default=False)
-    created_on = models.DateField(auto_now_add=True)
+    created_on = models.DateField(default=datetime.today)
     legend_one = models.ForeignKey('Legend', related_name='combos_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='combos_two', on_delete=models.CASCADE)
@@ -164,7 +167,7 @@ class Combo(models.Model):
     users = models.ManyToManyField('user.User', blank=True, related_name='combos')
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
     video = models.FileField(upload_to=combo_video_upload_to)
-    poster = models.ImageField(upload_to=combo_post_upload_to)
+    poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL)
     views = models.PositiveIntegerField(default=0)
     objects = ComboManager()
@@ -248,7 +251,6 @@ class Combo(models.Model):
             with open(str(BASE_DIR / 'main/templates/combos/rendered_sheet.html'), 'w') as sheet:
                 sheet.write(spreadsheet_soup.prettify())
 
-
 class RequestManager(models.Manager):
     def complete(self):
         return self.filter(combo__isnull=False)
@@ -270,7 +272,7 @@ class Request(models.Model):
     CODEX_COINS = 5
     combo = models.OneToOneField('Combo', blank=True, null=True, related_name='request', on_delete=models.CASCADE)
     user = models.ForeignKey('user.User', blank=True, null=True, related_name='requests', on_delete=models.CASCADE)
-    created_on = models.DateField(auto_now_add=True)
+    created_on = models.DateField(default=datetime.today)
     legend_one = models.ForeignKey('Legend', related_name='requests_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='requests_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='requests_two', on_delete=models.CASCADE)
@@ -297,7 +299,7 @@ class Request(models.Model):
     
 class DailyChallenge(models.Model):
     CODEX_COINS = 10
-    created_on = models.DateField(auto_now_add=True)
+    created_on = models.DateField(default=datetime.today)
     legend_one = models.ForeignKey('Legend', related_name='daily_challenges_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='daily_challenges_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='daily_challenges_two', on_delete=models.CASCADE)

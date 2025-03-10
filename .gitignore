@@ -9,3 +9,9 @@ combocodex/media
 .env
 
 combocodex/main/templates/combos/rendered_sheet.html
+
+import_data.py
+
+data.json
+
+db.sqlite3

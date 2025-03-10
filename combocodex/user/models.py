@@ -5,6 +5,7 @@ from django.db.models import Prefetch, Q, Count, F
 from django.utils.text import slugify
 from datetime import datetime, timedelta
 from django.urls import reverse
+from allauth.account.models import EmailAddress
 
 class User(AbstractUser):
     discord_id = models.BigIntegerField(blank=True, null=True, unique=True)
@@ -45,19 +46,27 @@ class User(AbstractUser):
 
     @cached_property
     def legends(self):
-        from main.models import Legend, Combo
-        return Legend.objects.prefetch_related(
-            Prefetch('combos_one', queryset=Combo.objects.prefetch_related('users')),
-            Prefetch('combos_two', queryset=Combo.objects.prefetch_related('users'))
-        ).filter(Q(combos_one__users=self) | Q(combos_two__users=self)).distinct()
-    
+        from main.models import Legend
+        legend_count = Legend.objects.count()
+        legends = set()
+        for combo in self.combos.select_related('legend_one', 'legend_two').filter(users=self):
+            legends.update([combo.legend_one.id, combo.legend_two.id])
+            if len(legends) == legend_count:
+                break
+        return Legend.objects.filter(id__in=legends)
+
     @cached_property
     def weapons(self):
-        from main.models import Weapon, Combo
-        return Weapon.objects.prefetch_related(
-            Prefetch('combos_one', queryset=Combo.objects.prefetch_related('users')),
-            Prefetch('combos_two', queryset=Combo.objects.prefetch_related('users'))
-        ).filter(Q(combos_one__users=self) | Q(combos_two__users=self)).distinct()
+        from main.models import Weapon
+        weapon_count = Weapon.objects.count()
+        weapons = set()
+        for combo in self.combos.select_related('weapon_one', 'weapon_two').filter(users=self):
+            weapons.update([combo.weapon_one.id, combo.weapon_two.id])
+            if len(weapons) == weapon_count:
+                break
+        return Weapon.objects.filter(id__in=weapons)
+
+
     
     @cached_property
     def daily_challenges(self):
@@ -68,6 +77,10 @@ class User(AbstractUser):
     def completed_requests(self):
         from main.models import Request
         return Request.objects.select_related('combo').filter(combo__users=self)
+    
+    @cached_property
+    def email_address(self):
+        return EmailAddress.objects.filter(user=self, primary=True).first()
     
     @classmethod
     def weekly_user(cls):

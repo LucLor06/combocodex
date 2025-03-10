@@ -13,7 +13,7 @@ Settings
     <div class="section-content">
         <div>
             <h3>Email</h3>
-            <p>Your email is currently "{{ user.email }}"</p>
+            <p>Your email is currently "{{ user.email_address.email }}"</p>
             <p>If you'd like to change your email please use the form below. Note you will have to verify the new email.</p>
             {% if errors %}
             <div>
@@ -54,7 +54,7 @@ Settings
             <p>You can begin resetting your password by pressing the button below</p>
             <form method="post" action="{% url 'account_reset_password' %}" class="accounts-settings-password__form">
                 {% csrf_token %}
-                <button type="submit" name="email" value="{{ user.email }}">
+                <button type="submit" name="email" value="{{ user.email_address.email }}">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
                     <p>Reset Password</p>
                 </button>

@@ -70,10 +70,10 @@ end"{% endif %}>
             </div>
             <div class="combo-data__users">
                 {% for user in combo.users.all %}
-                <a class="text--sm {{ user.user_color.css_class }}" href="{{ user.get_absolute_url }}">{{ user.username }}</a>
+                <a class="text--xs {{ user.user_color.css_class }}" href="{{ user.get_absolute_url }}">{{ user.username }}</a>
                 {% endfor %}
                 {% for guest in combo.guests.all %}
-                <p class="text--sm">{{ guest.username }}</p>
+                <p class="text--xs">{{ guest.username }}</p>
                 {% endfor %}
             </div>
             <div>
@@ -81,7 +81,7 @@ end"{% endif %}>
             </div>
         </div>
     </div>
-    <video muted playsinline controls src="{{ combo.video.url }}" poster="{{ combo.poster.url }}" _="
+    <video muted playsinline controls src="{{ combo.video.url }}" {% if combo.post %}poster="{{ combo.poster.url }}"{% endif %} _="
     on play
         add .combo-hidden to the previous .combo-data
     end

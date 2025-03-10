@@ -1,5 +1,5 @@
 {% if page.has_other_pages %}
-<form class="pagination" hx-get hx-target="{{ target }}" hx-swap="outerHTML" hx-select="{{ target }}" hx-include="{{ form }}">
+<form class="pagination" hx-get="{{ request.path }}" hx-target="{{ target }}" hx-swap="outerHTML" hx-select="{{ target }}" hx-include="{{ form }}">
     <button {% if not page.has_previous %}class="disabled"{% endif %} name="page" value="1">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M240-240v-480h80v480h-80Zm440 0L440-480l240-240 56 56-184 184 184 184-56 56Z"/></svg>
         <p class="tooltip">First page</p>

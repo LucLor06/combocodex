@@ -21,6 +21,9 @@
 .user-color--orange {
     @include gradient-text(#F58219)
 }
+.user-color--classic {
+    @include gradient-text(#239063)
+}
 .user-color--purple {
     @include gradient-text(#874CD0, #7767E9)
 }
