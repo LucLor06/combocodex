@@ -111,6 +111,7 @@ class ComboManager(models.Manager):
         from user.models import User
         paginate = kwargs.pop('paginate', True)
         combos = self.verified() if not show_unverified else self.all()
+        users = [user.strip() for user in users if user]
         for username in users:
             try:
                 user = User.objects.get(username__iexact=username)
