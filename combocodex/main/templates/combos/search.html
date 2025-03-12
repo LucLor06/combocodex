@@ -95,7 +95,7 @@ Combos | Search
             </div>
             {% endfor %}
         </div>
-        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-select="#combos-search__found">
+        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found">
             <div>
                 <p class="text--center text--xs text--secondary">Click/tap items to remove</p>
                 <div class="legend-weapon__pairs">
@@ -276,6 +276,7 @@ Combos | Search
                     </div>
                 </div>
             </div>
+            <input type="hidden" name="action" value="search">
             <button type="submit" class="combos-search__submit">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                 <svg class="loader" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_HIK5{transform-origin:center;animation:spinner_XVY9 1s cubic-bezier(0.36,.6,.31,1) infinite}@keyframes spinner_XVY9{50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}</style><circle cx="12" cy="12" r="3"/><g class="spinner_HIK5"><circle cx="4" cy="12" r="3"/><circle cx="20" cy="12" r="3"/></g></svg>
@@ -325,6 +326,7 @@ Combos | Search
     </div>
 </section>
 <div id="combos-search__found">
+    {% partialdef combos %}
     <h2 class="text--header">{% if combos %}{{ count }} Combo{{ combos|pluralize }} Found{% else %}No combos found {% endif %}</h2>
     <section id="combos-search__section">
         {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' %}
@@ -335,5 +337,7 @@ Combos | Search
         </div>
         {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' %}
     </section>
+    {% endpartialdef combos %}
+    {% partial combos %}
 </div>
 {% endblock content %}

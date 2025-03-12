@@ -118,8 +118,8 @@ def combos_search(request):
     users = request.GET.getlist('user', [])
     combos, page, count = Combo.objects.search(legends, weapons, users, order_by, show_unverified, page_number)
     context = {'combos': combos, 'page': page, 'count': count}
-    if len(request.GET) > 0 and 'filter_users' not in request.GET and 'user' not in request.GET:
-        return render(request, 'combos/search.html', context)
+    if request.GET.get('action') == 'search':
+        return render(request, 'combos/search.html#combos', context)
     context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all(), 'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
     return render(request, 'combos/search.html', context)
 
