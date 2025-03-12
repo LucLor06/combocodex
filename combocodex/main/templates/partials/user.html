@@ -1,17 +1,14 @@
 <a class="user" href="{{ user.get_absolute_url }}">
     <div>
-        <h3 class="text--center {{ user.user_color.css_class }}">{{ user.username }}</h3>
+        <p class="text--center {{ user.user_color.css_class }} text--sm">{{ user.username }}</p>
     </div>
     <div>
-        <h3 class="text--center">{{ user.combos.verified.count }}</h3>
-        <p class="text--center text--sm">Combos</p>
+        <p class="text--center">{{ user.combos.verified.count }}</p>
     </div>
     <div>
-        <h3 class="text--center">{{ user.completed_requests.count }}</h3>
-        <p class="text--center text--sm">Requests Completed</p>
+        <p class="text--center">{{ user.completed_requests.count }}</p>
     </div>
     <div>
-        <h3 class="text--center">{{ user.daily_challenges.count }}</h3>
-        <p class="text--center text--sm">Daily Challenges</p>
+        <p class="text--center">{{ user.daily_challenges.count }}</p>
     </div>
 </a>

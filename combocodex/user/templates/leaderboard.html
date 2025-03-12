@@ -21,24 +21,22 @@ Leaderboard
         <p>View the top users in the Codex!</p>
         <p>This is calculated by summing a users combos, requests completed, and daily challenges completed.</p>
         <div class="users">
+            <div class="user users-info">
+                <div>
+                    <h3 class="text--center text--xs">Username</h3>
+                </div>
+                <div>
+                    <h3 class="text--center text--xs">Combos</h3>
+                </div>
+                <div>
+                    <h3 class="text--center text--xs">Requests</h3>
+                </div>
+                <div>
+                    <h3 class="text--center text--xs">Challenges</h3>
+                </div>
+            </div>
             {% for user in users %}
-            <a class="user" href="{{ user.get_absolute_url }}">
-                <div>
-                    <h3 class="text--center {{ user.user_color.css_class }}">{{ user.username }}</h3>
-                </div>
-                <div>
-                    <h3 class="text--center">{{ user.combos.verified.count }}</h3>
-                    <p class="text--center text--sm">Combos</p>
-                </div>
-                <div>
-                    <h3 class="text--center">{{ user.completed_requests.count }}</h3>
-                    <p class="text--center text--sm">Requests Completed</p>
-                </div>
-                <div>
-                    <h3 class="text--center">{{ user.daily_challenges.count }}</h3>
-                    <p class="text--center text--sm">Daily Challenges</p>
-                </div>
-            </a>
+            {% include 'partials/user.html' %}
             {% endfor %}
         </div>
     </div>
