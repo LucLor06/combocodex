@@ -24,11 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['www.combocodex.com']
 
 AUTH_USER_MODEL = 'user.User'
+
+TRUSTED_COMBO_REQUIREMENT = 50
 
 # AllAuth
 
@@ -123,7 +125,7 @@ DATABASES = {
 
 STORAGES = {
     'default': {
-        'BACKEND': 'config.storages.R2DevStorage',
+        'BACKEND': 'config.storages.R2Storage',
         'OPTIONS': {
             'access_key': R2_ACCESS_KEY,
             'secret_key': R2_SECRET_ACCESS_KEY,
@@ -181,7 +183,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / 'static/'
 
-MEDIA_URL = f'https://pub-{R2_DEV_ID}.r2.dev/'
+MEDIA_URL = 'https://media.combocodex.com/'
 
 MEDIA_ROOT = BASE_DIR / 'media/'
 

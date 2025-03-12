@@ -30,14 +30,18 @@
         gap: 2rem;
         align-items: center;
         justify-content: center;
+        width: 100%;
 
         .request__pair {
             display: flex;
             width: clamp(4rem, 50%, 8rem);
+            flex: 1;
+            max-width: 50%;
 
             img {
+                display: block;
                 flex: 1;
-                width: 100%;
+                width: 50%;
             }
         }
     }

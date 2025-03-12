@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from datetime import datetime, timedelta
 from django.urls import reverse
 from allauth.account.models import EmailAddress
+from config.settings import TRUSTED_COMBO_REQUIREMENT
 
 class User(AbstractUser):
     discord_id = models.BigIntegerField(blank=True, null=True, unique=True)
@@ -18,7 +19,7 @@ class User(AbstractUser):
     user_themes = models.ManyToManyField('UserTheme', blank=True, related_name='users')
     user_background = models.ForeignKey('UserBackground', blank=True, null=True, related_name='users_individual', on_delete=models.SET_NULL)
     user_backgrounds = models.ManyToManyField('UserBackground', blank=True, related_name='users')
-    favorite_combos = models.ManyToManyField('main.Combo', blank=True, related_name='favorite_users')
+    favorite_combos = models.ManyToManyField('main.Combo', blank=True, related_name='favorite_users', editable=False)
 
     def get_absolute_url(self):
         return reverse('profile', kwargs={'pk': self.pk})
@@ -26,7 +27,7 @@ class User(AbstractUser):
     def check_trusted(self):
         from main.models import Combo
         if not self.is_trusted:
-            if Combo.objects.verified().filter(users=self).count() >= 10:
+            if Combo.objects.verified().filter(users=self).count() >= TRUSTED_COMBO_REQUIREMENT:
                 self.is_trusted = True
                 self.save()
         return self.is_trusted
@@ -67,21 +68,21 @@ class User(AbstractUser):
         return Weapon.objects.filter(id__in=weapons)
 
 
-    
+
     @cached_property
     def daily_challenges(self):
         from main.models import DailyChallenge
         return DailyChallenge.objects.prefetch_related('combos').filter(combos__users=self).distinct()
-    
+
     @cached_property
     def completed_requests(self):
         from main.models import Request
         return Request.objects.select_related('combo').filter(combo__users=self)
-    
+
     @cached_property
     def email_address(self):
         return EmailAddress.objects.filter(user=self, primary=True).first()
-    
+
     @classmethod
     def weekly_user(cls):
         today = datetime.now().date()
@@ -112,7 +113,7 @@ class UserColor(AbstractShopItem):
 
     def icon(self):
         return f'/static/user_colors/{self.slug}.png'
-    
+
     def purchase(self, user):
         if user.codex_coins >= self.price:
             user.codex_coins -= self.price
@@ -130,7 +131,7 @@ class UserTheme(AbstractShopItem):
 
     def icon(self):
         return f'/static/user_themes/{self.slug}.png'
-    
+
     def purchase(self, user):
         if user.codex_coins >= self.price:
             user.codex_coins -= self.price
@@ -147,13 +148,13 @@ class UserTheme(AbstractShopItem):
 class UserBackground(AbstractShopItem):
     def image(self):
         return f'/static/user_backgrounds/{self.slug}.png'
-    
+
     def purchase(self, user):
         if user.codex_coins >= self.price:
             user.codex_coins -= self.price
             user.user_backgrounds.add(self)
             user.save()
-    
+
     def set(self, user):
         if user.user_backgrounds.filter(id=self.id).exists():
             user.user_background = self

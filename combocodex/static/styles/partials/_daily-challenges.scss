@@ -14,14 +14,18 @@
         gap: 2rem;
         align-items: center;
         justify-content: center;
+        width: 100%;
 
         .daily-challenge__pair {
             display: flex;
             width: clamp(4rem, 50%, 8rem);
+            max-width: 50%;
+            flex: 1;
 
             img {
+                display: block;
                 flex: 1;
-                width: 100%;
+                width: 50%;
             }
         }
     }

@@ -15,6 +15,10 @@ $font-size-xxs: clamp(12px, .75vw, 18px);
     src: url(fonts/Dosis.ttf);
 }
 
+:root {
+    --plyr-font-family: 'Dosis';
+}
+
 h1, h2, h3, h4, h5, p, a, li, sub, input, button, label {
     color: $color-text;
     margin-block: .5rem;
@@ -144,9 +148,9 @@ hr {
     }
 }
 
-*:has(> .tooltip) { 
+*:has(> .tooltip) {
     position: relative;
-    
+
     &:hover > .tooltip, &:focus-visible > .tooltip {
         opacity: 1;
         transition: opacity 250ms 125ms;
@@ -171,7 +175,7 @@ svg {
 
 .icon--error {
     fill: $color-error;
-    
+
     path {
         fill: $color-error;
     }

@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% load tags %}
 
 {% block title %}
 Spreadsheet
 {% endblock title %}
+
+{% block embeds %}
+<meta property="og:image" content="{% static 'logo.png' %}">
+<meta property="og:title" content="ComboCodex | Combo Spreadsheet">
+<meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+{% endblock embeds %}
 
 {% block header %}
 <h1>Spreadsheet</h1>
@@ -13,7 +20,7 @@ Spreadsheet
 {% block content %}
 <section>
     <div class="spreadsheet-content">
-        {% include 'combos/rendered_sheet.html' %}   
+        {% include 'combos/rendered_sheet.html' %}
     </div>
 </section>
 {% endblock %}

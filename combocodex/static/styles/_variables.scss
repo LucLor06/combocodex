@@ -5,6 +5,7 @@ $color-text: #ffffff;
     --color-primary: #239063;
     --color-secondary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
     --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
+    --plyr-color-main: var(--color-secondary);
 }
 
 $color-success: #91db69;

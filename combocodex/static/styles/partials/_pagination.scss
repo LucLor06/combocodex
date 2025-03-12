@@ -1,6 +1,6 @@
 .pagination {
     margin-inline: auto;
-    width: 70%;
+    width: clamp(340px, 70%, 1200px);
     position: relative;
     margin-block: .5rem;
     display: flex;

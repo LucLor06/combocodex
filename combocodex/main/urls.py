@@ -3,6 +3,9 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('robots.txt', views.robots_txt, name='robots-txt'),
+    path('about', views.about, name='about'),
+    path('combos/', views.redirect_combos_search, name='combos-redirect'),
     path('combos/submit/', views.combos_submit, name='combos-submit'),
     path('combos/verify/', views.combos_verify, name='combos-verify'),
     path('combos/search/', views.combos_search, name='combos-search'),

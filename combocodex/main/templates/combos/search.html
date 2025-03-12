@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 {% load partials %}
+{% load static %}
 
 {% block title %}
 Combos | Search
 {% endblock title %}
+
+{% block embeds %}
+<meta property="og:image" content="{% static 'logo.png' %}">
+<meta property="og:title" content="ComboCodex | Search Combos">
+<meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+{% endblock embeds %}
 
 {% block header %}
 <h1>Search Combos</h1>
@@ -181,7 +188,7 @@ Combos | Search
                                 increment global userCount
                                 send usercountchanged to the first <button/> in .form__users
                             end">
-                                <p class="text--center {{ user.user_color.css_class }}">{{ user.username }}</p>  
+                                <p class="text--center {{ user.user_color.css_class }}">{{ user.username }}</p>
                                 <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                                 <input name="user" type="hidden" value="{{ user.username }}">
                             </div>
@@ -277,7 +284,7 @@ Combos | Search
         <div class="modal hidden">
             <div class="modal__content">
                 <div class="hs-template user-selected">
-                    <p class="text--center"></p>  
+                    <p class="text--center"></p>
                     <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                     <input name="user" type="hidden">
                 </div>

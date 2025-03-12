@@ -81,7 +81,10 @@ end"{% endif %}>
             </div>
         </div>
     </div>
-    <video muted playsinline controls src="{{ combo.video.url }}" {% if combo.post %}poster="{{ combo.poster.url }}"{% endif %} _="
+    <video muted playsinline src="{{ combo.video.url }}" {% if combo.poster %}poster="{{ combo.poster.url }}"{% endif %} _="
+    on load
+        make a Plyr from me
+    end
     on play
         add .combo-hidden to the previous .combo-data
     end

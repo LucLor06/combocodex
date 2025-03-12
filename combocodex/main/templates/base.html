@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ComboCodex{% endblock title %}</title>
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta name="theme-color" content="#000000">
+    <meta name="manifest" content='/static/manifest.json'>
     {% block embeds %}
     <meta property="og:image" content="{% static 'logo.png' %}">
     <meta property="og:title" content="ComboCodex">
@@ -15,10 +17,12 @@
     {% endblock embeds %}
     <link rel="icon" type="image/x-icon" href="{% static 'logo.ico' %}">
     {% compress css %}
-    <link rel="stylesheet" type="text/x-scss" href="{% static '/styles/styles.scss' %}">
+    <link rel="stylesheet" type="text/x-scss" href="{% static '/styles/styles.scss' %}?ver=1.1">
     {% endcompress %}
     <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.js" integrity="sha512-vONptKEoKbP1gaC5UkbYDa9OPr04ur4bxaaqT7DAJxGHB2oogtseCPrl5e5hPFokGYotlGNV4d+GM593ka7iNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/plyr/3.7.8/plyr.min.css" integrity="sha512-uPqDOam5vjVgnASE75fCgMtdLa3oK2+3muDU5ESulSImHAA0Z0xjEnuJpKowTsXUWY09MsYre48zgBFwh2P/yw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script type="text/hyperscript">
         on keyup[key is 'Escape'] from document
             add .hidden to .modal
@@ -40,6 +44,7 @@
                 --color-primary: {{ request.user.theme_color }};
                 --color-secondary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
                 --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
+                --plyr-color-main: var(--color-secondary);
             }
             body {
                 background-image: url({{ request.user.user_background.image }});

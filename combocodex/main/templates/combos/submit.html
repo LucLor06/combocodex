@@ -1,9 +1,17 @@
 {% extends 'base.html' %}
 {% load partials %}
+{% load static %}
 
 {% block title %}
 Combos | Submit
 {% endblock title %}
+
+{% block embeds %}
+<meta property="og:image" content="{% static 'logo.png' %}">
+<meta property="og:title" content="ComboCodex | Submit Combos">
+<meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+{% endblock embeds %}
+
 
 {% block header %}
 <h1>Submit Combos</h1>
@@ -25,7 +33,7 @@ Combos | Submit
             <p>Bot must start grounded</p>
             <p>Combos cannot start with unarmed unless it is an unarmed combo</p>
             <p>Make sure your video is trimmed to include the start and end of the combo</p>
-            <p>Combo must kill in stun</p>       
+            <p>Combo must kill in stun</p>
             <p>Combos must be done in Brawlhaven, Demon Island or Shipwreck</p>
             <p>Combo must start with 0 damage</p>
             <p>Must not be DI-Able (exception if DI is on the final move)</p>
@@ -35,7 +43,7 @@ Combos | Submit
             <p>Bot must start grounded</p>
             <p>Combos cannot start with unarmed unless it is an unarmed combo</p>
             <p>Make sure your video is trimmed to include the start and end of the combo</p>
-            <p>Combo must kill in stun</p>              
+            <p>Combo must kill in stun</p>
         </div>
         <div class="modal__actions">
             <button _="
@@ -182,7 +190,7 @@ Combos | Submit
                         increment global userCount
                         send usercountchanged to the first <button/> in .form__users
                     end">
-                        <p class="text--center {{ user.user_color.css_class }}">{{ user.username }}</p>  
+                        <p class="text--center {{ user.user_color.css_class }}">{{ user.username }}</p>
                         <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                         <input name="user" type="hidden" value="{{ user.username }}">
                     </div>
@@ -209,7 +217,7 @@ Combos | Submit
                     <label class="button">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
                         <p>Add Video</p>
-                        <input type="file" name="video" _="
+                        <input type="file" name="video" accept="video/mp4" _="
                         on change
                             if my.files.length > 0
                             set video to my.files[0]
@@ -240,7 +248,7 @@ Combos | Submit
         <div class="modal hidden">
             <div class="modal__content">
                 <div class="hs-template user-selected">
-                    <p class="text--center"></p>  
+                    <p class="text--center"></p>
                     <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="install UserRemove"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                     <input name="user" type="hidden">
                 </div>

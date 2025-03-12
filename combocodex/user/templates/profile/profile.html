@@ -1,9 +1,16 @@
 {% extends 'base.html' %}
 {% load partials %}
+{% load static %}
 
 {% block title %}
 {{ user.username }} | Profile
 {% endblock title %}
+
+{% block embeds %}
+<meta property="og:image" content="{% static 'logo.png' %}">
+<meta property="og:title" content="ComboCodex | {{ user.username }}">
+<meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+{% endblock embeds %}
 
 {% block header %}
 <h1>{{ user.username }}</h1>

@@ -25,10 +25,15 @@
     width: clamp(320px, 60%, 1200px);
     overflow-x: visible;
     overflow-y: clip;
+    aspect-ratio: 16/9;
 
     video {
         display: block;
         width: 100%;
+        border-radius: 1rem;
+    }
+
+    .plyr {
         border-radius: 1rem;
     }
 
@@ -42,6 +47,7 @@
         border-bottom-right-radius: 1rem;
         border-bottom-left-radius: 1rem;
         transition: transform 250ms;
+        z-index: 1;
 
         p {
             margin: 0;

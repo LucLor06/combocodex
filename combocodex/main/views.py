@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from user.models import User
 from main.models import Combo, WebsiteSocial, DailyChallenge, Legend, Weapon, Request
 from django.db.models import Q
+from django.urls import reverse
 from django.http import HttpResponse, HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -14,8 +15,26 @@ def home(request):
 def help(request):
     return render(request, 'help.html')
 
+def about(request):
+    return render(request, 'about.html')
+
+def robots_txt(request):
+    content = """
+    User-agent: *
+    Disallow: /admin/
+    Disallow: /api/
+    Disallow: /login/
+    Disallow: /register/
+    Disallow: /media/
+    Disallow: /combos/
+    Allow: /combos/search/
+    Allow: /combos/submit/
+    Allow: /
+    """
+    return HttpResponse(content, content_type='text/plain')
+
 def combos_increment_view(request, pk):
-    combo = Combo.objects.get(pk=pk)
+    combo = get_object_or_404(Combo, pk=pk)
     combo.views += 1
     combo.save()
     return HttpResponse('')
@@ -39,8 +58,12 @@ def combos_submit(request):
         users = User.objects.filter(username__icontains=request.GET['filter_users'])
         return render(request, 'combos/submit.html#users', {'users': users})
     if request.method == 'POST':
-        Combo.objects.create_from_post(request.POST, request.FILES, request.user)
-        message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
+        video = request.FILES.get('video')
+        if video.size > 25 * 1024 * 1024:
+            message = 'Please make sure your videos are less than 25mb.'
+        else:
+            Combo.objects.create_from_post(request.POST, request.FILES, request.user)
+            message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/submit.html', context)
 
@@ -76,7 +99,7 @@ def combos_verify(request):
     return render(request, 'combos/verify.html', context)
 
 def combos_combo(request, pk):
-    combo = Combo.objects.get(pk=pk)
+    combo = get_object_or_404(Combo, pk=pk)
     context = {'combo': combo, 'similar_combos': combo.get_similar()}
     return render(request, 'combos/combo.html', context)
 
@@ -90,7 +113,7 @@ def combos_search(request):
     page_number = request.GET.get('page', 1)
     weapons = request.GET.getlist('weapon', [])
     legends =  request.GET.getlist('legend', [])
-    order_by = request.GET.get('order_by', '-id') 
+    order_by = request.GET.get('order_by', '-id')
     show_unverified = bool(request.GET.get('show_unverified', False))
     users = request.GET.getlist('user', [])
     combos, page, count = Combo.objects.search(legends, weapons, users, order_by, show_unverified, page_number)
@@ -99,6 +122,9 @@ def combos_search(request):
         return render(request, 'combos/search.html', context)
     context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all(), 'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
     return render(request, 'combos/search.html', context)
+
+def redirect_combos_search(request):
+    return redirect(reverse('combos-search'))
 
 def requests_list(request):
     requests = Request.objects.incomplete()
@@ -128,7 +154,7 @@ def requests_submit(request):
 
 @staff_member_required
 def requests_delete(request, pk):
-    combo_request = Request.objects.get(pk=pk)
+    combo_request = get_object_or_404(Request, pk=pk)
     if combo_request.user:
         from user.models import Mail
         reasoning = '. '.join(request.POST.getlist('reason')) + '.' if 'reason' in request.POST else None

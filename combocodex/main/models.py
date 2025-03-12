@@ -41,10 +41,10 @@ class Legend(AbstractModel):
 
     def icon(self):
         return f'/static/legends/{self.slug}.png'
-    
+
 
 class Guest(models.Model):
-    username = models.CharField(max_length=32)
+    username = models.CharField(max_length=32, unique=True)
 
     def transfer_combos_to_user(self, user):
         from user.models import User
@@ -67,18 +67,19 @@ def combo_post_upload_to(instance, filename):
 class ComboManager(models.Manager):
     def select_weapons_legends(self):
         return self.select_related('legend_one', 'weapon_one', 'legend_two', 'weapon_two')
-    
+
     def verified(self):
         return self.select_weapons_legends().filter(is_verified=True)
 
     def unverified(self):
         return self.select_weapons_legends().filter(is_verified=False)
-    
+
     def create_from_post(self, post, files, submitter=None, **kwargs):
         from user.models import User
         users = []
         guests = []
         usernames = post.getlist('user') if not kwargs.get('users') else kwargs.get('users')
+        usernames = [username for username in usernames if username != '']
         is_verified = False
         if submitter and submitter.is_authenticated:
             is_verified = submitter.is_trusted
@@ -105,7 +106,7 @@ class ComboManager(models.Manager):
         if is_verified:
             combo = combo.verify()
         return combo
-    
+
     def search(self, legends, weapons, users=[], ordering='-id', show_unverified=False, page_number=1, **kwargs):
         from user.models import User
         paginate = kwargs.pop('paginate', True)
@@ -115,9 +116,8 @@ class ComboManager(models.Manager):
                 user = User.objects.get(username__iexact=username)
                 combos = combos.filter(users=user)
             except User.DoesNotExist:
-                if username != '':
-                    guest = Guest.objects.get_or_create(username__iexact=username)
-                    combos = combos.filter(guests=guest)
+                guest = Guest.objects.get(username__iexact=username)
+                combos = combos.filter(guests=guest)
         if len(legends) == 2 and legends[0] == legends[1]:
             combos = combos.filter(Q(legend_one=legends[0], legend_two=legends[0]))
         else:
@@ -135,7 +135,7 @@ class ComboManager(models.Manager):
             return page.object_list, page, combos.count()
         else:
             return combos, combos.count()
-        
+
     def spreadsheet_data(self):
         combinations = {}
         combo_count = self.count()
@@ -151,8 +151,8 @@ class ComboManager(models.Manager):
                         percent = round((count/combo_count) * 100, 2)
                         combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count, 'link': link, 'percent': percent}
         return combinations
-    
-    
+
+
 class Combo(models.Model):
     CODEX_COINS = 5
     is_verified = models.BooleanField(default=False)
@@ -164,8 +164,8 @@ class Combo(models.Model):
     weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='combos_two', on_delete=models.CASCADE)
     weapon_two = models.ForeignKey('Weapon', related_name='combos_two', on_delete=models.CASCADE)
-    users = models.ManyToManyField('user.User', blank=True, related_name='combos')
-    guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
+    users = models.ManyToManyField('user.User', blank=True, related_name='combos', editable=False)
+    guests = models.ManyToManyField('Guest', blank=True, related_name='combos', editable=False)
     video = models.FileField(upload_to=combo_video_upload_to)
     poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL)
@@ -179,7 +179,7 @@ class Combo(models.Model):
         return reverse('combos-combo', kwargs={'pk': self.pk})
 
     def __str__(self):
-        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})' 
+        return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
 
     def verify(self):
         if not self.is_verified:
@@ -196,17 +196,16 @@ class Combo(models.Model):
             except Request.DoesNotExist:
                 pass
             try:
-                daily_challenge = DailyChallenge.objects.get(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
-                if daily_challenge.created_on == self.created_on:
-                    self.daily_challenge = daily_challenge
-                    self.users.update(codex_coins=F('codex_coins') + DailyChallenge.CODEX_COINS)
+                daily_challenge = DailyChallenge.objects.filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one)).get(created_on=self.created_on)
+                self.daily_challenge = daily_challenge
+                self.users.update(codex_coins=F('codex_coins') + DailyChallenge.CODEX_COINS)
             except DailyChallenge.DoesNotExist:
                 pass
             self.save()
             for user in self.users.all():
                 user.check_trusted()
         return self
-    
+
     def reject(self, reasoning=None):
         if not self.is_verified:
             from user.models import Mail
@@ -227,8 +226,14 @@ class Combo(models.Model):
         if exclude_self:
             combos = combos.exclude(id=self.id)
         return combos
-    
+
+    @property
+    def has_universal(self):
+        return 'Universal' in [self.legend_one.name, self.legend_two.name]
+
     def update_spreadsheet(self, deleting=False):
+        if self.has_universal:
+            return
         from .apps import MainConfig
         if not self.is_outdated:
             spreadsheet_soup = MainConfig.get_spreadsheet()
@@ -254,10 +259,10 @@ class Combo(models.Model):
 class RequestManager(models.Manager):
     def complete(self):
         return self.filter(combo__isnull=False)
-    
+
     def incomplete(self):
         return self.filter(combo__isnull=True)
-    
+
     def create_from_post(self, post, submitter):
         legend_one = Legend.objects.get(id=post.get('legend_one'))
         weapon_one = Weapon.objects.get(id=post.get('weapon_one'))
@@ -266,11 +271,11 @@ class RequestManager(models.Manager):
         notes = post.get('notes')
         request = Request.objects.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, notes=notes, user=submitter)
         return request
-    
+
 
 class Request(models.Model):
     CODEX_COINS = 5
-    combo = models.OneToOneField('Combo', blank=True, null=True, related_name='request', on_delete=models.CASCADE)
+    combo = models.OneToOneField('Combo', blank=True, null=True, related_name='request', on_delete=models.CASCADE, editable=False)
     user = models.ForeignKey('user.User', blank=True, null=True, related_name='requests', on_delete=models.CASCADE)
     created_on = models.DateField(default=datetime.today)
     legend_one = models.ForeignKey('Legend', related_name='requests_one', on_delete=models.CASCADE)
@@ -280,12 +285,15 @@ class Request(models.Model):
     notes = models.TextField(blank=True, null=True)
     objects = RequestManager()
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
 
     def display_name(self):
         return 'Guest' if not self.user else self.user.username
-    
+
     def complete(self, combo):
         self.combo = combo
         if self.user:
@@ -296,7 +304,7 @@ class Request(models.Model):
             self.user.save()
         self.save()
         return self
-    
+
 class DailyChallenge(models.Model):
     CODEX_COINS = 10
     created_on = models.DateField(default=datetime.today)
@@ -305,12 +313,15 @@ class DailyChallenge(models.Model):
     legend_two = models.ForeignKey('Legend', related_name='daily_challenges_two', on_delete=models.CASCADE)
     weapon_two = models.ForeignKey('Weapon', related_name='daily_challenges_two', on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['-id']
+
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
-    
+
 
 class WebsiteSocial(AbstractModel):
     link = models.URLField()
-    
+
     def icon(self):
         return f'/static/socials/{self.slug}.png'

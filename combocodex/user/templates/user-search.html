@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
 User Search
 {% endblock title %}
+
+{% block embeds %}
+<meta property="og:image" content="{% static 'logo.png' %}">
+<meta property="og:title" content="ComboCodex | Search Users">
+<meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+{% endblock embeds %}
 
 {% block header %}
 <h1>User Search</h1>
@@ -12,7 +19,7 @@ User Search
 <section>
     <div class="section-content">
         <form class="accounts-search__form" id="accounts-search__form" hx-get hx-target="#accounts-search__target" hx-select="#accounts-search__target" hx-trigger="input from:input delay:250ms" hx-swap="outerHTML">
-            <input type="text" name="user" placeholder="Username">
+            <input autocomplete="off" type="text" name="user" placeholder="Username">
         </form>
     </div>
 </section>

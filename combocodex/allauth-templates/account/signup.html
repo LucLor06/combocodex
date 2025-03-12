@@ -1,8 +1,15 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
 Register
 {% endblock title %}
+
+{% block embeds %}
+<meta property="og:image" content="{% static 'logo.png' %}">
+<meta property="og:title" content="ComboCodex | Register">
+<meta property="og:description" content="ComboCodex is a website where users can shared and view team combos from the platform fighting game Brawlhalla">
+{% endblock embeds %}
 
 {% block header %}
 <h1>Register</h1>
@@ -26,7 +33,7 @@ Register
         {% endif %}
         <form method="post" class="accounts-signup__form" _="
         init
-            set global emailValid to false  
+            set global emailValid to false
             set global usernameValid to false
             set global passwordValid to false
         end">

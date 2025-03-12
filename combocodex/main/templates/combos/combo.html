@@ -4,6 +4,19 @@
 Combos | {{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) | {{ combo.legend_two.name }} ({{ combo.weapon_two.name }})
 {% endblock title %}
 
+{% block embeds %}
+<meta property="og:title" content="{{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) {{ combo.legend_two.name }} ({{ combo.weapon_two.name }})"/>
+<meta property="og:description" content="Created on: {{ combo.created_on }} | Views: {{ combo.views }}">
+<meta property="og:url" content="https://www.combocodex.com/combos/{{ combo.pk }}/"/>
+<meta property="og:video:url" content="{{ combo.video.url }}"/>
+<meta property="og:video:type" content=video/mp4>
+<meta property="og:type" content="video">
+<meta property="og:video:secure_url" content="{{ combo.video.url }}">
+<meta property="og:video:height" content="720">
+<meta property="og:video:width" content="1280">
+{% endblock embeds %}
+
+
 {% block header %}
 <h1>Combo Viewer</h1>
 {% endblock header %}

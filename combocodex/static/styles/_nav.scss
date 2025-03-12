@@ -5,7 +5,7 @@
     position: fixed;
     display: flex;
     align-items: center;
-    z-index: 2;
+    z-index: 4;
     top: 0;
     left: 0;
     width: 100%;
@@ -61,7 +61,7 @@ nav {
     position: fixed;
     height: 100%;
     width: clamp(320px, 20%, 600px);
-    z-index: 1;
+    z-index: 3;
     padding-top: $font-size-xl;
     top: 0;
     left: 0;
@@ -135,7 +135,7 @@ nav {
         svg {
             width: $font-size-lg;
             height: $font-size-lg;
-            
+
             path {
                 fill: var(--color-secondary);
             }
