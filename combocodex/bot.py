@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from environment_variables import DISCORD_TOKEN
 import requests
+from environment_variables import DISCORD_TOKEN
 import httpx
 import asyncio
 from datetime import datetime, timedelta, timezone
@@ -16,6 +16,8 @@ COLOR_BASE = discord.Color(int("239063", 16))
 COLOR_SUCCESS = discord.Color(int("91db69", 16))
 COLOR_ERROR = discord.Color(int("e83b3b", 16))
 
+INVITE_LINK = 'https://discord.com/oauth2/authorize?client_id=1086175083107717150'
+
 UPLOAD_GUILDS = [discord.Object(id=612653706730668033), discord.Object(id=338425553935925250)]
 
 def build_url(path):
@@ -26,8 +28,9 @@ def get_message_link(message: discord.Message):
     return f'https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}'
 
 combocodex = None
-manager_role = None
+trusted_role = None
 submissions_channel = None
+logging_channel = None
 client = None
 
 async def output_to_embed(upload_type, success, message):
@@ -65,6 +68,14 @@ async def on_ready():
     print('Creating httpx client')
     global client
     client = httpx.AsyncClient()
+    global combocodex
+    combocodex = bot.get_guild(612653706730668033)
+    global trusted_role
+    trusted_role = combocodex.get_role(1169793321779089438)
+    global submissions_channel
+    submissions_channel = combocodex.get_channel(614586175189155840)
+    global logging_channel
+    logging_channel = combocodex.get_channel(1349496200956739645)
 
 @bot.event
 async def on_disconnect():
@@ -79,10 +90,13 @@ async def on_resumed():
     global client
     client = httpx.AsyncClient()
 
-
 def build_payload(interaction: discord.Interaction | commands.Context, **kwargs):
     kwargs['discord_id'] = interaction.user.id if isinstance(interaction, discord.Interaction) else interaction.author.id
     return kwargs
+
+@bot.tree.command(name='invite', description='Provides a link to invite this bot to your server')
+async def invite(interaction: discord.Interaction):
+    await interaction.response.send_message(f'Click the link below to invite ComboCodex to your server\n{INVITE_LINK}')
 
 @bot.tree.command(name='link', description='Link your discord account to a ComboCodex account')
 async def link(interaction: discord.Interaction, username: str, password: str):
@@ -149,6 +163,7 @@ async def search(interaction: discord.Interaction, legend_one: str | None = None
         weapons = [weapon_data[weapon.lower()]['id'] for weapon in [weapon_one, weapon_two] if weapon]
     except KeyError:
         await interaction.response.send_message('There was an error with the legend/weapon names you entered.')
+        return
     response = await client.get(url, params={'legend': legends, 'weapon': weapons})
     response = response.json()
     await interaction.response.send_message(DOMAIN + f"/combos/{response[0]['id']}/", view=ComboView(interaction, response))
@@ -224,26 +239,31 @@ async def upload_site(interaction: discord.Interaction | commands.Context, messa
     await message.add_reaction('🔼')
     return True, 'Combo uploaded to site'
 
-@bot.tree.context_menu(name='Upload to site', guilds=UPLOAD_GUILDS)
+@bot.tree.context_menu(name='Upload to Site', guilds=UPLOAD_GUILDS)
 async def upload_site_context_menu(interaction: discord.Interaction, message: discord.Message):
     await interaction.response.send_message(embed= await response_defer_embed('site'))
     upload_site_success, upload_site_message = await upload_site(interaction, message)
-    await interaction.edit_original_response(embed= await output_to_embed('site', upload_site_success, upload_site_message))
+    embed = await output_to_embed('site', upload_site_success, upload_site_message)
+    await interaction.edit_original_response(embed=embed)
+    await logging_channel.send(content=message.jump_url, embed=embed)
     await delete_original_response(interaction)
 
 @bot.command(name='upload_site')
 async def upload_site_old(ctx: commands.Context):
+    if ctx.guild != combocodex:
+        await ctx.reply('This command is only available in ComboCodex!', delete_after=DELETE_AFTER)
+        return
     message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
     original_response = await ctx.reply(embed= await response_defer_embed('site'))
     await ctx.message.delete()
     upload_site_success, upload_site_message = await upload_site(ctx, message)
-    await original_response.edit(embed= await output_to_embed('site', upload_site_success, upload_site_message), delete_after=DELETE_AFTER)
+    embed = await output_to_embed('site', upload_site_success, upload_site_message)
+    await original_response.edit(embed=embed, delete_after=DELETE_AFTER)
+    await logging_channel.send(content=message.jump_url, embed=embed)
 
 async def upload_discord(interaction: discord.Interaction, message: discord.Message):
-    combocodex = bot.get_guild(612653706730668033)
-    manager_role = combocodex.get_role(894343287526277153)
     sender_roles = interaction.user.roles if isinstance(interaction, discord.Interaction) else interaction.author.roles
-    if manager_role not in sender_roles:
+    if trusted_role not in sender_roles:
         return False, 'Only combo managers can upload to the discord'
     if '✅' in list(map(lambda reaction: reaction.emoji, message.reactions)):
         return False, 'This combo has already been uploaded to the discord'
@@ -281,22 +301,29 @@ async def upload_discord(interaction: discord.Interaction, message: discord.Mess
     await message.add_reaction('✅')
     return True, 'Combo uploaded to discord'
 
-@bot.tree.context_menu(name='Upload to discord', guilds=UPLOAD_GUILDS)
+@bot.tree.context_menu(name='Upload to Discord', guilds=UPLOAD_GUILDS)
 async def upload_discord_context_menu(interaction: discord.Interaction, message: discord.Message):
     await interaction.response.send_message(embed= await response_defer_embed('discord'))
     upload_discord_success, upload_discord_message = await upload_discord(interaction, message)
-    await interaction.edit_original_response(embed= await output_to_embed('discord', upload_discord_success, upload_discord_message))
+    embed = await output_to_embed('discord', upload_discord_success, upload_discord_message)
+    await interaction.edit_original_response(embed=embed)
+    await logging_channel.send(content=message.jump_url, embed=embed)
     await delete_original_response(interaction)
 
 @bot.command(name='upload_discord')
 async def upload_discord_old(ctx: commands.Context):
+    if ctx.guild != combocodex:
+        await ctx.reply('This command is only available in ComboCodex!', delete_after=DELETE_AFTER)
+        return
     original_response = await ctx.reply(embed= await response_defer_embed('discord'))
     message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
     await ctx.message.delete()
     upload_discord_success, upload_discord_message = await upload_discord(ctx, message)
-    await original_response.edit(embed= await output_to_embed('discord', upload_discord_success, upload_discord_message), delete_after=DELETE_AFTER)
+    embed = await output_to_embed('discord', upload_discord_success, upload_discord_message)
+    await original_response.edit(embed=embed, delete_after=DELETE_AFTER)
+    await logging_channel.send(content=message.jump_url, embed=embed)
 
-@bot.tree.context_menu(name='Upload to both', guilds=UPLOAD_GUILDS)
+@bot.tree.context_menu(name='Upload to Both', guilds=UPLOAD_GUILDS)
 async def upload_both(interaction: discord.Interaction, message: discord.Message):
     await interaction.response.send_message(embed= await response_defer_embed('both'))
     upload_site_success, upload_site_message = await upload_site(interaction, message)
@@ -304,10 +331,14 @@ async def upload_both(interaction: discord.Interaction, message: discord.Message
     upload_discord_success, upload_discord_message = await upload_discord(interaction, message)
     upload_discord_embed = await output_to_embed('discord', upload_discord_success, upload_discord_message)
     await interaction.edit_original_response(embeds=[upload_discord_embed, upload_site_embed])
+    await logging_channel.send(content=message.jump_url, embeds=[upload_discord_embed, upload_site_embed])
     await delete_original_response(interaction)
 
 @bot.command(name='upload')
 async def upload_discord_old(ctx: commands.Context):
+    if ctx.guild != combocodex:
+        await ctx.reply('This command is only available in ComboCodex!', delete_after=DELETE_AFTER)
+        return
     original_response = await ctx.reply(embed= await response_defer_embed('both'))
     message = await ctx.channel.fetch_message(ctx.message.reference.message_id)
     await ctx.message.delete()
@@ -316,6 +347,7 @@ async def upload_discord_old(ctx: commands.Context):
     upload_discord_success, upload_discord_message = await upload_discord(ctx, message)
     upload_discord_embed = await output_to_embed('discord', upload_discord_success, upload_discord_message)
     await original_response.edit(embeds=[upload_discord_embed, upload_site_embed], delete_after=DELETE_AFTER)
+    await logging_channel.send(content=message.jump_url, embeds=[upload_discord_embed, upload_site_embed])
 
 
 
@@ -325,8 +357,6 @@ async def upload_last(interaction: discord.Interaction, minutes: int = 15):
         await interaction.response.send_message('Please provide a valid amount of minutes (1 - 60).')
         return
     await interaction.response.send_message(f'Uploading combos sent by you in the last {minutes} minutes. This may take a while.')
-    combocodex = bot.get_guild(612653706730668033)
-    submissions_channel = combocodex.get_channel(614586175189155840)
     after_time = datetime.now(timezone.utc) - timedelta(minutes=minutes)
     upload_site_count = 0
     upload_discord_count = 0
@@ -344,7 +374,6 @@ async def upload_last(interaction: discord.Interaction, minutes: int = 15):
 
 async def bulk_upload_from_video(interaction: discord.Interaction, message: discord.Message):
     async def upload_discord(interaction, attachment, legends_weapons):
-        combocodex = bot.get_guild(612653706730668033)
         server = combocodex
         legends = [legends_weapons[0], legends_weapons[2]]
         weapons = [legends_weapons[1], legends_weapons[3]]
@@ -414,19 +443,19 @@ async def bulk_upload_from_video(interaction: discord.Interaction, message: disc
         emoji = '👍' if attachment['upload_site']['success'] else '❗️'
         embed.add_field(name='🔼 **Upload to Site** 🔼', value=f'{emoji} {attachment["upload_site"]["message"]}', inline=False)
         emoji = '👍' if attachment['upload_discord']['success'] else '❗️'
-        embed.add_field(name='🔼 **Upload to Discord** 🔼', value=f'{emoji} {attachment["upload_discord"]["message"]}', inline=False)
+        embed.add_field(name='✅ **Upload to Discord** ✅', value=f'{emoji} {attachment["upload_discord"]["message"]}', inline=False)
         embeds.append(embed)
+    await message.add_reaction('⏫')
     return embeds
 
 @bot.tree.context_menu(name='Bulk Upload From Video', guilds=UPLOAD_GUILDS)
 async def bulk_upload_from_video_context_menu(interaction: discord.Interaction, message: discord.Message):
-    combocodex = bot.get_guild(612653706730668033)
-    trusted_role = combocodex.get_role(1169793321779089438)
     sender_roles = interaction.user.roles if isinstance(interaction, discord.Interaction) else interaction.author.roles
     if trusted_role not in sender_roles:
         return False, 'Only trusted users can use this command!'
     await interaction.response.send_message(embed= await response_defer_embed('Bulk Video'))
     embeds = await bulk_upload_from_video(interaction, message)
     await interaction.edit_original_response(embeds=embeds)
+    await logging_channel.send(content=message.jump_url, embeds=embeds)
 
 bot.run(DISCORD_TOKEN)
