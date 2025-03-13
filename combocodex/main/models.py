@@ -107,10 +107,12 @@ class ComboManager(models.Manager):
             combo = combo.verify()
         return combo
 
-    def search(self, legends, weapons, users=[], ordering='-id', show_unverified=False, page_number=1, **kwargs):
+    def search(self, legends=[], weapons=[], users=[], **kwargs):
         from user.models import User
         paginate = kwargs.pop('paginate', True)
-        combos = self.verified() if not show_unverified else self.all()
+        order_by = kwargs.pop('order_by', '-id')
+        page_number = kwargs.pop('page', 1)
+        combos = self.all() if kwargs.pop('is_verified', False) else self.verified()
         users = [user.strip() for user in users if user]
         for username in users:
             try:
@@ -129,13 +131,15 @@ class ComboManager(models.Manager):
         else:
             for weapon in weapons:
                 combos = combos.filter(Q(weapon_one=weapon) | Q(weapon_two=weapon))
-        combos = combos.order_by(ordering)
+        combos.filter(**kwargs)
+        combos = combos.order_by(order_by)
+        combo_count = combos.count()
+        data = {'combo_count': combo_count, 'combos': combos}
         if paginate:
             paginator = Paginator(combos, 10)
             page = paginator.get_page(page_number)
-            return page.object_list, page, combos.count()
-        else:
-            return combos, combos.count()
+            data.update({'combos': page.object_list, 'page': page})
+        return data
 
     def spreadsheet_data(self):
         combinations = {}

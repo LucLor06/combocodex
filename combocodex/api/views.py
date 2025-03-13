@@ -12,8 +12,8 @@ class ComboListView(ListAPIView):
     def get_queryset(self):
         legends = self.request.query_params.getlist('legend', [])
         weapons = self.request.query_params.getlist('weapon', [])
-        combos, count = Combo.objects.search(legends, weapons, paginate=False)
-        return combos
+        combo_data = Combo.objects.search(legends, weapons, paginate=False)
+        return combo_data['combos']
 
 
 class LegendListView(ListAPIView):

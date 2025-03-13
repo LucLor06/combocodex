@@ -116,8 +116,7 @@ def combos_search(request):
     order_by = request.GET.get('order_by', '-id')
     show_unverified = bool(request.GET.get('show_unverified', False))
     users = request.GET.getlist('user', [])
-    combos, page, count = Combo.objects.search(legends, weapons, users, order_by, show_unverified, page_number)
-    context = {'combos': combos, 'page': page, 'count': count}
+    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, is_verified=not show_unverified)
     if request.GET.get('action') == 'search':
         return render(request, 'combos/search.html#combos', context)
     context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all(), 'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
@@ -139,14 +138,15 @@ def requests_submit(request):
         if existing_requests.exists():
             message = 'There is already a request for this open!'
             return render(request, 'partials/modal-message.html', {'message': message})
-        combos, count = Combo.objects.search(legends, weapons, paginate=False)
+        combo_data = Combo.objects.search(legends, weapons, paginate=False)
+        combos = combo_data['combos']
         if 'confirmation' in request.POST or not combos.exists():
             user = request.user if type(request.user) == User else None
             Request.objects.create_from_post(request.POST, user)
             message = 'Request submitted!'
             return render(request, 'partials/modal-message.html', {'message': message})
         if combos.exists():
-            context = {'combos': combos, 'count': count, 'notes': request.POST.get('notes')}
+            context = {'combos': combos, 'count': combo_data['combo_count'], 'notes': request.POST.get('notes')}
             return render(request, 'requests/found.html', context)
     context = {'legends': Legend.objects.exclude(name='Universal')}
     return render(request, 'requests/submit.html', context)

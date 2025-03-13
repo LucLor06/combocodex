@@ -30,6 +30,10 @@
                 <a href="{% url 'combos-search' %}?user={{ user.username }}#combos" class="text--xs text--center">See all</a>
             </div>
             <div>
+                <h2 class="text--center">{{ total_views }}</h2>
+                <p class="text--sm text--center">Combo Views</p>
+            </div>
+            <div>
                 <h2 class="text--center">{{ user.codex_coins }}</h2>
                 <p class="text--sm text--center">Codex Coins</p>
             </div>

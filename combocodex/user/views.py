@@ -10,7 +10,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.contrib import messages
 
 def email_resend(request):
@@ -138,7 +138,7 @@ def profile(request, pk):
             context.update({'combos': favorites})
             return render(request, 'profile/favorites.html', context)
     else:
-        context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
+        context.update({'total_views': request.user.combos.aggregate(total_views=Sum('views'))['total_views'], 'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
     return render(request, 'profile/profile.html', context)
 
 def search(request):

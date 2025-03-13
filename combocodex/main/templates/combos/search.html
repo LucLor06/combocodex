@@ -327,7 +327,7 @@ Combos | Search
 </section>
 <div id="combos-search__found">
     {% partialdef combos %}
-    <h2 class="text--header">{% if combos %}{{ count }} Combo{{ combos|pluralize }} Found{% else %}No combos found {% endif %}</h2>
+    <h2 class="text--header">{% if combos %}{{ combo_count }} Combo{{ combo_count|pluralize }} Found{% else %}No combos found {% endif %}</h2>
     <section id="combos-search__section">
         {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' %}
         <div class="section-content combos" id="combos">
