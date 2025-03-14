@@ -118,8 +118,9 @@ def combos_search(request):
     show_unverified = bool(request.GET.get('show_unverified', False))
     users = request.GET.getlist('user', [])
     context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, order_by_function=order_by_function, is_verified=not show_unverified)
-    if request.htmx:
+    if request.htmx and not request.htmx.history_restore_request:
         return render(request, 'combos/search.html#combos', context)
+    print(legends, weapons)
     context.update({
         'selected_legends': [Legend.objects.get(id=id) for id in legends[:2]],
         'selected_weapons': [Weapon.objects.get(id=id) for id in weapons[:2]],

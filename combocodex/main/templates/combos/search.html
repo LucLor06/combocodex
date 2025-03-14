@@ -17,6 +17,11 @@ Combos | Search
 {% endblock header %}
 
 {% block content %}
+<script type="text/hyperscript">
+    on load
+        localStorage.removeItem('htmx-history-cache')
+    end
+</script>
 <section>
     <div class="section-content">
         <p>Click on a legend/weapon to add them to your query. <b>Nothing is required.</b></p>
@@ -94,7 +99,12 @@ Combos | Search
                 <div class="legend-weapon__pairs">
                     <div class="legend-weapon__pair" id="legend-weapon__pair-one">
                         {% for legend in selected_legends %}
-                        <div class="legend" _="install LegendRemove">
+                        <div class="legend" _="
+                        install LegendRemove
+                        init
+                            increment global legendCount
+                            trigger legendcountchanged
+                        end">
                             <img src="{{ legend.icon }}">
                             <input type="hidden" name='legend' value="{{ legend.id }}">
                         </div>
@@ -102,7 +112,13 @@ Combos | Search
                     </div>
                     <div class="legend-weapon__pair" id="legend-weapon__pair-two">
                         {% for weapon in selected_weapons %}
-                        <div class="weapon" _="install WeaponRemove">
+                        <div class="weapon" _="
+                        install WeaponRemove
+                        init
+                            increment global weaponCount
+                            trigger weaponcountchanged
+                        end
+                        ">
                             <img src="{{ weapon.icon }}">
                             <input type="hidden" name='weapon' value="{{ weapon.id }}">
                         </div>
@@ -121,6 +137,7 @@ Combos | Search
                                 set global weaponCount to 0
                                 trigger legendcountchanged
                                 trigger weaponcountchanged
+                                trigger submit on the closest parent <form/>
                             end"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
                         </div>
                     </div>
