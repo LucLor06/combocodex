@@ -17,11 +17,6 @@ Combos | Search
 {% endblock header %}
 
 {% block content %}
-<script type="text/hyperscript">
-    on load
-
-    end
-</script>
 <section>
     <div class="section-content">
         <p>Click on a legend/weapon to add them to your query. <b>Nothing is required.</b></p>
@@ -46,7 +41,6 @@ Combos | Search
             end
         end
         on legendcountchanged from document
-            log legendCount
             if legendCount >= 2
                 add .disabled to .legend in .legends
             else
@@ -81,7 +75,6 @@ Combos | Search
             end
         end
         on weaponcountchanged from document
-            log weaponCount
             if weaponCount >= 2
                 add .disabled to .weapon in .weapons
             else
@@ -95,12 +88,25 @@ Combos | Search
             </div>
             {% endfor %}
         </div>
-        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found">
+        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-push-url="true">
             <div>
                 <p class="text--center text--xs text--secondary">Click/tap items to remove</p>
                 <div class="legend-weapon__pairs">
-                    <div class="legend-weapon__pair" id="legend-weapon__pair-one"></div>
+                    <div class="legend-weapon__pair" id="legend-weapon__pair-one">
+                        {% for legend in selected_legends %}
+                        <div class="legend" _="install LegendRemove">
+                            <img src="{{ legend.icon }}">
+                            <input type="hidden" name='legend' value="{{ legend.id }}">
+                        </div>
+                        {% endfor %}
+                    </div>
                     <div class="legend-weapon__pair" id="legend-weapon__pair-two">
+                        {% for weapon in selected_weapons %}
+                        <div class="weapon" _="install WeaponRemove">
+                            <img src="{{ weapon.icon }}">
+                            <input type="hidden" name='weapon' value="{{ weapon.id }}">
+                        </div>
+                        {% endfor %}
                         <div class="legend-weapon__pair-clear">
                             <p class="tooltip">Clear</p>
                             <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" _="
@@ -223,42 +229,37 @@ Combos | Search
                             <label class="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
                                 <p>Date Created</p>
-                                <input type="radio" name="order_by" value="-id" checked>
+                                <input type="radio" name="order_by" value="id" {% if order_by == 'id' %} checked{% endif %}>
                             </label>
                             <label class="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg>
                                 <p>Views</p>
-                                <input type="radio" name="order_by" value="-views">
+                                <input type="radio" name="order_by" value="views" {% if order_by == 'views' %} checked{% endif %}>
                             </label>
                             <label class="button combos-search__order-by--function" _="
                             init
-                                set element function to 'descending'
+                                set element function to the @value of the next <input/>
                             end
                             on click
-                                if function == 'descending'
-                                    for input in <input[name='order_by']/>
-                                        set input.value to input.value.slice(1)
-                                    end
+                                if function is 'descending'
                                     set element function to 'ascending'
-                                    set the innerText of <p/> in me to 'Ascending'
-                                    add .hidden to .combos-search__order-by--descending
                                     remove .hidden from .combos-search__order-by--ascending
+                                    add .hidden to .combos-search__order-by--descending
+                                    set the innerText of .tooltip in me to 'Ascending'
                                 else
-                                    for input in <input[name='order_by']/>
-                                        set input.value to `-${input.value}`
-                                    end
                                     set element function to 'descending'
-                                    set the innerText of <p/> in me to 'Descending'
                                     add .hidden to .combos-search__order-by--ascending
                                     remove .hidden from .combos-search__order-by--descending
+                                    set the innerText of .tooltip in me to 'Descending'
                                 end
-                                send submit to the closest parent <form/>
-                                log function
+                                set the @value of the next <input/> to function
+                                trigger submit on the closest parent <form/>
                             end">
-                                <svg class="combos-search__order-by--ascending hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m296-224-56-56 240-240 240 240-56 56-184-183-184 183Zm0-240-56-56 240-240 240 240-56 56-184-183-184 183Z"/></svg>
-                                <svg class="combos-search__order-by--descending" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg>
-                                <p class="tooltip tooltip--bottom">Descending</p>
+                                <svg class="combos-search__order-by--ascending{% if order_by_function == 'descending' %} hidden{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m296-224-56-56 240-240 240 240-56 56-184-183-184 183Zm0-240-56-56 240-240 240 240-56 56-184-183-184 183Z"/></svg>
+                                <svg class="combos-search__order-by--descending{% if order_by_function == 'ascending' %} hidden{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-200 240-440l56-56 184 183 184-183 56 56-240 240Zm0-240L240-680l56-56 184 183 184-183 56 56-240 240Z"/></svg>
+                                <p class="tooltip tooltip--bottom">{{ order_by_function|title }}</p>
                             </label>
+                            <input type="hidden" name="order_by_function" value="{{ order_by_function }}">
                         </div>
                     </div>
                     <div>
@@ -270,13 +271,12 @@ Combos | Search
                             <label class="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg>
                                 <p>Show Unverified</p>
-                                <input type="checkbox" name="show_unverified">
+                                <input type="checkbox" name="show_unverified"{% if show_unverified %} checked{% endif %}>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
-            <input type="hidden" name="action" value="search">
             <button type="submit" class="combos-search__submit">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                 <svg class="loader" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_HIK5{transform-origin:center;animation:spinner_XVY9 1s cubic-bezier(0.36,.6,.31,1) infinite}@keyframes spinner_XVY9{50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}</style><circle cx="12" cy="12" r="3"/><g class="spinner_HIK5"><circle cx="4" cy="12" r="3"/><circle cx="20" cy="12" r="3"/></g></svg>
@@ -329,13 +329,13 @@ Combos | Search
     {% partialdef combos %}
     <h2 class="text--header">{% if combos %}{{ combo_count }} Combo{{ combo_count|pluralize }} Found{% else %}No combos found {% endif %}</h2>
     <section id="combos-search__section">
-        {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' %}
+        {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' hx_push_url=True %}
         <div class="section-content combos" id="combos">
             {% for combo in combos %}
             {% include 'partials/combo.html' %}
             {% endfor %}
         </div>
-        {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' %}
+        {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' hx_push_url=True %}
     </section>
     {% endpartialdef combos %}
     {% partial combos %}

@@ -109,10 +109,16 @@ class ComboManager(models.Manager):
 
     def search(self, legends=[], weapons=[], users=[], **kwargs):
         from user.models import User
+        legends = legends[:2]
+        weapons = weapons[:2]
         paginate = kwargs.pop('paginate', True)
-        order_by = kwargs.pop('order_by', '-id')
+        order_by = kwargs.pop('order_by', 'id')
+        order_by_function = kwargs.pop('order_by_function', 'descending')
+        if order_by_function == 'descending' and not order_by.startswith('-'):
+            order_by = f'-{order_by}'
+        print(order_by)
         page_number = kwargs.pop('page', 1)
-        combos = self.all() if kwargs.pop('is_verified', False) else self.verified()
+        combos = self.all() if bool(kwargs.pop('is_verified', False)) else self.verified()
         users = [user.strip() for user in users if user][:2]
         for username in users:
             try:

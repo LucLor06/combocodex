@@ -113,13 +113,22 @@ def combos_search(request):
     page_number = request.GET.get('page', 1)
     weapons = request.GET.getlist('weapon', [])
     legends =  request.GET.getlist('legend', [])
-    order_by = request.GET.get('order_by', '-id')
+    order_by = request.GET.get('order_by', 'id')
+    order_by_function = request.GET.get('order_by_function', 'descending')
     show_unverified = bool(request.GET.get('show_unverified', False))
     users = request.GET.getlist('user', [])
-    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, is_verified=not show_unverified)
-    if request.htmx and request.GET.get('action') == 'search':
+    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, order_by_function=order_by_function, is_verified=not show_unverified)
+    if request.htmx:
         return render(request, 'combos/search.html#combos', context)
-    context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all(), 'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
+    context.update({
+        'selected_legends': Legend.objects.filter(id__in=legends),
+        'selected_weapons': Weapon.objects.filter(id__in=weapons),
+        'order_by': order_by,
+        'order_by_function': order_by_function,
+        'show_unverified': show_unverified,
+        'legends': Legend.objects.all(),
+        'weapons': Weapon.objects.all(),
+        'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
     return render(request, 'combos/search.html', context)
 
 def redirect_combos_search(request):
