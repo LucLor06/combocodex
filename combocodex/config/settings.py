@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'storages',
     'rest_framework',
     'api',
+    'django_htmx',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware'
+    'allauth.account.middleware.AccountMiddleware',
+    'django_htmx.middleware.HtmxMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'

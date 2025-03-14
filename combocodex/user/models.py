@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.functional import cached_property
-from django.db.models import Prefetch, Q, Count, F
+from django.db.models import Prefetch, Q, Count, F, Sum
 from django.utils.text import slugify
 from datetime import datetime, timedelta
 from django.urls import reverse
@@ -82,6 +82,10 @@ class User(AbstractUser):
     @cached_property
     def email_address(self):
         return EmailAddress.objects.filter(user=self, primary=True).first()
+
+    @cached_property
+    def total_combo_views(self):
+        return self.combos.aggregate(total_views=Sum('views'))['total_views']
 
     @classmethod
     def weekly_user(cls):

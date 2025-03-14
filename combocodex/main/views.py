@@ -54,7 +54,7 @@ def combos_submit(request):
     if not read_rules:
         request.session['read_rules'] = True
     context = {'legends': Legend.objects.prefetch_related('weapons'), 'read_rules': read_rules}
-    if 'filter_users' in request.GET:
+    if request.htmx and 'filter_users' in request.GET:
         users = User.objects.filter(username__icontains=request.GET['filter_users'])
         return render(request, 'combos/submit.html#users', {'users': users})
     if request.method == 'POST':
@@ -75,7 +75,7 @@ def combos_verify(request):
     except Combo.DoesNotExist:
         pass
     context = {'combo': combo, 'combos_count': Combo.objects.unverified().count()}
-    if request.method == 'POST':
+    if request.htmx and request.method == 'POST':
         action = request.POST.get('action', 'accept')
         if action == 'accept':
             is_outdated = bool(request.POST.get('is_outdated', False))
@@ -107,7 +107,7 @@ def combos_spreadsheet(request):
     return render(request, 'combos/spreadsheet.html')
 
 def combos_search(request):
-    if 'filter_users' in request.GET:
+    if request.htmx and 'filter_users' in request.GET:
         users = User.objects.filter(username__icontains=request.GET['filter_users'])
         return render(request, 'combos/submit.html#users', {'users': users})
     page_number = request.GET.get('page', 1)
@@ -117,7 +117,7 @@ def combos_search(request):
     show_unverified = bool(request.GET.get('show_unverified', False))
     users = request.GET.getlist('user', [])
     context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, is_verified=not show_unverified)
-    if request.GET.get('action') == 'search':
+    if request.htmx and request.GET.get('action') == 'search':
         return render(request, 'combos/search.html#combos', context)
     context.update({'legends': Legend.objects.all(), 'weapons': Weapon.objects.all(), 'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
     return render(request, 'combos/search.html', context)
@@ -131,7 +131,7 @@ def requests_list(request):
     return render(request, 'requests/requests.html', context)
 
 def requests_submit(request):
-    if request.method == 'POST':
+    if request.method == 'POST' and request.htmx:
         legends = [request.POST['legend_one'], request.POST['legend_two']]
         weapons = [request.POST['weapon_one'], request.POST['weapon_two']]
         existing_requests = Request.objects.filter(Q(legend_one=legends[0], weapon_one=weapons[0], legend_two=legends[1], weapon_two=weapons[1]) | Q(legend_one=legends[1], weapon_one=weapons[1], legend_two=legends[0], weapon_two=weapons[0]))

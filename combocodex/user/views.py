@@ -14,7 +14,7 @@ from django.db.models import Count, Sum
 from django.contrib import messages
 
 def email_resend(request):
-    if request.method == "POST":
+    if request.method == "POST" and request.htmx:
         try:
             email = EmailAddress.objects.get(email__iexact=request.POST.get('email'))
             if not email.verified:
@@ -29,7 +29,7 @@ def email_resend(request):
 
 @login_required
 def shop(request):
-    if request.method == 'POST':
+    if request.htmx and request.method == 'POST':
         if 'user_color' in request.POST:
             user_color = UserColor.objects.get(id=request.POST['user_color'])
             user_color.purchase(request.user)
@@ -55,7 +55,7 @@ def inventory(request):
         context['custom_theme'] = custom_theme
     except UserTheme.DoesNotExist:
         pass
-    if request.POST:
+    if request.htmx and request.method == 'POST':
         if 'user_color' in request.POST:
             user_color = UserColor.objects.get(id=request.POST['user_color'])
             previous_item = request.user.user_color
@@ -94,7 +94,7 @@ def settings(request):
                 email = EmailAddress.objects.create(user=request.user, email=request.POST['email'], verified=False, primary=True)
                 send_email_confirmation(request, request.user, email=request.POST['email'])
                 logout(request)
-                return redirect('account_email_verification_sent')     
+                return redirect('account_email_verification_sent')
     return render(request, 'account/settings.html', {'errors': errors})
 
 @login_required
@@ -114,7 +114,7 @@ def profile(request, pk):
     legends = Legend.objects.all()
     weapons = Weapon.objects.all()
     context = {'user': user}
-    if 'view' in request.GET:
+    if request.htmx and 'view' in request.GET:
         view = request.GET['view']
         if view == 'general':
             context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
@@ -138,12 +138,12 @@ def profile(request, pk):
             context.update({'combos': favorites})
             return render(request, 'profile/favorites.html', context)
     else:
-        context.update({'total_views': request.user.combos.aggregate(total_views=Sum('views'))['total_views'], 'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
+        context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
     return render(request, 'profile/profile.html', context)
 
 def search(request):
     username = request.GET.get('user')
-    users = User.objects.all() if not username else User.objects.filter(username__icontains=username)  
+    users = User.objects.all() if not username else User.objects.filter(username__icontains=username)
     user_count = users.count()
     page_number = request.GET.get('page', 1)
     paginator = Paginator(users, 15)

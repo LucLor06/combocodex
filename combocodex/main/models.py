@@ -79,7 +79,7 @@ class ComboManager(models.Manager):
         users = []
         guests = []
         usernames = post.getlist('user') if not kwargs.get('users') else kwargs.get('users')
-        usernames = [username for username in usernames if username != '']
+        usernames = [username for username in usernames if username != ''][:2]
         is_verified = False
         if submitter and submitter.is_authenticated:
             is_verified = submitter.is_trusted
@@ -113,7 +113,7 @@ class ComboManager(models.Manager):
         order_by = kwargs.pop('order_by', '-id')
         page_number = kwargs.pop('page', 1)
         combos = self.all() if kwargs.pop('is_verified', False) else self.verified()
-        users = [user.strip() for user in users if user]
+        users = [user.strip() for user in users if user][:2]
         for username in users:
             try:
                 user = User.objects.get(username__iexact=username)
