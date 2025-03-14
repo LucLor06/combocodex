@@ -88,7 +88,7 @@ Combos | Search
             </div>
             {% endfor %}
         </div>
-        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-push-url="true">
+        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-push-url="true" hx-history="false">
             <div>
                 <p class="text--center text--xs text--secondary">Click/tap items to remove</p>
                 <div class="legend-weapon__pairs">

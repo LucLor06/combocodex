@@ -121,8 +121,8 @@ def combos_search(request):
     if request.htmx:
         return render(request, 'combos/search.html#combos', context)
     context.update({
-        'selected_legends': Legend.objects.filter(id__in=legends),
-        'selected_weapons': Weapon.objects.filter(id__in=weapons),
+        'selected_legends': [Legend.objects.get(id=id) for id in legends[:2]],
+        'selected_weapons': [Weapon.objects.get(id=id) for id in weapons[:2]],
         'order_by': order_by,
         'order_by_function': order_by_function,
         'show_unverified': show_unverified,

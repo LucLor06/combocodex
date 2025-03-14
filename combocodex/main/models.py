@@ -149,18 +149,13 @@ class ComboManager(models.Manager):
 
     def spreadsheet_data(self):
         combinations = {}
-        combo_count = self.count()
         for legend_one in Legend.objects.prefetch_related('weapons'):
             for weapon_one in legend_one.weapons.all():
                 for legend_two in Legend.objects.prefetch_related('weapons'):
                     for weapon_two in legend_two.weapons.all():
                         combos = self.filter(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one)).exclude(is_outdated=True)
                         count = combos.count()
-                        link = ''
-                        if count > 0:
-                            link = combos.latest('id').get_absolute_url()
-                        percent = round((count/combo_count) * 100, 2)
-                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count, 'link': link, 'percent': percent}
+                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count}
         return combinations
 
 
@@ -257,11 +252,8 @@ class Combo(models.Model):
                 cell = spreadsheet_soup.find(id=cell_id)
                 if combo_count > 0:
                     cell['style'] = 'background-color: green;'
-                    link = self.get_absolute_url() if not deleting else combos.latest('id').get_absolute_url()
-                    cell['href'] = link
                 else:
                     del cell['style']
-                    del cell['href']
                 cell_count = cell.find(id=f'{cell_id}__combo-count')
                 cell_count.string = f'{combo_count} combos'
             with open(str(BASE_DIR / 'main/templates/combos/rendered_sheet.html'), 'w') as sheet:
