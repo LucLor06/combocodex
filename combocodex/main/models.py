@@ -177,8 +177,8 @@ class Combo(models.Model):
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos', editable=False)
     video = models.FileField(upload_to=combo_video_upload_to)
     poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to)
-    daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL)
-    views = models.PositiveIntegerField(default=0)
+    daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL, editable=False)
+    views = models.PositiveIntegerField(default=0, editable=False)
     objects = ComboManager()
 
     class Meta:
@@ -186,10 +186,10 @@ class Combo(models.Model):
 
     def get_absolute_url(self):
         return reverse('combos-combo', kwargs={'pk': self.pk})
-    
+
     def get_admin_url(self):
         return reverse('admin:main_combo_change', args=[self.pk])
-    
+
     def save(self, *args, **kwargs):
         if self.pk:
             if self.is_preferred:
