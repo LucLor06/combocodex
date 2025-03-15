@@ -187,6 +187,9 @@ class Combo(models.Model):
     def get_absolute_url(self):
         return reverse('combos-combo', kwargs={'pk': self.pk})
     
+    def get_admin_url(self):
+        return reverse('admin:main_combo_change', args=[self.pk])
+    
     def save(self, *args, **kwargs):
         if self.pk:
             if self.is_preferred:
