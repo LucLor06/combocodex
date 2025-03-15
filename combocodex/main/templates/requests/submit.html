@@ -69,7 +69,7 @@ Requests | Submit
             </div>
             {% endfor %}
         </div>
-        <form autocomplete="off" class="submit-search-form" id="requests-submit" hx-post hx-target="main" hx-swap="beforebegin" hx-history="false">
+        <form autocomplete="off" class="submit-search-form" id="requests-submit" hx-post hx-target="main" hx-swap="beforebegin" hx-history="false" hx-indicator="*:has( > .loader)">
             {% csrf_token %}
             <div>
                 <h3 class="text--center">Legends/Weapons</h3>

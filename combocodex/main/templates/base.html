@@ -37,7 +37,7 @@
         end
     </script>
 </head>
-    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-indicator="*:has( > .loader)">
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         {% if request.user.is_authenticated %}
         <style id="user-styling" hx-swap-oob="outerHTML">
             :root {

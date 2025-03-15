@@ -110,7 +110,7 @@ Combos | Submit
             </div>
             {% endfor %}
         </div>
-        <form class="submit-search-form" id="combos-submit" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin" hx-history="false" _="
+        <form class="submit-search-form" id="combos-submit" hx-post hx-encoding="multipart/form-data" hx-target="main" hx-swap="beforebegin" hx-history="false" hx-indicator="*:has( > .loader)" _="
         on submit
             add .disabled to me
             add .disabled to <button[type='submit']/>

@@ -93,7 +93,7 @@ Combos | Search
             </div>
             {% endfor %}
         </div>
-        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-push-url="true" hx-history="false">
+        <form autocomplete="off" class="submit-search-form combos-search__form" id="combos-search__form" hx-get="{% url 'combos-search' %}" hx-target="#combos-search__found" hx-push-url="true" hx-history="false" hx-indicator="*:has( > .loader)">
             <div>
                 <p class="text--center text--xs text--secondary">Click/tap items to remove</p>
                 <div class="legend-weapon__pairs">
@@ -342,12 +342,12 @@ Combos | Search
         </div>
     </div>
 </section>
-<div id="combos-search__found">
+<div id="combos-search__found" hx-indicator="*:has( > .loader)">
     {% partialdef combos %}
     <h2 class="text--header">{% if combos %}{{ combo_count }} Combo{{ combo_count|pluralize }} Found{% else %}No combos found {% endif %}</h2>
     <section id="combos-search__section">
         {% include 'partials/pagination.html' with form='#combos-search__form' target='#combos-search__section' hx_push_url=True %}
-        <div class="section-content combos" id="combos">
+        <div class="section-content combos" id="combos" hx-disinherit="hx-indicator">
             {% for combo in combos %}
             {% include 'partials/combo.html' %}
             {% endfor %}
