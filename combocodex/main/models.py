@@ -139,6 +139,8 @@ class ComboManager(models.Manager):
                 combos = combos.filter(Q(weapon_one=weapon) | Q(weapon_two=weapon))
         combos.filter(**kwargs)
         combos = combos.order_by(order_by)
+        if len(legends) + len(weapons) > 2:
+            combos = combos.order_by('-is_preferred', order_by)
         combo_count = combos.count()
         data = {'combo_count': combo_count, 'combos': combos}
         if paginate:
@@ -162,6 +164,7 @@ class ComboManager(models.Manager):
 class Combo(models.Model):
     CODEX_COINS = 5
     is_verified = models.BooleanField(default=False)
+    is_preferred = models.BooleanField(default=False)
     is_outdated = models.BooleanField(default=False)
     is_map_specific = models.BooleanField(default=False)
     is_alternate_gamemode = models.BooleanField(default=False)
@@ -183,6 +186,17 @@ class Combo(models.Model):
 
     def get_absolute_url(self):
         return reverse('combos-combo', kwargs={'pk': self.pk})
+    
+    def save(self, *args, **kwargs):
+        if self.pk:
+            if self.is_preferred:
+                previous_self = Combo.objects.get(pk=self.pk)
+                if not previous_self.is_preferred:
+                    self.get_exact().update(is_preferred=False)
+        else:
+            if not self.get_exact().exists():
+                self.is_preferred = True
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
@@ -227,7 +241,7 @@ class Combo(models.Model):
     def get_similar(self):
         return Combo.objects.verified().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
 
-    def get_exact(self, exclude_self=False):
+    def get_exact(self, exclude_self=True):
         combos = Combo.objects.verified().filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
         if exclude_self:
             combos = combos.exclude(id=self.id)
