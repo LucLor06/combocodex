@@ -1,9 +1,21 @@
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save, pre_delete, post_delete
 from django.dispatch import receiver
 from .models import Combo, Legend
 
 @receiver(pre_delete, sender=Combo)
-def combo_delete(**kwargs):
-    instance = kwargs.get('instance')
+def combo_pre_delete(sender, instance, **kwargs):
     if instance.is_verified:
         instance.update_spreadsheet(deleting=True)
+    if instance.is_recommended:
+        combos = instance.get_exact(exclude_self=True)
+        if combos.exists():
+            combo = combos.first()
+            combo.is_recommended = True
+            combo.save(skip_custom_logic=True)
+
+@receiver(post_delete, sender=Combo)
+def combo_post_delete(sender, instance, **kwargs):
+    if instance.video:
+        instance.video.delete(save=False)
+    if instance.poster:
+        instance.poster.delete(save=False)

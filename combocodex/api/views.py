@@ -18,8 +18,8 @@ class ComboListView(ListAPIView):
 
 class LegendListView(ListAPIView):
     queryset = Legend.objects.all()
-    serializer_class = LegendSerializer 
-    
+    serializer_class = LegendSerializer
+
 
 class WeaponListView(ListAPIView):
     queryset = Weapon.objects.all()
@@ -43,17 +43,18 @@ def api_user_link(request):
 @api_view(['POST'])
 def api_combos_upload(request):
     post = request.POST
+    kwargs = {key.replace('kwarg_', 'is_'): True for key in request.POST if key.startswith('kwarg_')}
     user_ids = [post['user_one_id'], post['user_two_id']]
     usernames = [post['user_one_name'], post['user_two_name']]
     try:
         submitter = User.objects.get(discord_id=post['discord_id'])
     except User.DoesNotExist:
-        submitter = None   
+        submitter = None
     users = []
     for discord_id, username in zip(user_ids, usernames):
         try:
             users.append(User.objects.get(discord_id=discord_id).username)
         except User.DoesNotExist:
             users.append(username)
-    combo = Combo.objects.create_from_post(post, request.FILES, submitter, users=users)
+    combo = Combo.objects.create_from_post(post, request.FILES, submitter, users=users, **kwargs)
     return Response({'message': 'Combo successfully submitted!'})

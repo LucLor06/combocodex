@@ -20,7 +20,7 @@ Spreadsheet
 {% block content %}
 <section>
     <div class="spreadsheet-content">
-        {% include 'combos/rendered_sheet.html' %}
+        {{ spreadsheet|safe }}
     </div>
 </section>
 {% endblock %}

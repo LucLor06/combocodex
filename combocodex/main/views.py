@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from config.settings import BASE_DIR
 from datetime import datetime
 
 def home(request):
@@ -36,7 +37,7 @@ def robots_txt(request):
 def combos_increment_view(request, pk):
     combo = get_object_or_404(Combo, pk=pk)
     combo.views += 1
-    combo.save()
+    combo.save(skip_custom_logic=True)
     return HttpResponse('')
 
 @login_required
@@ -104,7 +105,10 @@ def combos_combo(request, pk):
     return render(request, 'combos/combo.html', context)
 
 def combos_spreadsheet(request):
-    return render(request, 'combos/spreadsheet.html')
+    context = {'spreadsheet': ''}
+    with open(BASE_DIR / 'main/templates/combos/rendered_sheet.html', 'r') as spreadsheet:
+        context['spreadsheet'] = spreadsheet.read()
+    return render(request, 'combos/spreadsheet.html', context)
 
 def combos_search(request):
     if request.htmx and 'filter_users' in request.GET:

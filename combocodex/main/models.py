@@ -78,11 +78,11 @@ class ComboManager(models.Manager):
         from user.models import User
         users = []
         guests = []
-        usernames = post.getlist('user') if not kwargs.get('users') else kwargs.get('users')
+        usernames = post.getlist('user') if not kwargs.get('users') else kwargs.pop('users')
         usernames = [username for username in usernames if username != ''][:2]
         is_verified = False
-        if submitter and submitter.is_authenticated:
-            is_verified = submitter.is_trusted
+        if (submitter and submitter.is_authenticated and submitter.is_trusted) or kwargs.get('is_recommended', False):
+            is_verified = True
         for username in usernames:
             try:
                 users.append(User.objects.get(username=username))
@@ -100,7 +100,7 @@ class ComboManager(models.Manager):
         image = io.BytesIO()
         Image.fromarray(frame).save(image, format='JPEG', optimize=True, quality=25)
         poster = ContentFile(image.getvalue(), name='temp.jpg')
-        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, poster=poster)
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, poster=poster, **kwargs)
         combo.users.set(users)
         combo.guests.set(guests)
         if is_verified:
@@ -138,9 +138,7 @@ class ComboManager(models.Manager):
             for weapon in weapons:
                 combos = combos.filter(Q(weapon_one=weapon) | Q(weapon_two=weapon))
         combos.filter(**kwargs)
-        combos = combos.order_by(order_by)
-        if len(legends) + len(weapons) > 2:
-            combos = combos.order_by('-is_preferred', order_by)
+        combos = combos.order_by('-is_recommended', order_by)
         combo_count = combos.count()
         data = {'combo_count': combo_count, 'combos': combos}
         if paginate:
@@ -164,7 +162,7 @@ class ComboManager(models.Manager):
 class Combo(models.Model):
     CODEX_COINS = 5
     is_verified = models.BooleanField(default=False)
-    is_preferred = models.BooleanField(default=False)
+    is_recommended = models.BooleanField(default=False)
     is_outdated = models.BooleanField(default=False)
     is_map_specific = models.BooleanField(default=False)
     is_alternate_gamemode = models.BooleanField(default=False)
@@ -191,14 +189,24 @@ class Combo(models.Model):
         return reverse('admin:main_combo_change', args=[self.pk])
 
     def save(self, *args, **kwargs):
-        if self.pk:
-            if self.is_preferred:
+        skip_custom_logic = kwargs.pop('skip_custom_logic', False)
+        if not skip_custom_logic:
+            previous_self = None
+            if self.pk:
                 previous_self = Combo.objects.get(pk=self.pk)
-                if not previous_self.is_preferred:
-                    self.get_exact().update(is_preferred=False)
-        else:
-            if not self.get_exact().exists():
-                self.is_preferred = True
+            if self.is_recommended and ((previous_self and not previous_self.is_recommended) or (not self.pk)):
+                self.get_exact().exclude(pk=self.pk).update(is_recommended=False)
+            if previous_self and not (
+                (self.legend_one == previous_self.legend_one and self.weapon_one == previous_self.weapon_one and
+                 self.legend_two == previous_self.legend_two and self.weapon_two == previous_self.weapon_two)
+                or
+                (self.legend_one == previous_self.legend_two and self.weapon_one == previous_self.weapon_two and
+                 self.legend_two == previous_self.legend_one and self.weapon_two == previous_self.weapon_one)
+            ):
+                previous_self.update_spreadsheet(deleting=True)
+                self.update_spreadsheet()
+            if not self.pk and not self.get_exact().exists():
+                self.is_recommended = True
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -208,7 +216,7 @@ class Combo(models.Model):
         if not self.is_verified:
             from user.models import Mail
             self.is_verified = True
-            self.save()
+            self.save(skip_custom_logic=True)
             self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
             self.update_spreadsheet()
             mail = Mail.objects.create(subject='Combo Verified', type='good', content=f'Your combo {self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name}) has been verified.', link=self.get_absolute_url())
@@ -224,7 +232,7 @@ class Combo(models.Model):
                 self.users.update(codex_coins=F('codex_coins') + DailyChallenge.CODEX_COINS)
             except DailyChallenge.DoesNotExist:
                 pass
-            self.save()
+            self.save(skip_custom_logic=True)
             for user in self.users.all():
                 user.check_trusted()
         return self
@@ -255,6 +263,7 @@ class Combo(models.Model):
         return 'Universal' in [self.legend_one.name, self.legend_two.name]
 
     def update_spreadsheet(self, deleting=False):
+        print(f'Updating sheet for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
         if self.has_universal:
             return
         from .apps import MainConfig
@@ -262,8 +271,10 @@ class Combo(models.Model):
             spreadsheet_soup = MainConfig.get_spreadsheet()
             cell_id_one = f'{self.legend_one.slug}-{self.weapon_one.slug}-{self.legend_two.slug}-{self.weapon_two.slug}'
             cell_id_two = f'{self.legend_two.slug}-{self.weapon_two.slug}-{self.legend_one.slug}-{self.weapon_one.slug}'
-            combos = self.get_exact(exclude_self=deleting)
+            combos = self.get_exact(exclude_self=True)
             combo_count = combos.count()
+            if not deleting:
+                combo_count += 1
             combo_percent = round((combo_count / Combo.objects.count()) * 100, 2)
             for cell_id in [cell_id_one, cell_id_two]:
                 cell = spreadsheet_soup.find(id=cell_id)
