@@ -7,11 +7,14 @@ from config.settings import BASE_DIR
 from secrets import token_urlsafe
 import io
 from PIL import Image
+import os
 import imageio
 from django.core.files.base import ContentFile
 from datetime import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from lxml import etree
+import portalocker
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
@@ -114,9 +117,9 @@ class ComboManager(models.Manager):
         paginate = kwargs.pop('paginate', True)
         order_by = kwargs.pop('order_by', 'id')
         order_by_function = kwargs.pop('order_by_function', 'descending')
+        recommended_first = kwargs.pop('recommended_first', True)
         if order_by_function == 'descending' and not order_by.startswith('-'):
             order_by = f'-{order_by}'
-        print(order_by)
         page_number = kwargs.pop('page', 1)
         combos = self.all() if bool(kwargs.pop('is_verified', False)) else self.verified()
         users = [user.strip() for user in users if user][:2]
@@ -127,18 +130,24 @@ class ComboManager(models.Manager):
             except User.DoesNotExist:
                 guest = Guest.objects.get(username__iexact=username)
                 combos = combos.filter(guests=guest)
+        legend_filter = Q()
         if len(legends) == 2 and legends[0] == legends[1]:
-            combos = combos.filter(Q(legend_one=legends[0], legend_two=legends[0]))
+            legend_filter = Q(legend_one=legends[0], legend_two=legends[0])
         else:
             for legend in legends:
-                combos = combos.filter(Q(legend_one=legend) | Q(legend_two=legend))
+                legend_filter &= Q(legend_one=legend) | Q(legend_two=legend)
+        weapon_filter = Q()
         if len(weapons) == 2 and weapons[0] == weapons[1]:
-            combos = combos.filter(Q(weapon_one=weapons[0], weapon_two=weapons[0]))
+            weapon_filter = Q(weapon_one=weapons[0], weapon_two=weapons[0])
         else:
             for weapon in weapons:
-                combos = combos.filter(Q(weapon_one=weapon) | Q(weapon_two=weapon))
-        combos.filter(**kwargs)
-        combos = combos.order_by('-is_recommended', order_by)
+                weapon_filter &= Q(weapon_one=weapon) | Q(weapon_two=weapon)
+        kwarg_filter = Q(**kwargs)
+        combos = combos.filter(legend_filter & weapon_filter & kwarg_filter)
+        if recommended_first:
+            combos = combos.order_by('-is_recommended', order_by)
+        else:
+            combos = combos.order_by(order_by)
         combo_count = combos.count()
         data = {'combo_count': combo_count, 'combos': combos}
         if paginate:
@@ -157,7 +166,6 @@ class ComboManager(models.Manager):
                         count = combos.count()
                         combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count}
         return combinations
-
 
 class Combo(models.Model):
     CODEX_COINS = 5
@@ -204,7 +212,9 @@ class Combo(models.Model):
                  self.legend_two == previous_self.legend_one and self.weapon_two == previous_self.weapon_one)
             ):
                 previous_self.update_spreadsheet(deleting=True)
+                previous_self.set_next_exact_recommended()
                 self.update_spreadsheet()
+                self.is_recommended = False
             if not self.pk and not self.get_exact().exists():
                 self.is_recommended = True
         super().save(*args, **kwargs)
@@ -258,34 +268,52 @@ class Combo(models.Model):
             combos = combos.exclude(id=self.id)
         return combos
 
+    def set_next_exact_recommended(self):
+        if self.is_recommended:
+            combos = self.get_exact()
+            if combos.exists():
+                combo = combos.first()
+                combo.is_recommended = True
+                combo.save(skip_custom_logic=True)
+                return True
+        return False
+
     @property
     def has_universal(self):
         return 'Universal' in [self.legend_one.name, self.legend_two.name]
 
     def update_spreadsheet(self, deleting=False):
         print(f'Updating sheet for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
-        if self.has_universal:
+        if self.has_universal or self.is_outdated:
             return
-        from .apps import MainConfig
-        if not self.is_outdated:
-            spreadsheet_soup = MainConfig.get_spreadsheet()
+        spreadsheet_path = str(BASE_DIR / 'main/templates/combos/rendered_sheet.html')
+        parser = etree.HTMLParser()
+        with open(spreadsheet_path, 'r+', encoding='utf-8') as file:
+            portalocker.lock(file, portalocker.LOCK_EX)
+            tree = etree.parse(file, parser)
+            root = tree.getroot()
             cell_id_one = f'{self.legend_one.slug}-{self.weapon_one.slug}-{self.legend_two.slug}-{self.weapon_two.slug}'
             cell_id_two = f'{self.legend_two.slug}-{self.weapon_two.slug}-{self.legend_one.slug}-{self.weapon_one.slug}'
             combos = self.get_exact(exclude_self=True)
             combo_count = combos.count()
             if not deleting:
                 combo_count += 1
-            combo_percent = round((combo_count / Combo.objects.count()) * 100, 2)
+            combo_text = f'{combo_count} combos'
             for cell_id in [cell_id_one, cell_id_two]:
-                cell = spreadsheet_soup.find(id=cell_id)
-                if combo_count > 0:
-                    cell['style'] = 'background-color: green;'
-                else:
-                    del cell['style']
-                cell_count = cell.find(id=f'{cell_id}__combo-count')
-                cell_count.string = f'{combo_count} combos'
-            with open(str(BASE_DIR / 'main/templates/combos/rendered_sheet.html'), 'w') as sheet:
-                sheet.write(spreadsheet_soup.prettify())
+                a_element = root.xpath(f'//a[@id="{cell_id}"]')
+                if a_element:
+                    a_element = a_element[0]
+                    a_element.set('style', 'background-color: green;' if combo_count > 0 else '')
+                    count_element = a_element.xpath(f'.//*[@id="{cell_id}__combo-count"]')
+                    if count_element:
+                        count_element[0].text = combo_text
+            file.seek(0)
+            file.write(etree.tostring(tree, pretty_print=True, encoding='utf-8', method='html').decode('utf-8'))
+            file.truncate()
+            file.flush()
+            os.fsync(file.fileno())
+            portalocker.unlock(file)
+        print(f'Sheet updated for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
 
 class RequestManager(models.Manager):
     def complete(self):

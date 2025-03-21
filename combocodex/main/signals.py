@@ -6,12 +6,7 @@ from .models import Combo, Legend
 def combo_pre_delete(sender, instance, **kwargs):
     if instance.is_verified:
         instance.update_spreadsheet(deleting=True)
-    if instance.is_recommended:
-        combos = instance.get_exact(exclude_self=True)
-        if combos.exists():
-            combo = combos.first()
-            combo.is_recommended = True
-            combo.save(skip_custom_logic=True)
+        instance.set_next_exact_recommended()
 
 @receiver(post_delete, sender=Combo)
 def combo_post_delete(sender, instance, **kwargs):

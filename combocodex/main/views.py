@@ -120,8 +120,9 @@ def combos_search(request):
     order_by = request.GET.get('order_by', 'id')
     order_by_function = request.GET.get('order_by_function', 'descending')
     show_unverified = bool(request.GET.get('show_unverified', False))
+    recommended_first = 'recommended_first' in request.GET if request.GET else True
     users = request.GET.getlist('user', [])
-    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, order_by_function=order_by_function, is_verified=not show_unverified)
+    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, order_by_function=order_by_function, is_verified=not show_unverified, recommended_first=recommended_first)
     if request.htmx and not request.htmx.history_restore_request:
         return render(request, 'combos/search.html#combos', context)
     print(legends, weapons)
@@ -131,6 +132,7 @@ def combos_search(request):
         'order_by': order_by,
         'order_by_function': order_by_function,
         'show_unverified': show_unverified,
+        'recommended_first': recommended_first,
         'legends': Legend.objects.all(),
         'weapons': Weapon.objects.all(),
         'users': User.objects.filter(username__in=request.GET.getlist('user', []))})
