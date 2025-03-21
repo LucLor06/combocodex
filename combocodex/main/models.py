@@ -99,11 +99,13 @@ class ComboManager(models.Manager):
         video = files.get('video')
         video_bytes = io.BytesIO(video.read())
         video_bytes.seek(0)
-        frame = imageio.get_reader(video_bytes, format="mp4").get_next_data()
+        reader = imageio.get_reader(video_bytes, format="mp4")
+        frame = reader.get_next_data()
         image = io.BytesIO()
         Image.fromarray(frame).save(image, format='JPEG', optimize=True, quality=25)
         poster = ContentFile(image.getvalue(), name='temp.jpg')
-        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, poster=poster, **kwargs)
+        video_duration = reader.get_meta_data()['duration']
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, video_duration=video_duration, poster=poster, **kwargs)
         combo.users.set(users)
         combo.guests.set(guests)
         if is_verified:
@@ -182,6 +184,7 @@ class Combo(models.Model):
     users = models.ManyToManyField('user.User', blank=True, related_name='combos', editable=False)
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos', editable=False)
     video = models.FileField(upload_to=combo_video_upload_to)
+    video_duration = models.FloatField()
     poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL, editable=False)
     views = models.PositiveIntegerField(default=0, editable=False)
