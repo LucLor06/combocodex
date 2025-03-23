@@ -41,7 +41,8 @@ main {
 }
 
 section {
-    width: 100%;
+    min-width: 100%;
+    width: fit-content;
     background-color: $color-base;
     padding-block: 1rem;
 }
