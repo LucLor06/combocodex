@@ -301,15 +301,12 @@ class Combo(models.Model):
             combo_count = combos.count()
             if not deleting:
                 combo_count += 1
-            combo_text = f'{combo_count} combos'
             for cell_id in [cell_id_one, cell_id_two]:
-                a_element = root.xpath(f'//a[@id="{cell_id}"]')
-                if a_element:
-                    a_element = a_element[0]
-                    a_element.set('style', 'background-color: green;' if combo_count > 0 else '')
-                    count_element = a_element.xpath(f'.//*[@id="{cell_id}__combo-count"]')
-                    if count_element:
-                        count_element[0].text = combo_text
+                cell = root.xpath(f'//a[@id="{cell_id}"]')
+                if cell:
+                    cell = cell[0]
+                    cell.set('style', 'background-color: green;' if combo_count > 0 else '')
+                    cell.set('data-combo-count', str(combo_count))
             file.seek(0)
             file.write(etree.tostring(tree, pretty_print=True, encoding='utf-8', method='html').decode('utf-8'))
             file.truncate()

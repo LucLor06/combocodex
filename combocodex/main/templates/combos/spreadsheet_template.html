@@ -5,11 +5,11 @@
             <div class="spreadsheet__row-head-spacer"></div>
             {% for legend in legends %}
             <div>
-                <img src="{{ legend.icon }}">
+                <img src="{{ legend.icon }}" loading="lazy">
                 <div>
                     {% for weapon in legend.weapons.all %}
                     {% if weapon.name != 'Unarmed' %}
-                    <img src="{{ weapon.icon }}">
+                    <img src="{{ weapon.icon }}" loading="lazy">
                     {% endif %}
                     {% endfor %}
                 </div>
@@ -20,11 +20,11 @@
             {% for legend_one in legends %}
             <div>
                 <div class="spreadsheet__column-head-item">
-                    <img src="{{ legend_one.icon }}">
+                    <img src="{{ legend_one.icon }}" loading="lazy">
                     <div>
                         {% for weapon in legend_one.weapons.all %}
                         {% if weapon.name != 'Unarmed' %}
-                        <img src="{{ weapon.icon }}">
+                        <img src="{{ weapon.icon }}" loading="lazy">
                         {% endif %}
                         {% endfor %}
                     </div>
@@ -38,21 +38,7 @@
                         {% if weapon_one.name != 'Unarmed' %}
                         {% with legend_one.name|add:weapon_one.name|add:legend_two.name|add:weapon_two.name as combo_name %}
                         {% with combo=combos|get:combo_name %}
-                        <a id="{{ legend_one.slug }}-{{ weapon_one.slug }}-{{ legend_two.slug }}-{{ weapon_two.slug }}" href="{{ combos_search_url }}?weapon={{ weapon_one.id}}&weapon={{ weapon_two.id }}&legend={{ legend_one.id }}&legend={{ legend_two.id }}" {% if combo.count > 0 %}style="background-color: green;"{% endif %}>
-                            <div class="tooltip">
-                                <div class="spreadsheet__pairs">
-                                    <div class="spreadsheet__pair">
-                                        <img src="{{ legend_one.icon }}">
-                                        <img src="{{ weapon_one.icon }}">
-                                    </div>
-                                    <div class="spreadsheet__pair">
-                                        <img src="{{ legend_two.icon }}">
-                                        <img src="{{ weapon_two.icon }}">
-                                    </div>
-                                </div>
-                                <p class="text--center text--xs"><span id="{{ legend_one.slug }}-{{ weapon_one.slug }}-{{ legend_two.slug }}-{{ weapon_two.slug }}__combo-count">{{ combo.count }} combo{{ combo.count|pluralize }}</span></p>
-                            </div>
-                        </a>
+                        <a id="{{ legend_one.slug }}-{{ weapon_one.slug }}-{{ legend_two.slug }}-{{ weapon_two.slug }}" data-legend-one="{{ legend_one.slug }}" data-weapon-one="{{ weapon_one.slug }}" data-legend-two="{{ legend_two.slug }}" data-weapon-two="{{ weapon_two.slug }}" data-combo-count="{{ combo.count }}" href="{{ combos_search_url }}?weapon={{ weapon_one.id}}&weapon={{ weapon_two.id }}&legend={{ legend_one.id }}&legend={{ legend_two.id }}" {% if combo.count > 0 %}style="background-color: green;"{% endif %} _="install SpreadsheetCell"></a>
                         {% endwith %}
                         {% endwith %}
                         {% endif %}

@@ -20,6 +20,19 @@ Spreadsheet
 {% block content %}
 <section>
     <div class="spreadsheet-content">
+        <div class="tooltip spreadsheet-tooltip">
+            <div class="spreadsheet__pairs">
+                <div class="spreadsheet__pair">
+                    <img class="spreadsheet__pair--legend-one">
+                    <img class="spreadsheet__pair--weapon-one">
+                </div>
+                <div class="spreadsheet__pair">
+                    <img class="spreadsheet__pair--legend-two">
+                    <img class="spreadsheet__pair--weapon-two">
+                </div>
+            </div>
+            <p class="text--center text--xs"><span></span></p>
+        </div>
         <script type="text/hyperscript">
             init
                 set global spreadsheetZoom to 1
@@ -37,6 +50,27 @@ Spreadsheet
                     remove .disabled from .spreadsheet__zoom-out
                 else
                     add .disabled to .spreadsheet__zoom-out
+                end
+            end
+        </script>
+        <script type="text/hyperscript">
+            behavior SpreadsheetCell
+                on mouseenter
+                    set tooltip to .spreadsheet-tooltip
+                    set legendOne to `/static/legends/${@data-legend-one}.png`
+                    set weaponOne to `/static/weapons/${@data-weapon-one}.png`
+                    set legendTwo to `/static/legends/${@data-legend-two}.png`
+                    set weaponTwo to `/static/weapons/${@data-weapon-two}.png`
+                    set the @src of .spreadsheet__pair--legend-one to legendOne
+                    set the @src of .spreadsheet__pair--weapon-one to weaponOne
+                    set the @src of .spreadsheet__pair--legend-two to legendTwo
+                    set the @src of .spreadsheet__pair--weapon-two to weaponTwo
+                    set comboCount to `${@data-combo-count} combo`
+                    if @data-combo-count is not 1
+                        set comboCount to `${@data-combo-count} combos`
+                    end
+                    set innerText of <span/> in tooltip to comboCount
+                    put tooltip at the start of me
                 end
             end
         </script>
