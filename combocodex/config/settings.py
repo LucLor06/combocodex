@@ -26,7 +26,7 @@ SECRET_KEY = DJANGO_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.combocodex.com', '127.0.0.1']
+ALLOWED_HOSTS = ['www.combocodex.com', 'combocodex.com', '127.0.0.1']
 
 AUTH_USER_MODEL = 'user.User'
 

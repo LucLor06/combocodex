@@ -108,7 +108,11 @@ def combos_spreadsheet(request):
     context = {'spreadsheet': ''}
     with open(BASE_DIR / 'main/templates/combos/rendered_sheet.html', 'r') as spreadsheet:
         context['spreadsheet'] = spreadsheet.read()
-    return render(request, 'combos/spreadsheet.html', context)
+    response = render(request, 'combos/spreadsheet.html', context)
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 def combos_search(request):
     if request.htmx and 'filter_users' in request.GET:
