@@ -27,11 +27,11 @@ Combos | {{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) | {{ combo.le
         {% include 'partials/combo.html' %}
     </div>
 </section>
-{% if similar_combos %}
+{% if related_combos %}
 <h2 class="text--header">Similar Combos</h2>
 <section>
     <div class="section-content combos">
-        {% for combo in similar_combos %}
+        {% for combo in related_combos %}
         {% include 'partials/combo.html' %}
         {% endfor %}
     </div>

@@ -63,7 +63,7 @@
         margin: 0;
     }
 
-    & > * {
+    & > *:not(form) {
         cursor: pointer;
     }
 

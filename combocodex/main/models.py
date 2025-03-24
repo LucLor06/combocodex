@@ -285,9 +285,13 @@ class Combo(models.Model):
     def has_universal(self):
         return 'Universal' in [self.legend_one.name, self.legend_two.name]
 
+    @property
+    def has_unarmed(self):
+        return 'Unarmed' in [self.weapon_one.name, self.weapon_two.name]
+
     def update_spreadsheet(self, deleting=False):
         print(f'Updating sheet for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
-        if self.has_universal or self.is_outdated:
+        if self.has_universal or self.is_outdated or self.has_unarmed:
             return
         spreadsheet_path = str(BASE_DIR / 'main/templates/combos/rendered_sheet.html')
         parser = etree.HTMLParser()

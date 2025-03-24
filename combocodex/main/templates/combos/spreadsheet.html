@@ -35,12 +35,17 @@ Spreadsheet
         </div>
         <script type="text/hyperscript">
             init
-                set global spreadsheetZoom to 1
+                set global spreadsheetZoom to localStorage['spreadsheetZoom']
+                if spreadsheetZoom is null
+                    set global spreadsheetZoom to 1
+                end
                 set global spreadsheetMaxZoom to 2
                 set global spreadsheetMinZoom to 0.25
+                set the @style of .spreadsheet to `--spreadsheet-zoom: ${spreadsheetZoom}`
             end
             on spreadsheetzoomchange from document
                 set the @style of .spreadsheet to `--spreadsheet-zoom: ${spreadsheetZoom}`
+                set localStorage['spreadsheetZoom'] to spreadsheetZoom
                 if spreadsheetZoom < 2
                     remove .disabled from .spreadsheet__zoom-in
                 else
@@ -55,7 +60,7 @@ Spreadsheet
         </script>
         <script type="text/hyperscript">
             behavior SpreadsheetCell
-                on mouseenter
+                on mouseenter or touchstart
                     set tooltip to .spreadsheet-tooltip
                     set legendOne to `/static/legends/${@data-legend-one}.png`
                     set weaponOne to `/static/weapons/${@data-weapon-one}.png`

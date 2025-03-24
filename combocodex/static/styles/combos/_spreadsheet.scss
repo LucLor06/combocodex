@@ -1,6 +1,10 @@
 .spreadsheet-content {
     width: fit-content;
     margin-inline: auto;
+
+    & > .spreadsheet-tooltip {
+        display: none !important;
+    }
 }
 
 .spreadsheet__form {
@@ -43,7 +47,7 @@
         }
     }
 
-    
+
     .tooltip {
         border-radius: 1rem;
         flex-direction: column;

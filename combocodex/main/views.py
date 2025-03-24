@@ -101,7 +101,7 @@ def combos_verify(request):
 
 def combos_combo(request, pk):
     combo = get_object_or_404(Combo, pk=pk)
-    context = {'combo': combo, 'similar_combos': combo.get_similar()}
+    context = {'combo': combo, 'related_combos': combo.get_similar() if not combo.has_universal else combo.get_exact()}
     return render(request, 'combos/combo.html', context)
 
 def combos_spreadsheet(request):

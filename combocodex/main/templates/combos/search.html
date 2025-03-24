@@ -224,6 +224,8 @@ Combos | Search
                             end
                             on click
                                 remove .hidden from the next .modal
+                                get the first <input[type='search']/> in the next .modal
+                                it.focus()
                             end
                             on usercountchanged
                                 if userCount >= 2
