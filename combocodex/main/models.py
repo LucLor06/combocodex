@@ -166,7 +166,8 @@ class ComboManager(models.Manager):
                     for weapon_two in legend_two.weapons.all():
                         combos = self.filter(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one)).exclude(is_outdated=True)
                         count = combos.count()
-                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count}
+                        has_recommended = combos.filter(is_recommended=True).exists()
+                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count, 'has_recommended': has_recommended}
         return combinations
 
 class Combo(models.Model):
@@ -207,6 +208,10 @@ class Combo(models.Model):
                 previous_self = Combo.objects.get(pk=self.pk)
             if self.is_recommended and ((previous_self and not previous_self.is_recommended) or (not self.pk)):
                 self.get_exact().exclude(pk=self.pk).update(is_recommended=False)
+                if not self.get_exact().filter(is_recommended=True).exists():
+                    self.update_spreadsheet()
+            elif not self.is_recommended and previous_self and previous_self.is_recommended:
+                self.update_spreadsheet()
             if previous_self and not (
                 (self.legend_one == previous_self.legend_one and self.weapon_one == previous_self.weapon_one and
                  self.legend_two == previous_self.legend_two and self.weapon_two == previous_self.weapon_two)
@@ -305,11 +310,16 @@ class Combo(models.Model):
             combo_count = combos.count()
             if not deleting:
                 combo_count += 1
+            background_color = ''
+            if combo_count > 0:
+                background_color = 'var(--color-tertriary)'
+                if combos.filter(is_recommended=True).exists() or self.is_recommended:
+                    background_color = 'var(--color-primary)'
             for cell_id in [cell_id_one, cell_id_two]:
                 cell = root.xpath(f'//a[@id="{cell_id}"]')
                 if cell:
                     cell = cell[0]
-                    cell.set('style', 'background-color: green;' if combo_count > 0 else '')
+                    cell.set('style', f'background-color: {background_color};')
                     cell.set('data-combo-count', str(combo_count))
             file.seek(0)
             file.write(etree.tostring(tree, pretty_print=True, encoding='utf-8', method='html').decode('utf-8'))
