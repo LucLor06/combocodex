@@ -8,6 +8,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from config.settings import BASE_DIR
 from datetime import datetime
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 def home(request):
     context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user(), 'today_combo_count': Combo.objects.filter(created_on=datetime.today()).count()}
@@ -21,6 +22,9 @@ def about(request):
 
 def robots_txt(request):
     content = """
+    User-agent: Twitterbot
+    Allow: /
+
     User-agent: *
     Disallow: /admin/
     Disallow: /api/
@@ -103,6 +107,12 @@ def combos_combo(request, pk):
     combo = get_object_or_404(Combo, pk=pk)
     context = {'combo': combo, 'related_combos': combo.get_similar() if not combo.has_universal else combo.get_exact()}
     return render(request, 'combos/combo.html', context)
+
+@xframe_options_exempt
+def combos_twitter_embed(request, pk):
+    combo = get_object_or_404(Combo, pk=pk)
+    context = {'combo': combo}
+    return render(request, 'combos/twitter_embed.html', context)
 
 def combos_spreadsheet(request):
     context = {'spreadsheet': ''}

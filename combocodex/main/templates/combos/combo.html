@@ -7,13 +7,20 @@ Combos | {{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) | {{ combo.le
 {% block embeds %}
 <meta property="og:title" content="{{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) {{ combo.legend_two.name }} ({{ combo.weapon_two.name }})"/>
 <meta property="og:description" content="Created on: {{ combo.created_on }} | Views: {{ combo.views }}">
-<meta property="og:url" content="https://www.combocodex.com/combos/{{ combo.pk }}/"/>
+<meta property="og:url" content="https://combocodex.com/combos/{{ combo.pk }}/"/>
 <meta property="og:video:url" content="{{ combo.video.url }}"/>
 <meta property="og:video:type" content=video/mp4>
 <meta property="og:type" content="video">
 <meta property="og:video:secure_url" content="{{ combo.video.url }}">
 <meta property="og:video:height" content="720">
 <meta property="og:video:width" content="1280">
+<meta name="twitter:card" content="player">
+<meta name="twitter:title" content="{{ combo.legend_one.name }} ({{ combo.weapon_one.name }}) {{ combo.legend_two.name }} ({{ combo.weapon_two.name }})">
+<meta name="twitter:site" content="@randy_bh">
+<meta name="twitter:image" content="{{ combo.poster.url }}">
+<meta name="twitter:player" content="https://combocodex.com/combos/twitter-embed/{{ combo.pk }}/">
+<meta name="twitter:player:width" content="1280">
+<meta name="twitter:player:height" content="720">
 {% endblock embeds %}
 
 

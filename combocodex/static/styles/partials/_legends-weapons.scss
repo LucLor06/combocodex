@@ -51,7 +51,7 @@
         cursor: default;
     }
 
-    .weapons {
+    .weapons, .weapons--universal {
         position: absolute;
         background-color: $color-base;
         left: 50%;
@@ -66,6 +66,10 @@
         transform: translateX(-50%);
         opacity: 0;
         box-sizing: content-box;
+        width: calc((2 * clamp(1.75rem, 2vw, 3.5rem)) + .5rem);
+    }
+
+    .weapons.weapons--universal {
         width: calc((3 * clamp(1.75rem, 2vw, 3.5rem)) + 1rem);
     }
 
@@ -85,7 +89,7 @@
     &:hover  {
         opacity: 1;
         scale: 1.05;
-        
+
         & > .weapons {
             pointer-events: all;
             opacity: 1;

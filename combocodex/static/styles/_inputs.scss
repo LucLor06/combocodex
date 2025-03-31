@@ -26,7 +26,7 @@ button, input[type='submit'], .button {
         width: $font-size-md;
         height: $font-size-md;
         fill: $color-text;
-        
+
         path {
             fill: $color-text;
         }
@@ -47,6 +47,10 @@ button, input[type='submit'], .button {
         .loader {
             display: block;
         }
+    }
+
+    .button--fit-content {
+        width: fit-content;
     }
 }
 

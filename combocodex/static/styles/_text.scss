@@ -60,6 +60,10 @@ p {
     a {
         margin: 0;
     }
+
+    & + p {
+        margin-block: 1rem
+    }
 }
 
 b {

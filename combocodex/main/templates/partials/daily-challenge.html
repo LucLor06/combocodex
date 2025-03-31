@@ -1,4 +1,4 @@
-<div class="daily-challenge">
+<a class="daily-challenge" href="{% url 'combos-search' %}?weapon={{ daily_challenge.weapon_one.id}}&weapon={{ daily_challenge.weapon_two.id }}&legend={{ daily_challenge.legend_one.id }}&legend={{ daily_challenge.legend_two.id }}">
     <p class="text--center text--xs">{{ daily_challenge.created_on }}</p>
     <div class="daily-challenge__pairs">
         <div class="daily-challenge__pair">
@@ -12,4 +12,4 @@
             <img src="{{ daily_challenge.weapon_two.icon }}">
         </div>
     </div>
-</div>
+</a>
