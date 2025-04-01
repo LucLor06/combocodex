@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from config.settings import BASE_DIR
 from datetime import datetime
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.generic import UpdateView
 
 def home(request):
     context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user(), 'today_combo_count': Combo.objects.filter(created_on=datetime.today()).count()}
@@ -98,7 +99,8 @@ def combos_verify(request):
             message = 'All combos verified!'
         elif action == 'reject':
             message = 'Combo rejected.'
-            reasoning = '. '.join(request.POST.getlist('reason')) + '.' if 'reason' in request.POST else None
+            reasons = [reason for reason in request.POST.getlist('reason') if reason != ''] if 'reason' in request.POST else None
+            reasoning = '. '.join(reasons) + '.' if reasons else None
             combo.reject(reasoning)
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/verify.html', context)
@@ -155,6 +157,14 @@ def combos_search(request):
 def redirect_combos_search(request):
     return redirect(reverse('combos-search'))
 
+class ComboUpdateView(UpdateView):
+    model = Combo
+
+    def get_success_url(self):
+        if self.request.htmx:
+            return self.request.htmx.current_url
+        return reverse('combos-combo', kwargs={'pk': self.object.pk})
+    
 def requests_list(request):
     requests = Request.objects.incomplete()
     context = {'requests': requests}
