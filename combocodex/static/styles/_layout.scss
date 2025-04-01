@@ -51,7 +51,7 @@ section {
     margin-inline: auto;
     width: clamp(340px, 70%, 1200px);
 
-    & > div:not(.combo) {
+    & > div:not(.combo, .modal) {
         margin-block: 1rem;
     }
 }

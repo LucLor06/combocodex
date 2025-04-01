@@ -9,7 +9,12 @@ from django.contrib.auth.decorators import login_required
 from config.settings import BASE_DIR
 from datetime import datetime
 from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DeleteView
+from django.contrib.auth.mixins import UserPassesTestMixin
+
+class StaffRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
 
 def home(request):
     context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user(), 'today_combo_count': Combo.objects.filter(created_on=datetime.today()).count()}
@@ -157,13 +162,23 @@ def combos_search(request):
 def redirect_combos_search(request):
     return redirect(reverse('combos-search'))
 
-class ComboUpdateView(UpdateView):
+class ComboUpdateView(UpdateView, StaffRequiredMixin):
+    model = Combo
+    fields = ['is_outdated', 'is_recommended']
+
+    def form_valid(self, form):
+        self.object = form.save()
+        print(self.object.is_outdated)
+        if self.request.htmx:
+            context = {'combo': self.object}
+            return render(self.request, 'partials/combo.html', context)
+        return reverse('combos-combo', kwargs={'pk': self.object.pk})
+    
+class ComboDeleteView(DeleteView, StaffRequiredMixin):
     model = Combo
 
     def get_success_url(self):
-        if self.request.htmx:
-            return self.request.htmx.current_url
-        return reverse('combos-combo', kwargs={'pk': self.object.pk})
+        return self.request.POST.get('next', '')
     
 def requests_list(request):
     requests = Request.objects.incomplete()

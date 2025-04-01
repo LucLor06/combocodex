@@ -32,6 +32,13 @@ end"{% endif %}>
                 </div>
                 {% endif %}
                 {% if request.user.is_staff %}
+                <div class="pointer" _="
+                on click
+                    remove .hidden from the next .modal
+                end">
+                    <p class="tooltip">Actions</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                </div>
                 <a href="{{ combo.get_admin_url }}" target="_blank">
                     <p class="tooltip">Admin</p>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Zm70-80h79l14-106q31-8 57.5-23.5T639-327l99 41 39-68-86-65q5-14 7-29.5t2-31.5q0-16-2-31.5t-7-29.5l86-65-39-68-99 42q-22-23-48.5-38.5T533-694l-13-106h-79l-14 106q-31 8-57.5 23.5T321-633l-99-41-39 68 86 64q-5 15-7 30t-2 32q0 16 2 31t7 30l-86 65 39 68 99-42q22 23 48.5 38.5T427-266l13 106Zm42-180q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm-2-140Z"/></svg>
@@ -93,6 +100,47 @@ end"{% endif %}>
             </div>
         </div>
     </div>
+    {% if request.user.is_staff %}
+    <div class="modal hidden" hx-indicator="*:has( > .loader)">
+        <div class="modal__content">
+            <form id="combo-actions__form" class="modal__main" hx-post="{% url 'combos-update' combo.pk %}" hx-target="closest .combo" hx-swap="outerHTML">
+                <label class="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m387-412 35-114-92-74h114l36-112 36 112h114l-93 74 35 114-92-71-93 71ZM240-40v-309q-38-42-59-96t-21-115q0-134 93-227t227-93q134 0 227 93t93 227q0 61-21 115t-59 96v309l-240-80-240 80Zm240-280q100 0 170-70t70-170q0-100-70-170t-170-70q-100 0-170 70t-70 170q0 100 70 170t170 70ZM320-159l160-41 160 41v-124q-35 20-75.5 31.5T480-240q-44 0-84.5-11.5T320-283v124Zm160-62Z"/></svg>
+                    <p>Recommended</p>
+                    <input type="checkbox" name="is_recommended" {% if combo.is_recommended %}checked{% endif %}>
+                </label>
+                <label class="button">
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m388-212-56-56 92-92-92-92 56-56 92 92 92-92 56 56-92 92 92 92-56 56-92-92-92 92ZM200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/></svg>
+                    <p>Outdated</p>
+                    <input type="checkbox" name="is_outdated" {% if combo.is_outdated %}checked{% endif %}>
+                </label>
+                <label class="button">
+                    <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
+                    <p>Map Specific</p>
+                    <input type="checkbox" name="is_map_specific" {% if combo.is_map_specific %}checked{% endif %}>
+                </label>
+            </form>
+            <div class="modal__actions">
+                <form method="post" action="{% url 'combos-delete' combo.pk %}" _="
+                on submit
+                    confirm('Are you sure? I cannot undo this.')
+                end">
+                    {% csrf_token %}
+                    <button type="submit" class="button--error">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                        <p>Delete</p>
+                    </button>
+                    <input type="hidden" name="next" value="/combos/search/">
+                </form>
+                <button type="submit" form="combo-actions__form">
+                    <svg class="loader" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><style>.spinner_HIK5{transform-origin:center;animation:spinner_XVY9 1s cubic-bezier(0.36,.6,.31,1) infinite}@keyframes spinner_XVY9{50%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}</style><circle cx="12" cy="12" r="3"/><g class="spinner_HIK5"><circle cx="4" cy="12" r="3"/><circle cx="20" cy="12" r="3"/></g></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg>
+                    <p>Save</p>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <video muted playsinline src="{{ combo.video.url }}" {% if combo.poster %}poster="{{ combo.poster.url }}"{% endif %} _="
     on load
         make a Plyr from me, {controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'download', 'fullscreen'], storage: {enabled: false}}

@@ -116,7 +116,7 @@
         display: none;
     }
 
-    &:has(input:checked) {
+    &:has(input:checked) { 
         .combo-favorite--unfavorite {
             display: block;
         }

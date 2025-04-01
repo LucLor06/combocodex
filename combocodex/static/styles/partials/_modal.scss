@@ -23,14 +23,16 @@
         gap: 1rem;
         max-height: 100%;
 
-        .modal__actions {
+        .modal__actions, .modal__actions > form{
             margin-top: auto;
             display: flex;
             justify-content: center;
             gap: 1rem;
+            margin-inline: auto;
+            width: 80%;
 
-            button, .button {
-                width: 80%;
+            & > * {
+                flex: 1;
             }
         }
 
