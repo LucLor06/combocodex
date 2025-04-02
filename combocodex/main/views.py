@@ -170,6 +170,7 @@ class ComboUpdateView(UpdateView, StaffRequiredMixin):
         self.object = form.save()
         print(self.object.is_outdated)
         if self.request.htmx:
+            print(self.object)
             context = {'combo': self.object}
             return render(self.request, 'partials/combo.html', context)
         return reverse('combos-combo', kwargs={'pk': self.object.pk})
