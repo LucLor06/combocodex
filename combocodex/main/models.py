@@ -10,9 +10,9 @@ from PIL import Image
 import os
 import imageio
 from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import UploadedFile
 from datetime import datetime
 from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 from lxml import etree
 import portalocker
 
@@ -97,15 +97,8 @@ class ComboManager(models.Manager):
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
         video = files.get('video')
-        video_bytes = io.BytesIO(video.read())
-        video_bytes.seek(0)
-        reader = imageio.get_reader(video_bytes, format="mp4")
-        frame = reader.get_next_data()
-        image = io.BytesIO()
-        Image.fromarray(frame).save(image, format='JPEG', optimize=True, quality=25)
-        poster = ContentFile(image.getvalue(), name='temp.jpg')
-        video_duration = reader.get_meta_data()['duration']
-        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, video_duration=video_duration, poster=poster, **kwargs)
+        video_data = Combo.process_video(video)
+        combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, **video_data, **kwargs)
         combo.users.set(users)
         combo.guests.set(guests)
         if is_verified:
@@ -206,7 +199,9 @@ class Combo(models.Model):
             previous_self = None
             if self.pk:
                 previous_self = Combo.objects.get(pk=self.pk)
-            if self.is_recommended and ((previous_self and not previous_self.is_recommended) or (not self.pk)):
+            if self.is_recommended and (
+                (previous_self and not previous_self.is_recommended) or (not self.pk)
+            ):
                 self.get_exact().exclude(pk=self.pk).update(is_recommended=False)
                 if not self.get_exact().filter(is_recommended=True).exists():
                     self.update_spreadsheet()
@@ -214,10 +209,10 @@ class Combo(models.Model):
                 self.update_spreadsheet()
             if previous_self and not (
                 (self.legend_one == previous_self.legend_one and self.weapon_one == previous_self.weapon_one and
-                 self.legend_two == previous_self.legend_two and self.weapon_two == previous_self.weapon_two)
+                self.legend_two == previous_self.legend_two and self.weapon_two == previous_self.weapon_two)
                 or
                 (self.legend_one == previous_self.legend_two and self.weapon_one == previous_self.weapon_two and
-                 self.legend_two == previous_self.legend_one and self.weapon_two == previous_self.weapon_one)
+                self.legend_two == previous_self.legend_one and self.weapon_two == previous_self.weapon_one)
             ):
                 previous_self.update_spreadsheet(deleting=True)
                 previous_self.set_next_exact_recommended()
@@ -225,7 +220,14 @@ class Combo(models.Model):
                 self.is_recommended = False
             if not self.pk and not self.get_exact().exists():
                 self.is_recommended = True
+            if previous_self and self.video.name != previous_self.video.name:
+                previous_self.video.delete(save=False)
+                previous_self.poster.delete(save=False)
+                video_data = Combo.process_video(self.video)
+                self.video_duration = video_data['video_duration']
+                self.poster = video_data['poster']
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
@@ -285,6 +287,7 @@ class Combo(models.Model):
                 combo.save(skip_custom_logic=True)
                 return True
         return False
+        
 
     @property
     def has_universal(self):
@@ -328,6 +331,21 @@ class Combo(models.Model):
             os.fsync(file.fileno())
             portalocker.unlock(file)
         print(f'Sheet updated for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
+
+    @classmethod
+    def process_video(cls, video):
+        if not hasattr(video, 'read'):
+            raise TypeError('Expected a file-like object with .read().')
+        video_bytes = io.BytesIO(video.read())
+        video_bytes.seek(0)
+        reader = imageio.get_reader(video_bytes, format="mp4")
+        frame = reader.get_next_data()
+        image = io.BytesIO()
+        Image.fromarray(frame).save(image, format='JPEG', optimize=True, quality=25)
+        poster = ContentFile(image.getvalue(), name='temp.jpg')
+        video_duration = reader.get_meta_data()['duration']
+        video.seek(0)
+        return {'poster': poster, 'video_duration': video_duration}
 
 class RequestManager(models.Manager):
     def complete(self):

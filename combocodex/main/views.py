@@ -105,7 +105,7 @@ def combos_verify(request):
         elif action == 'reject':
             message = 'Combo rejected.'
             reasons = [reason for reason in request.POST.getlist('reason') if reason != ''] if 'reason' in request.POST else None
-            reasoning = '. '.join(reasons) + '.' if reasons else None
+            reasoning = '. '.join(reasons).rstrip('.') + '.' if reasons else None
             combo.reject(reasoning)
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/verify.html', context)
