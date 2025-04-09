@@ -112,7 +112,7 @@ def combos_verify(request):
 
 def combos_combo(request, pk):
     combo = get_object_or_404(Combo, pk=pk)
-    context = {'combo': combo, 'related_combos': combo.get_similar() if not combo.has_universal else combo.get_exact()}
+    context = {'combo': combo, 'related_combos': combo.get_combos_with_matching_legends() if not combo.has_universal else combo.get_combos_with_matching_pairs()}
     return render(request, 'combos/combo.html', context)
 
 @xframe_options_exempt

@@ -79,50 +79,62 @@ class ComboManager(models.Manager):
 
     def create_from_post(self, post, files, submitter=None, **kwargs):
         from user.models import User
+
+        is_verified = False
+        if (submitter and submitter.is_authenticated and submitter.is_trusted) or kwargs.get('is_recommended', False):
+            is_verified = True
+
         users = []
         guests = []
         usernames = post.getlist('user') if not kwargs.get('users') else kwargs.pop('users')
         usernames = [username for username in usernames if username != ''][:2]
-        is_verified = False
-        if (submitter and submitter.is_authenticated and submitter.is_trusted) or kwargs.get('is_recommended', False):
-            is_verified = True
         for username in usernames:
             try:
                 users.append(User.objects.get(username=username))
             except User.DoesNotExist:
                 guest, created = Guest.objects.get_or_create(username=username, defaults={'username': username})
                 guests.append(guest)
+
         legend_one = Legend.objects.get(id=post.get('legend_one'))
         weapon_one = Weapon.objects.get(id=post.get('weapon_one'))
         legend_two = Legend.objects.get(id=post.get('legend_two'))
         weapon_two = Weapon.objects.get(id=post.get('weapon_two'))
+
         video = files.get('video')
         video_data = Combo.process_video(video)
+
         combo = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two, video=video, **video_data, **kwargs)
         combo.users.set(users)
         combo.guests.set(guests)
+
         if is_verified:
             combo = combo.verify()
+            
         return combo
 
     def search(self, legends=[], weapons=[], users=[], **kwargs):
         from user.models import User
+
         DEFAULT_EXCLUDES = {'is_outdated': True, 'is_map_specific': True, 'is_verified': False}
         ignore_default_excludes = kwargs.pop('ignore_default_excludes', [])
         exclude_query = Q()
         for field, value in DEFAULT_EXCLUDES.items():
             if field not in ignore_default_excludes:
                 exclude_query |= Q(**{field: value})
+
         legends = legends[:2]
         weapons = weapons[:2]
         paginate = kwargs.pop('paginate', True)
+        page_number = kwargs.pop('page', 1)
+        recommended_first = kwargs.pop('recommended_first', True)
+
         order_by = kwargs.pop('order_by', 'id')
         order_by_function = kwargs.pop('order_by_function', 'descending')
-        recommended_first = kwargs.pop('recommended_first', True)
         if order_by_function == 'descending' and not order_by.startswith('-'):
             order_by = f'-{order_by}'
-        page_number = kwargs.pop('page', 1)
+
         combos = self.all().exclude(exclude_query)
+
         users = [user.strip() for user in users if user][:2]
         for username in users:
             try:
@@ -131,31 +143,41 @@ class ComboManager(models.Manager):
             except User.DoesNotExist:
                 guest = Guest.objects.get(username__iexact=username)
                 combos = combos.filter(guests=guest)
+        
         legend_filter = Q()
         if len(legends) == 2 and legends[0] == legends[1]:
             legend_filter = Q(legend_one=legends[0], legend_two=legends[0])
         else:
             for legend in legends:
                 legend_filter &= Q(legend_one=legend) | Q(legend_two=legend)
+
         weapon_filter = Q()
         if len(weapons) == 2 and weapons[0] == weapons[1]:
             weapon_filter = Q(weapon_one=weapons[0], weapon_two=weapons[0])
         else:
             for weapon in weapons:
                 weapon_filter &= Q(weapon_one=weapon) | Q(weapon_two=weapon)
+
         kwarg_filter = Q(**kwargs)
+
         combos = combos.filter(legend_filter & weapon_filter & kwarg_filter)
+
         if recommended_first:
             combos = combos.order_by('-is_recommended', order_by)
         else:
             combos = combos.order_by(order_by)
+    
         combo_count = combos.count()
+
         data = {'combo_count': combo_count, 'combos': combos}
+
         if paginate:
             paginator = Paginator(combos, 10)
             page = paginator.get_page(page_number)
             data.update({'combos': page.object_list, 'page': page})
+
         return data
+
 
 class Combo(models.Model):
     CODEX_COINS = 5
@@ -189,42 +211,51 @@ class Combo(models.Model):
 
     def save(self, *args, **kwargs):
         skip_custom_logic = kwargs.pop('skip_custom_logic', False)
-        if not skip_custom_logic:
-            previous_self = None
-            if self.pk:
-                previous_self = Combo.objects.get(pk=self.pk)
-            if self.is_recommended and (
-                (previous_self and not previous_self.is_recommended) or (not self.pk)
-            ):
-                self.get_exact().exclude(pk=self.pk).update(is_recommended=False)
-                if not self.get_exact().filter(is_recommended=True).exists():
-                    self.update_spreadsheet()
-            elif not self.is_recommended and previous_self and previous_self.is_recommended:
-                self.update_spreadsheet()
-            if previous_self and not (
-                (self.legend_one == previous_self.legend_one and self.weapon_one == previous_self.weapon_one and
-                self.legend_two == previous_self.legend_two and self.weapon_two == previous_self.weapon_two)
-                or
-                (self.legend_one == previous_self.legend_two and self.weapon_one == previous_self.weapon_two and
-                self.legend_two == previous_self.legend_one and self.weapon_two == previous_self.weapon_one)
-            ):
-                previous_self.update_spreadsheet(deleting=True)
-                previous_self.set_next_exact_recommended()
-                self.update_spreadsheet()
-                self.is_recommended = False
-            if not self.pk and not self.get_exact().exists():
-                self.is_recommended = True
-            if previous_self and self.video.name != previous_self.video.name:
-                previous_self.video.delete(save=False)
-                previous_self.poster.delete(save=False)
-                video_data = Combo.process_video(self.video)
-                self.video_duration = video_data['video_duration']
-                self.poster = video_data['poster']
-        super().save(*args, **kwargs)
+        if skip_custom_logic:
+            return super().save(*args, **kwargs)
+        
+        previous_self = Combo.objects.get(pk=self.pk) if self.pk else None
+        combos_with_matching_pairs = self.get_combos_with_matching_pairs()
 
+        now_recommended = self.is_recommended and previous_self and not previous_self.is_recommended
+        previously_recommended = not self.is_recommended and previous_self and previous_self.is_recommended
+        if now_recommended or (self.is_recommended and not self.pk):
+            has_matching_recommended = combos_with_matching_pairs.filter(is_recommended=True).exists()
+            combos_with_matching_pairs.exclude(pk=self.pk).update(is_recommended=False)
+            if not has_matching_recommended:
+                self.update_spreadsheet()
+        elif previously_recommended:
+            self.update_spreadsheet()
+
+        if previous_self and not self.has_matching_pairs(previous_self):
+            previous_self.update_spreadsheet(deleting=True)
+            previous_self.set_next_recommended()
+            self.update_spreadsheet()
+            self.is_recommended = False
+
+        if previous_self and self.video.name != previous_self.video.name:
+            previous_self.video.delete(save=False)
+            previous_self.poster.delete(save=False)
+            video_data = Combo.process_video(self.video)
+            self.video_duration = video_data['video_duration']
+            self.poster = video_data['poster']
+
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
+    
+    def value_has_changed(self, previous_self: 'Combo', field_name: str) -> bool:
+        return getattr(self, field_name) != getattr(previous_self, field_name)
+
+    def has_matching_pairs(self, combo: 'Combo') -> bool:
+        return (
+            (self.legend_one == combo.legend_one and self.weapon_one == combo.weapon_one and
+            self.legend_two == combo.legend_two and self.weapon_two == combo.weapon_two)
+            or
+            (self.legend_one == combo.legend_two and self.weapon_one == combo.weapon_two and
+            self.legend_two == combo.legend_one and self.weapon_two == combo.weapon_one)
+        )
 
     def verify(self):
         if not self.is_verified:
@@ -263,25 +294,24 @@ class Combo(models.Model):
             return True
         return False
 
-    def get_similar(self):
+    def get_combos_with_matching_legends(self):
         return Combo.objects.verified().filter(Q(legend_one=self.legend_one, legend_two=self.legend_two) | Q(legend_one=self.legend_two, legend_two=self.legend_one)).exclude(id=self.id)
 
-    def get_exact(self, exclude_self=True):
+    def get_combos_with_matching_pairs(self, exclude_self=True):
         combos = Combo.objects.verified().filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one))
         if exclude_self:
             combos = combos.exclude(id=self.id)
         return combos
 
-    def set_next_exact_recommended(self):
+    def set_next_recommended(self):
         if self.is_recommended:
-            combos = self.get_exact()
+            combos = self.get_combos_with_matching_pairs()
             if combos.exists():
                 combo = combos.first()
                 combo.is_recommended = True
                 combo.save(skip_custom_logic=True)
                 return True
         return False
-
 
     @property
     def has_universal(self):
@@ -292,7 +322,6 @@ class Combo(models.Model):
         return 'Unarmed' in [self.weapon_one.name, self.weapon_two.name]
 
     def update_spreadsheet(self, deleting=False):
-        print(f'Updating sheet for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
         if self.has_universal or self.is_outdated or self.has_unarmed:
             return
         spreadsheet_path = str(BASE_DIR / 'main/templates/combos/rendered_sheet.html')
@@ -303,7 +332,7 @@ class Combo(models.Model):
             root = tree.getroot()
             cell_id_one = f'{self.legend_one.slug}-{self.weapon_one.slug}-{self.legend_two.slug}-{self.weapon_two.slug}'
             cell_id_two = f'{self.legend_two.slug}-{self.weapon_two.slug}-{self.legend_one.slug}-{self.weapon_one.slug}'
-            combos = self.get_exact(exclude_self=True)
+            combos = self.get_combos_with_matching_pairs(exclude_self=True)
             combo_count = combos.count()
             if not deleting:
                 combo_count += 1
@@ -324,7 +353,6 @@ class Combo(models.Model):
             file.flush()
             os.fsync(file.fileno())
             portalocker.unlock(file)
-        print(f'Sheet updated for: {self.legend_one.slug} {self.weapon_one.slug} {self.legend_two.slug} {self.weapon_two.slug}')
 
     @classmethod
     def process_video(cls, video):
@@ -340,6 +368,7 @@ class Combo(models.Model):
         video_duration = reader.get_meta_data()['duration']
         video.seek(0)
         return {'poster': poster, 'video_duration': video_duration}
+    
 
 class RequestManager(models.Manager):
     def complete(self):

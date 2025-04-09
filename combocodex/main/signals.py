@@ -5,7 +5,7 @@ from .models import Combo, Legend
 @receiver(pre_delete, sender=Combo)
 def combo_pre_delete(sender, instance, **kwargs):
     if instance.is_verified:
-        instance.set_next_exact_recommended()
+        instance.set_next_recommended()
         instance.update_spreadsheet(deleting=True)
 
 @receiver(post_delete, sender=Combo)
