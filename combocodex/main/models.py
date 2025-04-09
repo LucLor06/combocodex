@@ -107,6 +107,12 @@ class ComboManager(models.Manager):
 
     def search(self, legends=[], weapons=[], users=[], **kwargs):
         from user.models import User
+        DEFAULT_EXCLUDES = {'is_outdated': True, 'is_map_specific': True, 'is_verified': False}
+        ignore_default_excludes = kwargs.pop('ignore_default_excludes', [])
+        exclude_query = Q()
+        for field, value in DEFAULT_EXCLUDES.items():
+            if field not in ignore_default_excludes:
+                exclude_query |= Q(**{field: value})
         legends = legends[:2]
         weapons = weapons[:2]
         paginate = kwargs.pop('paginate', True)
@@ -116,7 +122,7 @@ class ComboManager(models.Manager):
         if order_by_function == 'descending' and not order_by.startswith('-'):
             order_by = f'-{order_by}'
         page_number = kwargs.pop('page', 1)
-        combos = self.all() if bool(kwargs.pop('is_verified', False)) else self.verified()
+        combos = self.all().exclude(exclude_query)
         users = [user.strip() for user in users if user][:2]
         for username in users:
             try:
@@ -151,18 +157,6 @@ class ComboManager(models.Manager):
             data.update({'combos': page.object_list, 'page': page})
         return data
 
-    def spreadsheet_data(self):
-        combinations = {}
-        for legend_one in Legend.objects.prefetch_related('weapons'):
-            for weapon_one in legend_one.weapons.all():
-                for legend_two in Legend.objects.prefetch_related('weapons'):
-                    for weapon_two in legend_two.weapons.all():
-                        combos = self.filter(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one)).exclude(is_outdated=True)
-                        count = combos.count()
-                        has_recommended = combos.filter(is_recommended=True).exists()
-                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count, 'has_recommended': has_recommended}
-        return combinations
-
 class Combo(models.Model):
     CODEX_COINS = 5
     is_verified = models.BooleanField(default=False)
@@ -179,7 +173,7 @@ class Combo(models.Model):
     guests = models.ManyToManyField('Guest', blank=True, related_name='combos', editable=False)
     video = models.FileField(upload_to=combo_video_upload_to)
     video_duration = models.FloatField()
-    poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to)
+    poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to, editable=False)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL, editable=False)
     views = models.PositiveIntegerField(default=0, editable=False)
     objects = ComboManager()
@@ -287,7 +281,7 @@ class Combo(models.Model):
                 combo.save(skip_custom_logic=True)
                 return True
         return False
-        
+
 
     @property
     def has_universal(self):

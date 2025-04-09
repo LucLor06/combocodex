@@ -131,7 +131,7 @@ def combos_spreadsheet(request):
     response.headers['Expires'] = '0'
     return response
 
-def combos_search(request):
+def combos_search(request: HttpRequest):
     if request.htmx and 'filter_users' in request.GET:
         users = User.objects.filter(username__icontains=request.GET['filter_users'])
         return render(request, 'combos/submit.html#users', {'users': users})
@@ -140,19 +140,18 @@ def combos_search(request):
     legends =  request.GET.getlist('legend', [])
     order_by = request.GET.get('order_by', 'id')
     order_by_function = request.GET.get('order_by_function', 'descending')
-    show_unverified = bool(request.GET.get('show_unverified', False))
+    includes = request.GET.getlist('includes', [])
     recommended_first = 'recommended_first' in request.GET if request.GET else True
     users = request.GET.getlist('user', [])
-    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, order_by_function=order_by_function, is_verified=not show_unverified, recommended_first=recommended_first)
+    context = Combo.objects.search(legends, weapons, users, page=page_number, order_by=order_by, order_by_function=order_by_function, recommended_first=recommended_first, ignore_default_excludes=includes)
     if request.htmx and not request.htmx.history_restore_request:
         return render(request, 'combos/search.html#combos', context)
-    print(legends, weapons)
     context.update({
         'selected_legends': [Legend.objects.get(id=id) for id in legends[:2]],
         'selected_weapons': [Weapon.objects.get(id=id) for id in weapons[:2]],
         'order_by': order_by,
         'order_by_function': order_by_function,
-        'show_unverified': show_unverified,
+        'includes': includes,
         'recommended_first': recommended_first,
         'legends': Legend.objects.all(),
         'weapons': Weapon.objects.all(),
@@ -164,7 +163,7 @@ def redirect_combos_search(request):
 
 class ComboUpdateView(UpdateView, StaffRequiredMixin):
     model = Combo
-    fields = ['is_outdated', 'is_recommended']
+    fields = ['is_outdated', 'is_recommended', 'is_map_specific']
 
     def form_valid(self, form):
         self.object = form.save()
@@ -174,13 +173,13 @@ class ComboUpdateView(UpdateView, StaffRequiredMixin):
             context = {'combo': self.object}
             return render(self.request, 'partials/combo.html', context)
         return reverse('combos-combo', kwargs={'pk': self.object.pk})
-    
+
 class ComboDeleteView(DeleteView, StaffRequiredMixin):
     model = Combo
 
     def get_success_url(self):
         return self.request.POST.get('next', '')
-    
+
 def requests_list(request):
     requests = Request.objects.incomplete()
     context = {'requests': requests}
