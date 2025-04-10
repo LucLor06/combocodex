@@ -55,13 +55,13 @@ Requests | Submit
             {% for legend in legends %}
             <div class="pair-container">
                 <div class="legend">
-                    <img src="{{ legend.icon }}">
+                    <img draggable="false" src="{{ legend.icon }}">
                     <input type="hidden" value="{{ legend.id }}">
                 </div>
                 <div class="weapons{% if legend.name == 'Universal' %} weapons--universal{% endif %}">
                     {% for weapon in legend.weapons.all %}
                     <div class="weapon" _="install PairAdd">
-                        <img src="{{ weapon.icon }}">
+                        <img draggable="false" src="{{ weapon.icon }}">
                         <input type="hidden" value="{{ weapon.id }}">
                     </div>
                     {% endfor %}

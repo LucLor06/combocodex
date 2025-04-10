@@ -109,7 +109,7 @@ class ComboManager(models.Manager):
 
         if is_verified:
             combo = combo.verify()
-            
+
         return combo
 
     def search(self, legends=[], weapons=[], users=[], **kwargs):
@@ -143,7 +143,7 @@ class ComboManager(models.Manager):
             except User.DoesNotExist:
                 guest = Guest.objects.get(username__iexact=username)
                 combos = combos.filter(guests=guest)
-        
+
         legend_filter = Q()
         if len(legends) == 2 and legends[0] == legends[1]:
             legend_filter = Q(legend_one=legends[0], legend_two=legends[0])
@@ -166,7 +166,7 @@ class ComboManager(models.Manager):
             combos = combos.order_by('-is_recommended', order_by)
         else:
             combos = combos.order_by(order_by)
-    
+
         combo_count = combos.count()
 
         data = {'combo_count': combo_count, 'combos': combos}
@@ -197,7 +197,7 @@ class Combo(models.Model):
     video_duration = models.FloatField()
     poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to, editable=False)
     daily_challenge = models.ForeignKey('DailyChallenge', blank=True, null=True, related_name='combos', on_delete=models.SET_NULL, editable=False)
-    views = models.PositiveIntegerField(default=0, editable=False)
+    views = models.PositiveIntegerField(default=0)
     objects = ComboManager()
 
     class Meta:
@@ -213,7 +213,7 @@ class Combo(models.Model):
         skip_custom_logic = kwargs.pop('skip_custom_logic', False)
         if skip_custom_logic:
             return super().save(*args, **kwargs)
-        
+
         previous_self = Combo.objects.get(pk=self.pk) if self.pk else None
         combos_with_matching_pairs = self.get_combos_with_matching_pairs()
 
@@ -244,7 +244,7 @@ class Combo(models.Model):
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'
-    
+
     def value_has_changed(self, previous_self: 'Combo', field_name: str) -> bool:
         return getattr(self, field_name) != getattr(previous_self, field_name)
 
@@ -368,7 +368,7 @@ class Combo(models.Model):
         video_duration = reader.get_meta_data()['duration']
         video.seek(0)
         return {'poster': poster, 'video_duration': video_duration}
-    
+
 
 class RequestManager(models.Manager):
     def complete(self):
