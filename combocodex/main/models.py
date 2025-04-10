@@ -11,6 +11,7 @@ import os
 import imageio
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import UploadedFile
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from datetime import datetime
 from django.core.files.storage import default_storage
 from lxml import etree
@@ -209,8 +210,10 @@ class Combo(models.Model):
     def get_admin_url(self):
         return reverse('admin:main_combo_change', args=[self.pk])
 
-    def save(self, *args, **kwargs):
-        skip_custom_logic = kwargs.pop('skip_custom_logic', False)
+    def save(self, *args, skip_custom_logic=False, skip_validation=False, **kwargs):
+        if not skip_validation:
+            self.full_clean()
+
         if skip_custom_logic:
             return super().save(*args, **kwargs)
 
@@ -241,6 +244,15 @@ class Combo(models.Model):
             self.poster = video_data['poster']
 
         return super().save(*args, **kwargs)
+    
+    def clean(self):
+        errors = {}
+
+        if not self.legend_one.weapons.filter(pk=self.weapon_one.pk).exists() or not self.legend_two.weapons.filter(pk=self.weapon_two.pk).exists():
+            errors.setdefault(NON_FIELD_ERRORS, []).append('Legends and weapons do not match')
+
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return f'{self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name})'

@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from user.models import User
+from django.core.exceptions import ValidationError
 
 class ComboListView(ListAPIView):
     serializer_class = ComboSerailizer
@@ -46,6 +47,7 @@ def api_combos_upload(request):
     kwargs = {key.replace('kwarg_', 'is_'): True for key in request.POST if key.startswith('kwarg_')}
     user_ids = [post['user_one_id'], post['user_two_id']]
     usernames = [post['user_one_name'], post['user_two_name']]
+    response = {}
     try:
         submitter = User.objects.get(discord_id=post['discord_id'])
     except User.DoesNotExist:
@@ -56,5 +58,11 @@ def api_combos_upload(request):
             users.append(User.objects.get(discord_id=discord_id).username)
         except User.DoesNotExist:
             users.append(username)
-    combo = Combo.objects.create_from_post(post, request.FILES, submitter, users=users, **kwargs)
-    return Response({'message': 'Combo successfully submitted!'})
+    try:
+        combo = Combo.objects.create_from_post(post, request.FILES, submitter, users=users, **kwargs)
+        message = 'Combo successfully submitted'
+    except ValidationError as e:
+        message = 'There were errors when submitting your combo'
+        response['errors'] = '. '.join(e.message_dict.get('__all__', [])) + '.'
+    response['message'] = message
+    return Response({'message': 'Combo successfully submitted!'}, status=422)

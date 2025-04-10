@@ -11,6 +11,7 @@ from datetime import datetime
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import UpdateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.exceptions import ValidationError
 
 class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -73,8 +74,11 @@ def combos_submit(request):
         if video.size > 25 * 1024 * 1024:
             message = 'Please make sure your videos are less than 25mb.'
         else:
-            Combo.objects.create_from_post(request.POST, request.FILES, request.user)
-            message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
+            try:
+                Combo.objects.create_from_post(request.POST, request.FILES, request.user)
+                message = 'Combo submitted! Please note it may take some time before mods verify your combo!'
+            except ValidationError as e:
+                message = '. '.join(e.message_dict.get('__all__', [])) + '.'
         return render(request, 'partials/modal-message.html', {'message': message})
     return render(request, 'combos/submit.html', context)
 
@@ -169,9 +173,7 @@ class ComboUpdateView(UpdateView, StaffRequiredMixin):
 
     def form_valid(self, form):
         self.object = form.save()
-        print(self.object.is_outdated)
         if self.request.htmx:
-            print(self.object)
             context = {'combo': self.object}
             return render(self.request, 'partials/combo.html', context)
         return reverse('combos-combo', kwargs={'pk': self.object.pk})
