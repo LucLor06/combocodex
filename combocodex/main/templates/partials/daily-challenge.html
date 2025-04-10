@@ -1,15 +1,15 @@
-<a class="daily-challenge" href="{% url 'combos-search' %}?weapon={{ daily_challenge.weapon_one.id}}&weapon={{ daily_challenge.weapon_two.id }}&legend={{ daily_challenge.legend_one.id }}&legend={{ daily_challenge.legend_two.id }}">
+<a draggable="false" class="daily-challenge" href="{% url 'combos-search' %}?weapon={{ daily_challenge.weapon_one.id}}&weapon={{ daily_challenge.weapon_two.id }}&legend={{ daily_challenge.legend_one.id }}&legend={{ daily_challenge.legend_two.id }}">
     <p class="text--center text--xs">{{ daily_challenge.created_on }}</p>
     <div class="daily-challenge__pairs">
         <div class="daily-challenge__pair">
             <p class="tooltip">{{ daily_challenge.legend_one.name }} ({{ daily_challenge.weapon_one.name }})</p>
-            <img src="{{ daily_challenge.legend_one.icon }}">
-            <img src="{{ daily_challenge.weapon_one.icon }}">
+            <img draggable="false" src="{{ daily_challenge.legend_one.icon }}">
+            <img draggable="false" src="{{ daily_challenge.weapon_one.icon }}">
         </div>
         <div class="daily-challenge__pair">
             <p class="tooltip">{{ daily_challenge.legend_two.name }} ({{ daily_challenge.weapon_two.name }})</p>
-            <img src="{{ daily_challenge.legend_two.icon }}">
-            <img src="{{ daily_challenge.weapon_two.icon }}">
+            <img draggable="false" src="{{ daily_challenge.legend_two.icon }}">
+            <img draggable="false" src="{{ daily_challenge.weapon_two.icon }}">
         </div>
     </div>
 </a>

@@ -11,16 +11,16 @@ on play from <video/> in me
     end
 end"{% endif %}>
     <div class="combo-data">
-        <a class="combo-data__pairs" href="{{ combo.get_absolute_url }}">
+        <a draggable="false" class="combo-data__pairs" href="{{ combo.get_absolute_url }}">
             <div class="combo-data__pair">
                 <p class="tooltip">{{ combo.legend_one.name }} ({{ combo.weapon_one.name }})</p>
-                <img src="{{ combo.legend_one.icon }}">
-                <img src="{{ combo.weapon_one.icon }}">
+                <img draggable="false" src="{{ combo.legend_one.icon }}">
+                <img draggable="false" src="{{ combo.weapon_one.icon }}">
             </div>
             <div class="combo-data__pair">
                 <p class="tooltip">{{ combo.legend_two.name }} ({{ combo.weapon_two.name }})</p>
-                <img src="{{ combo.legend_two.icon }}">
-                <img src="{{ combo.weapon_two.icon }}">
+                <img draggable="false" src="{{ combo.legend_two.icon }}">
+                <img draggable="false" src="{{ combo.weapon_two.icon }}">
             </div>
         </a>
         <div class="combo-data__info">

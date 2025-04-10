@@ -105,7 +105,7 @@ Combos | Search
                             increment global legendCount
                             trigger legendcountchanged
                         end">
-                            <img src="{{ legend.icon }}">
+                            <img draggable="false" src="{{ legend.icon }}">
                             <input type="hidden" name='legend' value="{{ legend.id }}">
                         </div>
                         {% endfor %}
@@ -119,7 +119,7 @@ Combos | Search
                             trigger weaponcountchanged
                         end
                         ">
-                            <img src="{{ weapon.icon }}">
+                            <img draggable="false" src="{{ weapon.icon }}">
                             <input type="hidden" name='weapon' value="{{ weapon.id }}">
                         </div>
                         {% endfor %}

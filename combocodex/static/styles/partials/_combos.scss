@@ -62,6 +62,7 @@
             display: flex;
             gap: 2vw;
             align-items: center;
+            user-select: none;
 
             .combo-data__pair {
                 display: flex;
@@ -70,6 +71,7 @@
                 img {
                     flex: 1;
                     width: 50%;
+                    -webkit-user-drag: none;
                 }
             }
         }

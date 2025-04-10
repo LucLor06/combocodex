@@ -37,11 +37,13 @@
             width: clamp(4rem, 50%, 8rem);
             flex: 1;
             max-width: 50%;
+            user-select: none;
 
             img {
                 display: block;
                 flex: 1;
                 width: 50%;
+                -webkit-user-drag: none;
             }
         }
     }
