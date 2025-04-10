@@ -61,8 +61,10 @@ def api_combos_upload(request):
     try:
         combo = Combo.objects.create_from_post(post, request.FILES, submitter, users=users, **kwargs)
         message = 'Combo successfully submitted'
+        status = 200
     except ValidationError as e:
         message = 'There were errors when submitting your combo'
         response['errors'] = '. '.join(e.message_dict.get('__all__', [])) + '.'
+        status = 422
     response['message'] = message
-    return Response({'message': 'Combo successfully submitted!'}, status=422)
+    return Response(response, status=status)
