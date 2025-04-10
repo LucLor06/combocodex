@@ -102,4 +102,14 @@ Combos | Verify
         {% endif %}
     </div>
 </section>
+{% if similar_combos %}
+<h2 class="text--header">Matching Combos</h2>
+<section>
+    <div class="section-content combos">
+        {% for combo in similar_combos %}
+        {% include 'partials/combo.html' %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
 {% endblock content %}

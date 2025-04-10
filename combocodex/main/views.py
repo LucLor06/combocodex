@@ -86,6 +86,8 @@ def combos_verify(request):
     except Combo.DoesNotExist:
         pass
     context = {'combo': combo, 'combos_count': Combo.objects.unverified().count()}
+    if combo:
+        context['similar_combos'] = combo.get_combos_with_matching_pairs()
     if request.htmx and request.method == 'POST':
         action = request.POST.get('action', 'accept')
         if action == 'accept':
