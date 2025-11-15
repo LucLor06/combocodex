@@ -9,6 +9,7 @@ urlpatterns = [
     path('combos/submit/', views.combos_submit, name='combos-submit'),
     path('combos/verify/', views.combos_verify, name='combos-verify'),
     path('combos/search/', views.combos_search, name='combos-search'),
+    path('combos/random/', views.combos_random, name='combos-random'),
     path('combos/twitter-embed/<pk>/', views.combos_twitter_embed, name='combos-twitter-embed'),
     path('combos/<pk>/view/', views.combos_increment_view, name='combos-increment-view'),
     path('combos/<pk>/favorite/', views.combos_favorite, name='combos-favorite'),

@@ -12,6 +12,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import UpdateView, DeleteView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ValidationError
+import random
 
 class StaffRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -48,7 +49,7 @@ def robots_txt(request):
 def combos_increment_view(request, pk):
     combo = get_object_or_404(Combo, pk=pk)
     combo.views += 1
-    combo.save(skip_custom_logic=True)
+    combo.save(skip_custom_logic=True, skip_validation=True)
     return HttpResponse('')
 
 @login_required
@@ -167,6 +168,12 @@ def combos_search(request: HttpRequest):
 def redirect_combos_search(request):
     return redirect(reverse('combos-search'))
 
+def combos_random(request):
+    ids = Combo.objects.values_list('id', flat=True)
+    combo_id = random.choice(ids)
+    return redirect(reverse('combos-combo', kwargs={'pk': combo_id}))
+
+
 class ComboUpdateView(UpdateView, StaffRequiredMixin):
     model = Combo
     fields = ['is_outdated', 'is_recommended', 'is_map_specific']
@@ -193,7 +200,7 @@ def requests_submit(request):
     if request.method == 'POST' and request.htmx:
         legends = [request.POST['legend_one'], request.POST['legend_two']]
         weapons = [request.POST['weapon_one'], request.POST['weapon_two']]
-        existing_requests = Request.objects.filter(Q(legend_one=legends[0], weapon_one=weapons[0], legend_two=legends[1], weapon_two=weapons[1]) | Q(legend_one=legends[1], weapon_one=weapons[1], legend_two=legends[0], weapon_two=weapons[0]))
+        existing_requests = Request.objects.incomplete().filter(Q(legend_one=legends[0], weapon_one=weapons[0], legend_two=legends[1], weapon_two=weapons[1]) | Q(legend_one=legends[1], weapon_one=weapons[1], legend_two=legends[0], weapon_two=weapons[0]))
         if existing_requests.exists():
             message = 'There is already a request for this open!'
             return render(request, 'partials/modal-message.html', {'message': message})

@@ -29,7 +29,7 @@
             justify-content: center;
             gap: 1rem;
             margin-inline: auto;
-            width: 80%;
+            width: 100%;
 
             & > * {
                 flex: 1;
@@ -52,6 +52,10 @@
             margin-inline: auto;
         }
     }
+}
+
+.modal-message .modal__actions, .modal__actions > form {
+    width: 80%;
 }
 
 .modal__main.combos {

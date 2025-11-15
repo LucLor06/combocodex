@@ -30,8 +30,7 @@ class AbstractModel(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
 
@@ -55,7 +54,7 @@ class Guest(models.Model):
         user = User.objects.get(username__iexact=self.username)
         combos = Combo.objects.filter(guests=self)
         self.combos.remove(*combos)
-        user.combos.set(combos)
+        user.combos.add(*combos)
 
 
 def combo_video_upload_to(instance, filename):
@@ -179,6 +178,20 @@ class ComboManager(models.Manager):
 
         return data
 
+    def spreadsheet_data(self):
+        combinations = {}
+
+        for legend_one in Legend.objects.prefetch_related('weapons'):
+            for weapon_one in legend_one.weapons.all():
+                for legend_two in Legend.objects.prefetch_related('weapons'):
+                    for weapon_two in legend_two.weapons.all():
+                        combos = self.filter(Q(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two) | Q(legend_one=legend_two, weapon_one=weapon_two, legend_two=legend_one, weapon_two=weapon_one)).exclude(is_outdated=True)
+                        count = combos.count()
+                        has_recommended = combos.filter(is_recommended=True).exists()
+                        combinations[f'{legend_one.name}{weapon_one.name}{legend_two.name}{weapon_two.name}'] = {'count': count, 'has_recommended': has_recommended}
+
+        return combinations
+
 
 class Combo(models.Model):
     CODEX_COINS = 5
@@ -244,7 +257,7 @@ class Combo(models.Model):
             self.poster = video_data['poster']
 
         return super().save(*args, **kwargs)
-    
+
     def clean(self):
         errors = {}
 

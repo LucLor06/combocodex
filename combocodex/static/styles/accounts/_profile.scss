@@ -23,6 +23,7 @@
     gap: 1rem;
 
     label {
+        margin-inline: .5rem;
         font-size: $font-size-lg;
         font-family: 'BebasNeue';
         cursor: pointer;
@@ -32,7 +33,7 @@
             color: var(--color-secondary);
             scale: 1.2;
         }
-        
+
         &:hover:not(:has(input:checked)) {
             color: var(--color-tertriary);
             scale: 1.05;
