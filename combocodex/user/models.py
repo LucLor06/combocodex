@@ -31,6 +31,11 @@ class User(AbstractUser):
                 self.is_trusted = True
                 self.save()
         return self.is_trusted
+    
+    @cached_property
+    def teammates(self):
+        teammates = User.objects.annotate(matching_combo_count=Count('combos', filter=Q(combos__users=self), distinct=True)).exclude(pk=self.pk).filter(matching_combo_count__gt=0).order_by('-matching_combo_count')
+        return teammates
 
     def transfer_combos_to_user(self, user):
         combos = self.combos.all()

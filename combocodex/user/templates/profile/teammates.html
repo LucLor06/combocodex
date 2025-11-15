@@ -1,0 +1,23 @@
+<section>
+    <div class="section-content users">
+        <p class="text--sm text--center">Click a user to view combos done with them</p>
+        <div class="user users-info">
+            <div>
+                <h3 class="text--center text--xs">Username</h3>
+            </div>
+            <div>
+                <h3 class="text--center text--xs">Combos Done Together</h3>
+            </div>
+        </div>
+        {% for teammate in user.teammates %}
+        <a class="user" href="{% url 'combos-search' %}?user={{ teammate.username }}&user={{ user.username }}">
+            <div>
+                <p class="text--center {{ teammate.user_color.css_class }} text--sm">{{ teammate.username }}</p>
+            </div>
+            <div>
+                <p class="text--center">{{ teammate.matching_combo_count }}</p>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>

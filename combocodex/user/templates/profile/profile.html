@@ -67,6 +67,12 @@
         <input name="view" type="radio" value="favorites">
     </label>
     {% endif %}
+    {% if user.teammates.exists %}
+    <label>
+        teammates
+        <input name="view" type="radio" value="teammates">
+    </label>
+    {% endif %}
 </form>
 <div id="accounts-profile__content">
     {% include 'profile/general.html' %}

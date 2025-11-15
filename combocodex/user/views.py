@@ -137,6 +137,8 @@ def profile(request, pk):
             favorites = user.favorite_combos.all()
             context.update({'combos': favorites})
             return render(request, 'profile/favorites.html', context)
+        elif view == 'teammates':
+            return render(request, 'profile/teammates.html', context)
     else:
         context.update({'legends': legends, 'weapons': weapons, 'legends_percent': round((user.legends.count() / legends.count()) * 100, 2), 'weapons_percent': round((user.weapons.count() / weapons.count()) * 100, 2)})
     return render(request, 'profile/profile.html', context)
