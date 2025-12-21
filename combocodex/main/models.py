@@ -163,7 +163,7 @@ class ComboManager(models.Manager):
         combos = combos.filter(legend_filter & weapon_filter & kwarg_filter)
 
         if recommended_first:
-            combos = combos.order_by('-is_recommended', order_by)
+            combos = combos.order_by('-is_recommended', '-is_competitive', order_by)
         else:
             combos = combos.order_by(order_by)
 
@@ -200,6 +200,7 @@ class Combo(models.Model):
     is_outdated = models.BooleanField(default=False)
     is_map_specific = models.BooleanField(default=False)
     is_alternate_gamemode = models.BooleanField(default=False)
+    is_competitive = models.BooleanField(default=False)
     created_on = models.DateField(default=datetime.today)
     legend_one = models.ForeignKey('Legend', related_name='combos_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)

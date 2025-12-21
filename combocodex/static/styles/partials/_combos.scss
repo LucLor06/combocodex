@@ -11,9 +11,6 @@
     }
 }
 
-.combo-hidden {
-    transform: translateY(110%);
-}
 
 .combo {
     display: block;
@@ -27,6 +24,14 @@
     overflow-y: clip;
     aspect-ratio: 16/9;
 
+    &.combo--pro {
+        --color-primary: var(--color-pro);
+        --color-secondary: color-mix(in srgb, var(--color-primary) 85%, white 15%);
+        --color-tertriary: color-mix(in srgb, var(--color-primary) 75%, white 25%);
+        --plyr-color-main: var(--color-secondary);
+        box-shadow: 0px 0px 64px -16px var(--color-secondary);
+    }
+
     video {
         display: block;
         width: 100%;
@@ -36,6 +41,31 @@
     .plyr {
         border-radius: 1rem;
     }
+
+    .combo-pro-message {
+        padding: 2%;
+        background-color: rgba(0, 0, 0, .95);
+        display: flex;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        border-top-right-radius: 1rem;
+        border-top-left-radius: 1rem;
+        transition: transform 250ms;
+        justify-content: center;
+        z-index: 1;
+
+        h3 {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        &.combo-hidden {
+            transform: translateY(-110%);
+        }
+    }
+
 
     .combo-data {
         padding: 2%;
@@ -55,6 +85,15 @@
 
         a {
             margin: 0;
+        }
+        
+        h3 {
+            margin: 0;
+            padding: 0;
+        }
+
+        &.combo-hidden {
+            transform: translateY(110%);
         }
 
         .combo-data__pairs {

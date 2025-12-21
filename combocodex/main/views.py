@@ -176,7 +176,7 @@ def combos_random(request):
 
 class ComboUpdateView(UpdateView, StaffRequiredMixin):
     model = Combo
-    fields = ['is_outdated', 'is_recommended', 'is_map_specific']
+    fields = ['is_outdated', 'is_recommended', 'is_map_specific', 'is_competitive']
 
     def form_valid(self, form):
         self.object = form.save()

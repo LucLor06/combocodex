@@ -1,4 +1,4 @@
-<div class="combo"{% if not no_view %} hx-trigger="comboviewed" hx-post="{% url 'combos-increment-view' combo.pk %}" hx-swap="none" _="
+<div class="combo {% if combo.is_competitive %}combo--pro{% endif %}"{% if not no_view %} hx-trigger="comboviewed" hx-post="{% url 'combos-increment-view' combo.pk %}" hx-swap="none" _="
 init
     set element viewed to false
 end
@@ -10,6 +10,11 @@ on play from <video/> in me
         send comboviewed to me
     end
 end"{% endif %}>
+    {% if combo.is_competitive %}
+    <div class="combo-pro-message">
+        <h3>COMPETITIVE</h3>
+    </div>
+    {% endif %}
     <div class="combo-data">
         <a draggable="false" class="combo-data__pairs" href="{{ combo.get_absolute_url }}">
             <div class="combo-data__pair">
@@ -115,6 +120,11 @@ end"{% endif %}>
                     <input type="checkbox" name="is_outdated" {% if combo.is_outdated %}checked{% endif %}>
                 </label>
                 <label class="button">
+                    <h3 class="text--white">COMPETITIVE</h3>
+                    <p>Competitive</p>
+                    <input type="checkbox" name="is_competitive" {% if combo.is_competitive %}checked{% endif %}>
+                </label>
+                <label class="button">
                     <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
                     <p>Map Specific</p>
                     <input type="checkbox" name="is_map_specific" {% if combo.is_map_specific %}checked{% endif %}>
@@ -152,9 +162,15 @@ end"{% endif %}>
         make a Plyr from me, {controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'download', 'fullscreen'], storage: {enabled: false}}
     end
     on play
-        add .combo-hidden to the previous .combo-data
+        get .combo-data in the closest .combo
+        add .combo-hidden to it
+        get .combo-pro-message in the closest .combo
+        add .combo-hidden to it
     end
     on ended
-        remove .combo-hidden from the previous .combo-data
+        get .combo-data in the closest .combo
+        remove .combo-hidden from it
+        get .combo-pro-message in the closest .combo
+        remove .combo-hidden from it
     end">
 </div>
