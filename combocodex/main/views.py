@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from user.models import User
-from main.models import Combo, WebsiteSocial, DailyChallenge, Legend, Weapon, Request
+from main.models import Combo, WebsiteSocial, DailyChallenge, Legend, Weapon, Request, ComboRejectionReason
 from django.db.models import Q
 from django.urls import reverse
 from django.http import HttpResponse, HttpRequest
@@ -90,7 +90,7 @@ def combos_verify(request):
         combo = Combo.objects.unverified().latest('id')
     except Combo.DoesNotExist:
         pass
-    context = {'combo': combo, 'combos_count': Combo.objects.unverified().count()}
+    context = {'combo': combo, 'combos_count': Combo.objects.unverified().count(), 'rejection_reasons': ComboRejectionReason.objects.all()}
     if combo:
         context['similar_combos'] = combo.get_combos_with_matching_pairs()
     if request.htmx and request.method == 'POST':

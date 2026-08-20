@@ -206,8 +206,8 @@ class Combo(models.Model):
     weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='combos_two', on_delete=models.CASCADE)
     weapon_two = models.ForeignKey('Weapon', related_name='combos_two', on_delete=models.CASCADE)
-    users = models.ManyToManyField('user.User', blank=True, related_name='combos', editable=False)
-    guests = models.ManyToManyField('Guest', blank=True, related_name='combos', editable=False)
+    users = models.ManyToManyField('user.User', blank=True, related_name='combos')
+    guests = models.ManyToManyField('Guest', blank=True, related_name='combos')
     video = models.FileField(upload_to=combo_video_upload_to)
     video_duration = models.FloatField()
     poster = models.ImageField(blank=True, null=True, upload_to=combo_post_upload_to, editable=False)
@@ -395,6 +395,11 @@ class Combo(models.Model):
         video.seek(0)
         return {'poster': poster, 'video_duration': video_duration}
 
+class ComboRejectionReason(models.Model):
+    reason = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.reason
 
 class RequestManager(models.Manager):
     def complete(self):

@@ -86,7 +86,7 @@
         a {
             margin: 0;
         }
-        
+
         h3 {
             margin: 0;
             padding: 0;
@@ -157,7 +157,7 @@
         display: none;
     }
 
-    &:has(input:checked) { 
+    &:has(input:checked) {
         .combo-favorite--unfavorite {
             display: block;
         }

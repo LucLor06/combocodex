@@ -159,7 +159,7 @@ end"{% endif %}>
     {% endif %}
     <video muted playsinline src="{{ combo.video.url }}" {% if combo.poster %}poster="{{ combo.poster.url }}"{% endif %} _="
     on load
-        make a Plyr from me, {controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'download', 'fullscreen'], storage: {enabled: false}}
+        make a Plyr from me, {controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'download', 'fullscreen'], storage: {enabled: true}}
     end
     on play
         get .combo-data in the closest .combo
