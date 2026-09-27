@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
-from django.db.models import F, Q
+from django.db.models import F, Q, Count
 from django.core.paginator import Paginator
 from django.urls import reverse
 from config.settings import BASE_DIR
@@ -16,6 +16,7 @@ from datetime import datetime
 from django.core.files.storage import default_storage
 from lxml import etree
 import portalocker
+import random
 
 class AbstractModel(models.Model):
     name = models.CharField(max_length=32)
@@ -289,7 +290,10 @@ class Combo(models.Model):
             self.is_verified = True
             self.save(skip_custom_logic=True)
             self.users.update(codex_coins=F('codex_coins') + Combo.CODEX_COINS)
-            self.update_spreadsheet()
+            try:
+                self.update_spreadsheet()
+            except:
+                pass
             mail = Mail.objects.create(subject='Combo Verified', type='good', content=f'Your combo {self.legend_one.name} ({self.weapon_one.name}) {self.legend_two.name} ({self.weapon_two.name}) has been verified.', link=self.get_absolute_url())
             mail.users.set(self.users.all())
             try:
@@ -298,7 +302,7 @@ class Combo(models.Model):
             except Request.DoesNotExist:
                 pass
             try:
-                daily_challenge = DailyChallenge.objects.filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one)).get(created_on=self.created_on)
+                daily_challenge = DailyChallenge.objects.current().filter(Q(legend_one=self.legend_one, weapon_one=self.weapon_one, legend_two=self.legend_two, weapon_two=self.weapon_two) | Q(legend_one=self.legend_two, weapon_one=self.weapon_two, legend_two=self.legend_one, weapon_two=self.weapon_one)).first()
                 self.daily_challenge = daily_challenge
                 self.users.update(codex_coins=F('codex_coins') + DailyChallenge.CODEX_COINS)
             except DailyChallenge.DoesNotExist:
@@ -450,6 +454,21 @@ class Request(models.Model):
         self.save()
         return self
 
+
+class DailyChallengeManager(models.Manager):
+    def current(self):
+        return self.filter(created_on=datetime.today())
+    
+    def create_with_weight(self):
+        legends = Legend.objects.annotate(combo_count=(Count('combos_one') + Count('combos_two'))).order_by('name').all()
+        legend_weights = [(1/ ((legend.combo_count + 1)**2)) for legend in legends]
+        legends = list(legends)
+        legends = random.choices(population=legends, weights=legend_weights, k=2)
+        weapons = [random.choice(list(legend.weapons.all())) for legend in legends]
+        legend_one, legend_two, weapon_one, weapon_two = legends + weapons
+        challenge = self.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two)
+        return challenge
+
 class DailyChallenge(models.Model):
     CODEX_COINS = 10
     created_on = models.DateField(default=datetime.today)
@@ -457,6 +476,8 @@ class DailyChallenge(models.Model):
     weapon_one = models.ForeignKey('Weapon', related_name='daily_challenges_one', on_delete=models.CASCADE)
     legend_two = models.ForeignKey('Legend', related_name='daily_challenges_two', on_delete=models.CASCADE)
     weapon_two = models.ForeignKey('Weapon', related_name='daily_challenges_two', on_delete=models.CASCADE)
+
+    objects = DailyChallengeManager()
 
     class Meta:
         ordering = ['-id']

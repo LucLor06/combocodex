@@ -19,7 +19,7 @@ class StaffRequiredMixin(UserPassesTestMixin):
         return self.request.user.is_staff
 
 def home(request):
-    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenge': DailyChallenge.objects.latest('id'), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user(), 'today_combo_count': Combo.objects.filter(created_on=datetime.today()).count()}
+    context = {'combos': Combo.objects.verified()[:4], 'socials': WebsiteSocial.objects.all(), 'daily_challenges': DailyChallenge.objects.current(), 'combo_count': Combo.objects.verified().count(), 'user_count': User.objects.count(), 'weekly_user': User.weekly_user(), 'today_combo_count': Combo.objects.filter(created_on=datetime.today()).count()}
     return render(request, 'home.html', context)
 
 def help(request):

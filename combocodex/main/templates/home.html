@@ -27,9 +27,12 @@
         </div>
         <div class="home-stats">
             <div>
-                <h3 class="text--center">Today's Challenge</h3>
-                {% include 'partials/daily-challenge.html' %}
+                <button _="
+                on click
+                remove .hidden from the next .modal
+                end">View Daily Challenges</button>
             </div>
+            
             <div>
                 <h2 class="text--center">{{ today_combo_count }}</h2>
                 <p class="text--xs text--center">Combos today</p>
@@ -45,6 +48,26 @@
         </div>
     </div>
 </section>
+<div class="modal hidden">
+    <div class="modal__content home__daily-challenges-modal">
+        <div class="modal__header">
+            <h2 class="text--center">Challenges</h2>
+        </div>
+        <div class="modal__main">
+            <div class="home__daily-challenges">
+                {% for daily_challenge in daily_challenges %}
+                {% include 'partials/daily-challenge.html' %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="modal__actions">
+            <button _="
+            on click
+                add .hidden to the closest .modal
+            end">Done</button>
+        </div>
+    </div>
+</div>
 <h2 class="text--header">Recent Combos</h2>
 <section>
     <div class="section-content combos">

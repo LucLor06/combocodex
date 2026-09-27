@@ -5,13 +5,9 @@ import random
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from main.models import DailyChallenge, Legend
+from main.models import DailyChallenge
 
-legends = Legend.objects.exclude(name='Universal')
+daily_challenge_count = 3
 
-legend_one = random.choice(legends)
-weapon_one = random.choice(legend_one.weapons.exclude(name='Unarmed'))
-legend_two = random.choice(legends)
-weapon_two = random.choice(legend_two.weapons.exclude(name='Unarmed'))
-
-daily_challenge = DailyChallenge.objects.create(legend_one=legend_one, weapon_one=weapon_one, legend_two=legend_two, weapon_two=weapon_two)
+for i in range(daily_challenge_count):
+    DailyChallenge.objects.create_with_weight()

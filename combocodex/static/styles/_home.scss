@@ -26,6 +26,12 @@
     }
 }
 
+.home__daily-challenges {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .home-stats {
     display: flex;
     flex-flow: row-reverse wrap;

@@ -1,19 +1,9 @@
 from django.contrib import admin
-from . import models
+from .models import User, UserColor, UserTheme, UserBackground, Mail
 
-admin.site.register([models.Legend, models.Weapon, models.WebsiteSocial, models.DailyChallenge, models.Request, models.ComboRejectionReason])
+admin.site.register([UserColor, UserTheme, UserBackground, Mail])
 
-class ComboAdmin(admin.ModelAdmin):
-    search_fields = ['legend_one__name', 'weapon_one__name', 'legend_two__name', 'weapon_two__name']
-    autocomplete_fields = ['users', 'guests']
-
-    class Media:
-        css = {
-            'all': ('styles/admin/admin.css',)
-        }
-
-class GuestAdmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     search_fields = ['username']
 
-admin.site.register(models.Guest, GuestAdmin)
-admin.site.register(models.Combo, ComboAdmin)
+admin.site.register(User, UserAdmin)
