@@ -78,6 +78,10 @@ class ComboManager(models.Manager):
     def unverified(self):
         return self.select_weapons_legends().filter(is_verified=False)
 
+    def random(self, *, legends=[], weapons=[]):
+        combo = self.search(legends=legends, weapons=weapons, paginate=False).get('combos').order_by('?').first()
+        return combo
+
     def create_from_post(self, post, files, submitter=None, **kwargs):
         from user.models import User
 
@@ -177,6 +181,8 @@ class ComboManager(models.Manager):
             page = paginator.get_page(page_number)
             data.update({'combos': page.object_list, 'page': page})
 
+        data['combos'] = data['combos'].select_related('legend_one', 'weapon_one', 'legend_two', 'weapon_two').prefetch_related('users')
+
         return data
 
     def spreadsheet_data(self):
@@ -202,6 +208,7 @@ class Combo(models.Model):
     is_map_specific = models.BooleanField(default=False)
     is_alternate_gamemode = models.BooleanField(default=False)
     is_competitive = models.BooleanField(default=False)
+    is_dodgeable = models.BooleanField(default=False)
     created_on = models.DateField(default=datetime.today)
     legend_one = models.ForeignKey('Legend', related_name='combos_one', on_delete=models.CASCADE)
     weapon_one = models.ForeignKey('Weapon', related_name='combos_one', on_delete=models.CASCADE)
@@ -458,7 +465,7 @@ class Request(models.Model):
 class DailyChallengeManager(models.Manager):
     def current(self):
         return self.filter(created_on=datetime.today())
-    
+
     def create_with_weight(self):
         legends = Legend.objects.annotate(combo_count=(Count('combos_one') + Count('combos_two'))).order_by('name').all()
         legend_weights = [(1/ ((legend.combo_count + 1)**2)) for legend in legends]

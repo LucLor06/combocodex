@@ -1,21 +1,40 @@
 from rest_framework.generics import ListAPIView
 from main.models import Combo, Legend, Weapon
-from .serializers import ComboSerailizer, LegendSerializer, WeaponSerializer
+from .serializers import ComboSerializer, LegendSerializer, WeaponSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from user.models import User
 from django.core.exceptions import ValidationError
+import time
 
 class ComboListView(ListAPIView):
-    serializer_class = ComboSerailizer
+    serializer_class = ComboSerializer
 
     def get_queryset(self):
-        legends = self.request.query_params.getlist('legend', [])
-        weapons = self.request.query_params.getlist('weapon', [])
-        combo_data = Combo.objects.search(legends, weapons, paginate=False)
+        legends = self.request.query_params.getlist('legends', [])
+        weapons = self.request.query_params.getlist('weapons', [])
+        print(f'getting combos for {legends} {weapons}')
+        combo_data = Combo.objects.search(legends=legends, weapons=weapons, paginate=False)
+        print('Done!')
         return combo_data['combos']
 
+    def list(self, request, *args, **kwargs):
+        start = time.perf_counter()
+
+        queryset = self.get_queryset()
+        combos = list(queryset)
+
+        print(f'Query: {time.perf_counter() - start:.3f}s', flush=True)
+
+        start = time.perf_counter()
+
+        serializer = self.get_serializer(combos, many=True)
+        data = serializer.data
+
+        print(f'Serialization: {time.perf_counter() - start:.3f}s', flush=True)
+
+        return Response(data)
 
 class LegendListView(ListAPIView):
     queryset = Legend.objects.all()
@@ -40,6 +59,13 @@ def api_user_link(request):
     else:
         response = 'An account with those credentials was not found. Both username and password are case sensitive.'
     return Response({'message': response})
+
+@api_view(['GET'])
+def api_combos_random(request):
+    legends = request.query_params.getlist('legends', [])
+    weapons = request.query_params.getlist('weapons', [])
+    combo = Combo.objects.random(legends=legends, weapons=weapons)
+    return Response({'combo': ComboSerializer(combo).data})
 
 @api_view(['POST'])
 def api_combos_upload(request):

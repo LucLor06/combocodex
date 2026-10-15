@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from main.models import Combo, Legend, Weapon
 from user.models import User
+import time
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -20,7 +21,7 @@ class WeaponSerializer(ModelSerializer):
         fields = ['name', 'id']
 
 
-class ComboSerailizer(ModelSerializer):
+class ComboSerializer(ModelSerializer):
     users = UserSerializer(many=True, read_only=True)
     legend_one = LegendSerializer()
     weapon_one = WeaponSerializer()

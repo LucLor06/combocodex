@@ -169,14 +169,13 @@ def redirect_combos_search(request):
     return redirect(reverse('combos-search'))
 
 def combos_random(request):
-    ids = Combo.objects.values_list('id', flat=True)
-    combo_id = random.choice(ids)
-    return redirect(reverse('combos-combo', kwargs={'pk': combo_id}))
+    combo = Combo.objects.random()
+    return redirect(reverse('combos-combo', kwargs={'pk': combo.pk}))
 
 
 class ComboUpdateView(UpdateView, StaffRequiredMixin):
     model = Combo
-    fields = ['is_outdated', 'is_recommended', 'is_map_specific', 'is_competitive']
+    fields = ['is_outdated', 'is_recommended', 'is_map_specific', 'is_competitive', 'is_dodgeable']
 
     def form_valid(self, form):
         self.object = form.save()

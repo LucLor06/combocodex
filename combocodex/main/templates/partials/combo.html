@@ -73,6 +73,12 @@ end"{% endif %}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m422-232 207-248H469l29-227-185 267h139l-30 208ZM320-80l40-280H160l360-520h80l-40 320h240L400-80h-80Zm151-390Z"/></svg>
                 </div>
                 {% endif %}
+                {% if combo.is_dodgeable %}
+                <div>
+                    <p class="tooltip">Dodgeable</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="m216-160-56-56 384-384H440v80h-80v-160h233q16 0 31 6t26 17l120 119q27 27 66 42t84 16v80q-62 0-112.5-19T718-476l-40-42-88 88 90 90-262 151-40-69 172-99-68-68-266 265Zm-96-280v-80h200v80H120ZM40-560v-80h200v80H40Zm739-80q-33 0-57-23.5T698-720q0-33 24-56.5t57-23.5q33 0 57 23.5t24 56.5q0 33-24 56.5T779-640Zm-659-40v-80h200v80H120Z"/></svg>
+                </div>
+                {% endif %}
                 <div>
                     <p class="tooltip">Views</p>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M640-160v-280h160v280H640Zm-240 0v-640h160v640H400Zm-240 0v-440h160v440H160Z"/></svg>
@@ -123,6 +129,11 @@ end"{% endif %}>
                     <h3 class="text--white">COMPETITIVE</h3>
                     <p>Competitive</p>
                     <input type="checkbox" name="is_competitive" {% if combo.is_competitive %}checked{% endif %}>
+                </label>
+                <label class="button">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666"><path d="m216-160-56-56 384-384H440v80h-80v-160h233q16 0 31 6t26 17l120 119q27 27 66 42t84 16v80q-62 0-112.5-19T718-476l-40-42-88 88 90 90-262 151-40-69 172-99-68-68-266 265Zm-96-280v-80h200v80H120ZM40-560v-80h200v80H40Zm739-80q-33 0-57-23.5T698-720q0-33 24-56.5t57-23.5q33 0 57 23.5t24 56.5q0 33-24 56.5T779-640Zm-659-40v-80h200v80H120Z"/></svg>
+                    <p>Dodgeable</p>
+                    <input type="checkbox" name="is_dodgeable" {% if combo.is_dodgeable %}checked{% endif %}>
                 </label>
                 <label class="button">
                     <svg class="icon--error" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m600-120-240-84-186 72q-20 8-37-4.5T120-170v-560q0-13 7.5-23t20.5-15l212-72 240 84 186-72q20-8 37 4.5t17 33.5v560q0 13-7.5 23T812-192l-212 72Zm-40-98v-468l-160-56v468l160 56Zm80 0 120-40v-474l-120 46v468Zm-440-10 120-46v-468l-120 40v474Zm440-458v468-468Zm-320-56v468-468Z"/></svg>
