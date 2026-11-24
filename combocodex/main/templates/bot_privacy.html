@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Bot Privacy Policy{% endblock title %}
+
+{% block header %}
+<h1>Discord Bot Privacy Policy</h1>
+{% endblock header %}
+
+{% block content %}
+<section>
+    <div class="section-content">
+        <div>
+            <p><strong>Last Updated:</strong> November 16, 2026</p>
+        </div>
+
+        <div>
+            <h3>1. About This Policy</h3>
+            <p>ComboCodex is a community project, and our Discord bot is simply another way to use the website. We don't collect information just for the sake of collecting it. This page explains what information the bot uses, what gets saved, and how you can remove it.</p>
+            <p>The short version: the bot doesn't have its own database. If you link your Discord account, ComboCodex saves your Discord user ID so it can recognize you. Searches aren't saved by the bot, and uploaded videos are only held temporarily in memory before being sent to ComboCodex.</p>
+        </div>
+
+        <div>
+            <h3>2. What Information Does the Bot Use?</h3>
+            <p>When you use the bot, it receives the information needed to respond to your commands, such as your Discord user ID, search queries, and any combo details you submit. The bot uses this information to communicate with <a href="https://combocodex.com/">ComboCodex</a> and return the results to Discord.</p>
+            <p>Searching for combos doesn't require an account, and the bot doesn't save a history of your searches. It simply requests the results from ComboCodex and sends back links that Discord can display as embeds.</p>
+            <p>The bot doesn't request access to general message content, presence updates, or server member-list events through Discord's privileged gateway intents.</p>
+        </div>
+
+        <div>
+            <h3>3. Linking Your Discord Account</h3>
+            <p>If you want to submit combos through Discord, you'll need to link your Discord account to your ComboCodex account. This can only be done through the official ComboCodex Discord server.</p>
+            <p>When you link your account, your Discord user ID is saved to your ComboCodex account so the bot knows who you are. This ID remains saved until you unlink your Discord account or your ComboCodex account is deleted.</p>
+            <p>You can unlink your Discord account through ComboCodex at any time, which immediately removes the stored Discord ID. If you'd like to delete your entire ComboCodex account, you'll need to contact me.</p>
+        </div>
+
+        <div>
+            <h3>4. Uploading Combos and Videos</h3>
+            <p>Combo submissions are only available in the official ComboCodex Discord server. When you upload a video through the bot, it temporarily downloads the file into memory and sends it to ComboCodex. The bot doesn't save its own permanent copy.</p>
+            <p>Once uploaded, your combo and video are stored through ComboCodex, with video hosting provided by Cloudflare. Submitted combos may be publicly visible on the website.</p>
+            <p>You can delete your own combos through ComboCodex. Deleting a combo also deletes its associated video from Cloudflare.</p>
+        </div>
+
+        <div>
+            <h3>5. Where Is Information Stored?</h3>
+            <p>The bot itself doesn't have a database or permanently store user information. Linked Discord IDs and submitted combos are stored by ComboCodex as described above.</p>
+            <p>Like most websites and applications, our hosting provider temporarily keeps general request logs, such as timestamps, requested URLs, and response information. These logs are automatically removed according to the hosting provider's retention settings.</p>
+            <p>The bot also relies on Discord to handle interactions and Cloudflare to host uploaded videos. These services may process information necessary to provide their functionality under their own privacy policies.</p>
+        </div>
+
+        <div>
+            <h3>6. Removing Your Information</h3>
+            <p>You can unlink your Discord account whenever you want, which removes your Discord ID from ComboCodex. You can also delete any combos you've submitted, including their associated videos.</p>
+            <p>If you want your entire ComboCodex account deleted, or have another request concerning your information, you can reach out to me (RandallBoBandall) through our <a href="https://discord.gg/5n4JWMb">Discord server</a>.</p>
+            <p>Removing the bot from a Discord server won't automatically delete any account information you've linked to ComboCodex.</p>
+        </div>
+
+        <div>
+            <h3>7. Questions or Changes?</h3>
+            <p>If you have questions about how the bot handles information, feel free to join the <a href="https://discord.gg/5n4JWMb">ComboCodex Discord server</a> and contact <strong>RandallBoBandall</strong>.</p>
+            <p>This policy may be updated as the bot changes or new features are added. The latest version will always be available on this page.</p>
+        </div>
+    </div>
+</section>
+{% endblock content %}
