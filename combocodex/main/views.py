@@ -28,6 +28,12 @@ def help(request):
 def about(request):
     return render(request, 'about.html')
 
+def bot_terms(request):
+    return render(request, 'bot_terms.html')
+
+def bot_privacy(request):
+    return render(request, 'bot_privacy.html')
+
 def robots_txt(request):
     content = """
     User-agent: Twitterbot
